@@ -4,11 +4,11 @@
   "description": "API for pulling in PuckIQ & WoodMoney data",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PuckIQ/puckiq-api.git"
+    "url": "git://github.com/PuckIQ/puckiq-api.git"
   },
   "author": "Zsolt Munoz <zsolt@puckiq.com>",
   "license": "GPL-2.0",
