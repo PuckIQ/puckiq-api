@@ -2,13 +2,12 @@
 
 ## Generic Queries
 ### Methods
-qSeasonList
-qSeasonCount
+qSeasonList, qSeasonCount
 
 ### URI Queries
-- '/puckiq/woodmoney-gen/:qmethod'
-- '/puckiq/wowy-gen/:qmethod'
-- '/puckiq/woodwowy-gen/:qmethod'
+- '/puckiq/woodmoney-gen/<method>'
+- '/puckiq/wowy-gen/<method>'
+- '/puckiq/woodwowy-gen/<method>'
 
 WOWY Queries
 qWowy -> options (object)
