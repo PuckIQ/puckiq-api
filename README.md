@@ -49,9 +49,9 @@ qWoodMoney *options (object)*
 getPlayerList *options (object)*
 
 ### URI Queries
-- /puckiq/players/:qmethod
-- /puckiq/players/:qmethod/season/:season
-- /puckiq/players/:qmethod/team/:Team
-- /puckiq/players/:qmethod/team/:Team/season/:season
-- /puckiq/players/:qmethod/player/:PlayerId
-- /puckiq/players/:qmethod/player/:PlayerId/season/:season
+- /puckiq/players/[method]
+- /puckiq/players/[method]/season/[season]
+- /puckiq/players/[method]/team/[team]
+- /puckiq/players/[method]/team/[team]/season/[season]
+- /puckiq/players/[method]/player/[playerid]
+- /puckiq/players/[method]/player/[playerid]/season/[season]
