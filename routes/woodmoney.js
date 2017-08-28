@@ -1,21 +1,21 @@
 var config = require('../config.js');
 var MongoClient = require('mongodb').MongoClient;
 var preGen = require('./queries/qgeneric');
-var prePlayers = require('./queries/qwoodmoney');
+var preWoodMoney = require('./queries/qwoodmoney');
 
 var dbUri = 'mongodb://' + config.dbUser + ':' + config.dbPass + '@' + config.dbUri + ':' + config.dbPort + '/' + config.dbName;
 
-function PlayersHandler(request) {
+function WoodMoneyHandler(request) {
   "use strict";
 
-  this.getPlayers = function (req, res) {
+  this.getWoodMoney = function (req, res) {
     var qmethod = req.params.qmethod;
     var options = req.params;
-    playersOptionQuery(qmethod, options, (data) => {
+    woodMoneyOptionQuery(qmethod, options, (data) => {
       res.contentType('application/json');
       res.send(JSON.stringify(data));
     });
-  };
+  }
 
   this.getSeasons = function (req, res) {
     var qmethod = req.params.qmethod;
@@ -30,7 +30,7 @@ function PlayersHandler(request) {
     try {
       var pq = new preGen();
       MongoClient.connect(dbUri, (err, db) => {
-        var Collection = db.collection('nhlplayers');
+        var Collection = db.collection('woodmoneylive');
         var results = pq[qmethod](Collection);
 
         results.toArray((err, docs) => {
@@ -50,7 +50,7 @@ function PlayersHandler(request) {
     try {
       var pq = new preGen();
       MongoClient.connect(dbUri, (err, db) => {
-        var Collection = db.collection('nhlplayers');
+        var Collection = db.collection('woodmoneylive');
         var results = pq[qmethod](options, Collection);
 
         results.toArray((err, docs) => {
@@ -66,11 +66,11 @@ function PlayersHandler(request) {
     }
   }
 
-  var playersStaticQuery = function (qmethod, callback) {
+  var woodMoneyStaticQuery = function (qmethod, callback) {
     try {
       var pq = new preWoodMoney();
       MongoClient.connect(dbUri, (err, db) => {
-        var Collection = db.collection('nhlplayers');
+        var Collection = db.collection('woodmoneylive');
         var results = pq[qmethod](Collection);
 
         results.toArray((err, docs) => {
@@ -86,10 +86,10 @@ function PlayersHandler(request) {
     }
   }
 
-  var playersOptionQuery = function (qmethod, options, callback) {
+  var woodMoneyOptionQuery = function (qmethod, options, callback) {
     var pq = new preWoodMoney();
     MongoClient.connect(dbUri, (err, db) => {
-      var Collection = db.collection('nhlplayers');
+      var Collection = db.collection('woodmoneylive');
       var results = pq[qmethod](options, Collection);
 
       results.toArray((err, docs) => {
@@ -103,4 +103,4 @@ function PlayersHandler(request) {
   }
 }
 
-module.exports = PlayersHandler;
+module.exports = WoodMoneyHandler;
