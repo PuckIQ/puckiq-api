@@ -20,12 +20,7 @@ module.exports = exports = function(app, cache, request) {
   // Game Schedule
   app.get('/puckiq/schedule/:simplegamedate', gamesHandler.getGameDate);
 
-  // Roster Queries
-  //app.get('/puckiq/roster/season/:season', playersHandler.getAllPlayers);
-  //app.get('/puckiq/roster/season/:season/team/:teamabbr', playersHandler.getAllPlayers);
-  // Future Use
-  //app.get('/puckiq/roster/game/:_id', teamsHandler.getAllTeams);
-  //app.get('/puckiq/roster/game/:_id/team/:teamabbr', teamsHandler.getAllTeams);
+  // Player Specific Queries using qplayers.js
 
   // WoodMoney Specific Queries using qwoodmoney.js
   app.get('/puckiq/woodmoney/:qmethod/season/:season', woodMoneyHandler.getWoodMoney);
