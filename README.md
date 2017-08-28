@@ -8,6 +8,7 @@ qSeasonList, qSeasonCount
 - /puckiq/woodmoney-gen/[method]
 - /puckiq/wowy-gen/[method]
 - /puckiq/woodwowy-gen/[method]
+- /puckiq/players-gen/[method]
 
 ## WOWY Queries
 ### Methods
@@ -42,3 +43,15 @@ qWoodMoney *options (object)*
 - /puckiq/woodmoney/[method]/player/[playerid]/team/[team]
 - /puckiq/woodmoney/[method]/player/[playerid]/team/[team]/season/[season]
 - /puckiq/woodmoney/[method]/player/[playerid]/season/[season]
+
+## Players Queries
+### Methods
+getPlayerList *options (object)*
+
+### URI Queries
+- /puckiq/players/:qmethod
+- /puckiq/players/:qmethod/season/:season
+- /puckiq/players/:qmethod/team/:Team
+- /puckiq/players/:qmethod/team/:Team/season/:season
+- /puckiq/players/:qmethod/player/:PlayerId
+- /puckiq/players/:qmethod/player/:PlayerId/season/:season
