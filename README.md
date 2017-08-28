@@ -5,9 +5,9 @@
 qSeasonList, qSeasonCount
 
 ### URI Queries
-- '/puckiq/woodmoney-gen/<method>'
-- '/puckiq/wowy-gen/<method>'
-- '/puckiq/woodwowy-gen/<method>'
+- '/puckiq/woodmoney-gen/[method]'
+- '/puckiq/wowy-gen/[method]'
+- '/puckiq/woodwowy-gen/[method]'
 
 WOWY Queries
 qWowy -> options (object)
