@@ -11,7 +11,11 @@ function PuckIQHandler(request) {
     var options = req.params;
     puckIQOptionQuery(qtype, qmethod, options, (data) => {
       res.contentType('application/json');
-      res.send(JSON.stringify(data));
+      if (data.length > 0) {
+        res.send(JSON.stringify(data));
+      } else {
+        res.status(404).send('Not Found');
+      }
     });
   }
 
@@ -20,7 +24,11 @@ function PuckIQHandler(request) {
     var qmethod = req.params.qmethod;
     puckIQStaticQuery(qtype, qmethod, (data) => {
       res.contentType('application/json');
-      res.send(JSON.stringify(data));
+      if (data.length > 0) {
+        res.send(JSON.stringify(data));
+      } else {
+        res.status(404).send('Not Found');
+      }
     });
   }
 
@@ -35,11 +43,12 @@ function PuckIQHandler(request) {
           var results = pq[qmethod](qtype, Collection);
 
           results.toArray((err, docs) => {
-            if (!err)
+            if (!err) {
               callback(docs);
-            else
+            } else {
               console.log(err);
-              callback(err)
+              callback(err);
+            }
             db.close();
           });
         } catch (exception) {
@@ -63,11 +72,12 @@ function PuckIQHandler(request) {
           var results = pq[qmethod](options, qtype, Collection);
 
           results.toArray((err, docs) => {
-            if (!err)
+            if (!err) {
               callback(docs);
-            else
+            } else {
               console.log(err);
-              callback(err)
+              callback(err);
+            }
             db.close();
           });
         } catch (exception) {
