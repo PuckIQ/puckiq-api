@@ -4,7 +4,7 @@ function PuckIQHelpers() {
   this.mongoQueryBuilder = function (options) {
     var queryBuilder = new Object();
     Object.keys(options).forEach(function (key) {
-      if (key != 'qmethod') {
+      if (key != 'qmethod' && key != 'qtype') {
         if (isNumeric(options[key]))
           queryBuilder[key] = parseInt(options[key]);
         else
