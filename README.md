@@ -1,14 +1,32 @@
 # PuckIQ API
 
+## Available Query Types
+
+The following query types are exposed for use with the PuckIQ API and are used /puckiq/[x]/[qtype]. *x* is reserverd for particular query types to avoid conflicts due to collection field names.
+
+- schedule
+- teams
+- players
+- roster
+- woodmoney
+- wowy
+- woodwowy
+
 ## Generic Queries
 ### Methods
 qSeasonList, qSeasonCount
 
 ### URI Queries
-- /puckiq/woodmoney-gen/[method]
-- /puckiq/wowy-gen/[method]
-- /puckiq/woodwowy-gen/[method]
-- /puckiq/players-gen/[method]
+- /puckiq/g/schedule/[method]
+- /puckiq/g/teams/[method]
+- /puckiq/g/schedule/[method]
+- /puckiq/g/schedule/[method]
+- /puckiq/g/schedule/[method]
+- /puckiq/g/schedule/[method]
+- 
+- /puckiq/g/wowy-gen/[method]
+- /puckiq/g/woodwowy-gen/[method]
+- /puckiq/g/players-gen/[method]
 
 ## WOWY Queries
 ### Methods
