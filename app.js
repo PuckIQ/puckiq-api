@@ -1,14 +1,13 @@
-var getExpeditiousCache = require('express-expeditious');
-var cache = getExpeditiousCache({
-  // Namespace used to prevent cache conflicts, must be alphanumeric 
+var config = require('./config.js');
+const getExpeditiousCache = require('express-expeditious');
+const redisOptions = {
+  host: config.redisHost,
+  port: config.redisPort
+}
+const cache = getExpeditiousCache({
   namespace: 'puckiqcache',
-  // Store cache entries for 1 minute (can also pass milliseconds e.g 60000) 
   defaultTtl: '1 minute',
-  engine: require('expeditious-engine-redis')({
-    // options for the redis driver 
-    host: 'localhost',
-    port: 6379
-  })
+  engine: require('expeditious-engine-redis')({redis: redisOptions}),
 });
 
 var express = require('express'),
@@ -17,7 +16,6 @@ var express = require('express'),
 var request = require('request'),
   http = require('http'),
   routes = require('./routes'),
-  config = require('./config.js'),
   server = http.createServer(app);
 
 routes(app, cache, request);
