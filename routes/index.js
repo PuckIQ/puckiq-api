@@ -5,15 +5,22 @@ module.exports = exports = function(app, cache, request) {
 
   // Teams
   app.get('/puckiq/t/:qtype/:qmethod', puckIQHandler.getStaticPuckIQ);
-  app.get('/puckiq/t/:qtype/:qmethod/abbr/:abbr', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/t/:qtype/:qmethod/abbr/:abbr/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/t/:qtype/:qmethod/team/:abbr', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/t/:qtype/:qmethod/team/:abbr/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/t/:qtype/:qmethod/teamseasonid/:_id', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/t/:qtype/:qmethod/conference/:conference', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/t/:qtype/:qmethod/conference/:conference/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/t/:qtype/:qmethod/division/:division', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/t/:qtype/:qmethod/division/:division/season/:season', puckIQHandler.getOptionPuckIQ);
 
   // Game Roster
   app.get('/puckiq/r/:qtype/:qmethod/game/:_id', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/r/:qtype/:qmethod/gamedate/:gamedate', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/r/:qtype/:qmethod/team/:team', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/r/:qtype/:qmethod/team/:team/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/r/:qtype/:qmethod/player/:playerid', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/r/:qtype/:qmethod/player/:playerid/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/r/:qtype/:qmethod/playerseasonid/:playerseasonid', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
 
   // Game Schedule
   app.get('/puckiq/s/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);

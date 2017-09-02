@@ -53,3 +53,56 @@ The following query types are exposed for use with the PuckIQ API and are used /
 
 **HTTP GET Queries**
 - /puckiq/s/schedule/getTeamSchedule/team/[team]/season/[season]
+
+## Team Queries
+### Methods
+
+**getTeam:** Returns a single team's info
+
+**HTTP GET Queries**
+- /puckiq/t/teams/getTeam/team/[team]
+- /puckiq/t/teams/getTeam/team/[team]/season/[season]
+- /puckiq/t/teams/getTeam/teamseasonid/[teamseasonid]
+- /puckiq/t/teams/getTeam/conference/[conference]
+- /puckiq/t/teams/getTeam/conference/[conference]/season/[season]
+- /puckiq/t/teams/getTeam/division/[division]
+- /puckiq/t/teams/getTeam/division/[division]/season/[season]
+
+**getTeamList:** Returns all teams' info
+
+**HTTP GET Queries**
+- /puckiq/t/teams/getTeamList
+
+## Player Queries
+### Methods
+
+**getPlayer:** Returns player info
+
+**HTTP GET Queries**
+- /puckiq/p/players/getPlayer/season/[season]
+- /puckiq/p/players/getPlayer/team/[team]
+- /puckiq/p/players/getPlayer/team/[team]/season/[season]
+- /puckiq/p/players/getPlayer/player/[playerid]
+- /puckiq/p/players/getPlayer/player/[playerid]/team/[team]
+- /puckiq/p/players/getPlayer/player/[playerid]/team/[team]/season/[season]
+- /puckiq/p/players/getPlayer/player/[playerid]/season/[season]
+
+## Roster Queries
+### Methods
+
+**getGameRoster:** Returns roster info for games
+
+**HTTP GET Queries**
+- /puckiq/r/roster/getGameRoster/game/[gameid]
+- /puckiq/r/roster/getGameRoster/gamedate/[gamedate]
+
+**getRosters:** Returns roster info by game, player or team
+
+**HTTP GET Queries**
+- /puckiq/r/roster/getRosters/game/[gameid]
+- /puckiq/r/roster/getRosters/gamedate/[gamedate]
+- /puckiq/r/roster/getRosters/team/[team]
+- /puckiq/r/roster/getRosters/team/[team]/season/[season]
+- /puckiq/r/roster/getRosters/player/[playerid]
+- /puckiq/r/roster/getRosters/player/[playerid]/season/[season]
+- /puckiq/r/roster/getRosters/playerseasonid/[playerseasonid]

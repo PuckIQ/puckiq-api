@@ -84,6 +84,21 @@ function preCannedQueries() {
       { $unwind: "$roster" },
     ]);
   }
+
+  this.getRosters = function (options, colname, collection) {
+    if (colname != 'roster')
+      throw Error(colname + ': Method not available');
+
+    var query = helper.mongoQueryBuilder(options);
+    return collection.aggregate([
+      { $unwind: "$roster" },
+      { $project: { _id: 1, season: 1, gamedate: 1, gamestart: 1, jerseynum: '$roster.jerseynum', playerseasonid: '$roster.playerseasonid' } },
+      { $lookup: { from: 'nhlplayers', localField: "playerseasonid", foreignField: "_id", as: "playerseasonid" } },
+      { $unwind: "$playerseasonid" },
+      { $project: { _id: 1, season: 1, gamedate: 1, gamestart: 1, jerseynum: 1, playerseasonid: "$playerseasonid._id", playerid: "$playerseasonid.playerid", teamseasonid: "$playerseasonid.teamseasonid", team: "$playerseasonid.teamabbr", fullName: "$playerseasonid.fullName", firstName: "$playerseasonid.firstName", lastName: "$playerseasonid.lastName", pos: "$playerseasonid.position", possible: "$playerseasonid.possible", conference: "$playerseasonid.conference", division: "$playerseasonid.division" } },
+      { $match: query }
+    ]);
+  }
   /* ------------Rosters Queries------------ */
 
 
