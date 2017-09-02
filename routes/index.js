@@ -38,7 +38,17 @@ module.exports = exports = function(app, cache, request) {
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId/season/:season', puckIQHandler.getOptionPuckIQ);
 
-  // WOWY & WoodWOWY
+  // WOWY
+  app.get('/puckiq/wy/:qtype/:qmethod/game/:gameid', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/team/:team', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/team/:team/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/player/:player1id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/player/:player1id/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/player1/:player1id/player2/:player2id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wy/:qtype/:qmethod/player1/:player1id/player2/:player2id/season/:season', puckIQHandler.getOptionPuckIQ);
+
+  // WoodWOWY
   app.get('/puckiq/w/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/w/:qtype/:qmethod/team/:Team', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/w/:qtype/:qmethod/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);

@@ -11,7 +11,7 @@ function preCannedQueries() {
   };
 
   this.getSeasonCount = function (colname, collection) {
-    return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season", count: { $sum: 1 } } }, { $sort: { "_id.season": -1 } }]);
+    return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season", count: { $sum: 1 } } }, { $sort: { "_id": -1 } }]);
   };
   /* ------------Generic Queries------------ */
 
@@ -109,7 +109,7 @@ function preCannedQueries() {
   /* ------------WOWY Queries------------ */
   // Use these methods in conjunction with /w/wowy
   this.getWowy = function (options, colname, collection) {
-    if (colname != 'wowy')
+    if (colname != 'seasonwowy' && colname != 'gamewowy')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -120,7 +120,7 @@ function preCannedQueries() {
         { $lookup: { from: 'nhlplayers', localField: "playerkey2", foreignField: "_id", as: "player2info" } },
         { $unwind: "$player1info" },
         { $unwind: "$player2info" },
-        { $sort: { 'Player1Id': 1, 'Player2Id': 1 } },
+        { $sort: { 'player1id': 1, 'player2id': 1 } },
       ]);
     } else {
       return collection.aggregate([
@@ -129,7 +129,7 @@ function preCannedQueries() {
         { $lookup: { from: 'nhlplayers', localField: "playerkey2", foreignField: "_id", as: "player2info" } },
         { $unwind: "$player1info" },
         { $unwind: "$player2info" },
-        { $sort: { 'Player1Id': 1, 'Player2Id': 1 } },
+        { $sort: { 'player1id': 1, 'player2id': 1 } },
         { $limit: 1000 }
       ]);
     }

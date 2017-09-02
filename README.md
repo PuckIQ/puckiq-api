@@ -2,74 +2,58 @@
 
 ## Available Query Types
 
-The following query types are exposed for use with the PuckIQ API and are used /puckiq/[x]/[qtype]. *x* is reserverd for particular query types to avoid conflicts due to collection field names.
+The following query types are exposed for use with the PuckIQ API and are used /puckiq/[x]/[qtype]. **x** is reserverd for particular query types to avoid conflicts due to collection field names.
 
 - schedule
 - teams
 - players
 - roster
 - woodmoney
-- wowy
+- gamewowy
+- seasonwowy
 - woodwowy
 
 ## Generic Queries
 ### Methods
-qSeasonList, qSeasonCount
 
-### URI Queries
-- /puckiq/g/schedule/[method]
-- /puckiq/g/teams/[method]
-- /puckiq/g/schedule/[method]
-- /puckiq/g/schedule/[method]
-- /puckiq/g/schedule/[method]
-- /puckiq/g/schedule/[method]
-- 
-- /puckiq/g/wowy-gen/[method]
-- /puckiq/g/woodwowy-gen/[method]
-- /puckiq/g/players-gen/[method]
+**++getSeasonList++**
+Returns a list of all of the seasons available within each collection
 
-## WOWY Queries
+**HTTP GET Queries**
+	- /puckiq/g/schedule/getSeasonList
+    - /puckiq/g/teams/getSeasonList
+    - /puckiq/g/players/getSeasonList
+    - /puckiq/g/roster/getSeasonList
+    - /puckiq/g/woodmoney/getSeasonList
+    - /puckiq/g/gamewowy/getSeasonList
+    - /puckiq/g/seasonwowy/getSeasonList
+    - /puckiq/g/woodwowy/getSeasonList
+
+**++getSeasonCount++**
+Returns a list of all of the seasons available within each collection along with the count of each document
+
+**HTTP GET Queries**
+	- /puckiq/g/schedule/getSeasonCount
+    - /puckiq/g/teams/getSeasonCount
+    - /puckiq/g/players/getSeasonCount
+    - /puckiq/g/roster/getSeasonCount
+    - /puckiq/g/woodmoney/getSeasonCount
+    - /puckiq/g/gamewowy/getSeasonCount
+    - /puckiq/g/seasonwowy/getSeasonCount
+    - /puckiq/g/woodwowy/getSeasonCount
+
+## Schedule Queries
 ### Methods
-qWowy *options (object)*
 
-### URI Queries
-- /puckiq/wowy/[method]/team/[team]/season/[season]
-- /puckiq/wowy/[method]/player/[playerid]
-- /puckiq/wowy/[method]/player/[playerid]/season/[season]
-- /puckiq/wowy/[method]/player1/[playerid]/player2/[playerid]
-- /puckiq/wowy/[method]/player1/[playerid]/player2/[playerid]/season/[season]
+**++getSchedule++**
+Returns the full season schedule for all teams
 
-## WoodWOWY Queries
-### Methods
-qWoodWowy *options (object)*
+**HTTP GET Queries**
+	- /puckiq/s/schedule/getSchedule/season/[season]
+	- /puckiq/s/schedule/getSchedule/gamedate/[gamedate]
 
-### URI Queries
-- /puckiq/woodwowy/[method]/team/[team]/season/[season]
-- /puckiq/woodwowy/[method]/player/[playerid]
-- /puckiq/woodwowy/[method]/player/[playerid]/season/[season]
-- /puckiq/woodwowy/[method]/player1/[playerid]/player2/[playerid]
-- /puckiq/woodwowy/[method]/player1/[playerid]/player2/[playerid]/season/[season]
+**++getTeamSchedule++**
+Returns the full season schedule for a single teams
 
-## WoodMoney Queries
-### Methods
-qWoodMoney *options (object)*
-
-### URI Queries
-- /puckiq/woodmoney/[method]/season/[season]
-- /puckiq/woodmoney/[method]/team/[team]/season/[season]
-- /puckiq/woodmoney/[method]/player/[playerid]
-- /puckiq/woodmoney/[method]/player/[playerid]/team/[team]
-- /puckiq/woodmoney/[method]/player/[playerid]/team/[team]/season/[season]
-- /puckiq/woodmoney/[method]/player/[playerid]/season/[season]
-
-## Players Queries
-### Methods
-getPlayerList *options (object)*
-
-### URI Queries
-- /puckiq/players/[method]
-- /puckiq/players/[method]/season/[season]
-- /puckiq/players/[method]/team/[team]
-- /puckiq/players/[method]/team/[team]/season/[season]
-- /puckiq/players/[method]/player/[playerid]
-- /puckiq/players/[method]/player/[playerid]/season/[season]
+**HTTP GET Queries**
+	- /puckiq/s/schedule/getTeamSchedule/team/[team]/season/[season]
