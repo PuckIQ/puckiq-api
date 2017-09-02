@@ -16,7 +16,7 @@ The following query types are exposed for use with the PuckIQ API and are used /
 ## Generic Queries
 ### Methods
 
-**++getSeasonList++**
+**<u>getSeasonList</u>**
 Returns a list of all of the seasons available within each collection
 
 **HTTP GET Queries**
@@ -29,7 +29,7 @@ Returns a list of all of the seasons available within each collection
 - /puckiq/g/seasonwowy/getSeasonList
 - /puckiq/g/woodwowy/getSeasonList
 
-**++getSeasonCount++**
+**<u>getSeasonCount</u>**
 Returns a list of all of the seasons available within each collection along with the count of each document
 
 **HTTP GET Queries**
@@ -45,14 +45,14 @@ Returns a list of all of the seasons available within each collection along with
 ## Schedule Queries
 ### Methods
 
-**++getSchedule++**
+**<u>getSchedule</u>**
 Returns the full season schedule for all teams
 
 **HTTP GET Queries**
 - /puckiq/s/schedule/getSchedule/season/[season]
 - /puckiq/s/schedule/getSchedule/gamedate/[gamedate]
 
-**++getTeamSchedule++**
+**<u>getTeamSchedule</u>**
 Returns the full season schedule for a single teams
 
 **HTTP GET Queries**
