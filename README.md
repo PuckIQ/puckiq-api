@@ -106,3 +106,31 @@ The following query types are exposed for use with the PuckIQ API and are used /
 - /puckiq/r/roster/getRosters/player/[playerid]
 - /puckiq/r/roster/getRosters/player/[playerid]/season/[season]
 - /puckiq/r/roster/getRosters/playerseasonid/[playerseasonid]
+
+## WoodMoney Queries
+### Methods
+
+**getWoodMoney:** Returns WoodMoney info by season
+
+**HTTP GET Queries**
+- /puckiq/wm/woodmoney/getWoodMoney/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/team/[team]
+- /puckiq/wm/woodmoney/getWoodMoney/team/[team]/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/season/[season]
+
+## WOWY Queries
+### Methods
+
+**getWowy:** Returns WoodMoney info by season
+
+**HTTP GET Queries**
+- /puckiq/wm/woodmoney/getWoodMoney/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/team/[team]
+- /puckiq/wm/woodmoney/getWoodMoney/team/[team]/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]/season/[season]
+- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/season/[season]

@@ -1,6 +1,6 @@
 var PuckIQHandler = require('./puckiq');
 
-module.exports = exports = function(app, cache, request) {
+module.exports = exports = function (app, cache, request) {
   var puckIQHandler = new PuckIQHandler(request);
 
   // Teams
@@ -22,7 +22,7 @@ module.exports = exports = function(app, cache, request) {
   app.get('/puckiq/r/:qtype/:qmethod/player/:playerid/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/r/:qtype/:qmethod/playerseasonid/:playerseasonid', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
 
-  // Game Schedule
+  // Game Schedules
   app.get('/puckiq/s/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/s/:qtype/:qmethod/team/:tm/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/s/:qtype/:qmethod/gamedate/:simplegamedate', puckIQHandler.getOptionPuckIQ);
@@ -37,32 +37,41 @@ module.exports = exports = function(app, cache, request) {
   app.get('/puckiq/p/:qtype/:qmethod/player/:playerid/season/:season', puckIQHandler.getOptionPuckIQ);
 
   // WoodMoney
-  app.get('/puckiq/wm/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wm/:qtype/:qmethod/team/:Team', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wm/:qtype/:qmethod/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wm/:qtype/:qmethod/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wm/:qtype/:qmethod/team/:Team', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wm/:qtype/:qmethod/team/:Team/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId/team/:Team', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wm/:qtype/:qmethod/player/:PlayerId/season/:season', puckIQHandler.getOptionPuckIQ);
 
-  // WOWY
-  app.get('/puckiq/wy/:qtype/:qmethod/game/:gameid', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/team/:team', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/team/:team/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/player/:player1id', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/player/:player1id/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/player1/:player1id/player2/:player2id', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wy/:qtype/:qmethod/player1/:player1id/player2/:player2id/season/:season', puckIQHandler.getOptionPuckIQ);
+  // WOWY By Game
+  app.get('/puckiq/wg/:qtype/:qmethod/game/:q1gameid', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/datestart/:q1datestart/dateend/:q1dateend', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/datestart/:q1datestart/dateend/:q1dateend/player/:q2player1id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/datestart/:q1datestart/dateend/:q1dateend/player1/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/team/:q1team/player/:q2player1id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/team/:q1team/player1/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/player/:q2player1id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/player/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+
+  // WOWY By Season
+  app.get('/puckiq/ws/:qtype/:qmethod/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/team/:team', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/team/:team/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/player/:player1id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/player/:player1id/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/player1/:player1id/player2/:player2id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ws/:qtype/:qmethod/player1/:player1id/player2/:player2id/season/:season', puckIQHandler.getOptionPuckIQ);
 
   // WoodWOWY
-  app.get('/puckiq/w/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/team/:Team', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/player/:Player1Id', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/player/:Player1Id/season/:season', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/player1/:Player1Id/player2/:Player2Id', puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/w/:qtype/:qmethod/player1/:Player1Id/player2/:Player2Id/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/team/:Team', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/team/:Team/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/player/:Player1Id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/player/:Player1Id/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/player1/:Player1Id/player2/:Player2Id', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/ww/:qtype/:qmethod/player1/:Player1Id/player2/:Player2Id/season/:season', puckIQHandler.getOptionPuckIQ);
 
   // Reserved for lists (seasons & counts)
   app.get('/puckiq/g/:qtype/:qmethod', puckIQHandler.getStaticPuckIQ);
