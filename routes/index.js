@@ -53,7 +53,7 @@ module.exports = exports = function (app, cache, request) {
   app.get('/puckiq/wg/:qtype/:qmethod/team/:q1team/player/:q2player1id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wg/:qtype/:qmethod/team/:q1team/player1/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/wg/:qtype/:qmethod/player/:q2player1id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
-  app.get('/puckiq/wg/:qtype/:qmethod/player/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/wg/:qtype/:qmethod/player1/:q2player1id/player2/:q2player2id', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);
 
   // WOWY By Season
   app.get('/puckiq/ws/:qtype/:qmethod/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);

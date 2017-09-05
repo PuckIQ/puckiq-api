@@ -121,16 +121,45 @@ The following query types are exposed for use with the PuckIQ API and are used /
 - /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]/season/[season]
 - /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/season/[season]
 
-## WOWY Queries
+## WOWY Range Queries
 ### Methods
 
-**getWowy:** Returns WoodMoney info by season
+**getRangeWowy:** Returns WOWY info by game, date range, player and player comp
 
 **HTTP GET Queries**
-- /puckiq/wm/woodmoney/getWoodMoney/season/[season]
-- /puckiq/wm/woodmoney/getWoodMoney/team/[team]
-- /puckiq/wm/woodmoney/getWoodMoney/team/[team]/season/[season]
-- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]
-- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]
-- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/team/[team]/season/[season]
-- /puckiq/wm/woodmoney/getWoodMoney/player/[playerid]/season/[season]
+- /puckiq/wg/schedule/getRangeWowy/game/[gameid]
+- /puckiq/wg/schedule/getRangeWowy/datestart/[date]/dateend/[date]
+- /puckiq/wg/schedule/getRangeWowy/datestart/[date]/dateend/[date]/player/[playerid]
+- /puckiq/wg/schedule/getRangeWowy/datestart/[date]/dateend/[date]/player1/[playerid]/player2/[playerid]
+- /puckiq/wg/schedule/getRangeWowy/team/[team]/player/[playerid]
+- /puckiq/wg/schedule/getRangeWowy/team/[team]/player1/[playerid]/player2/[playerid]
+- /puckiq/wg/schedule/getRangeWowy/player/[playerid]
+- /puckiq/wg/schedule/getRangeWowy/player1/[playerid]/player2/[playerid]
+
+## WOWY Season Queries
+### Methods
+
+**getSeasonWowy:** Returns WOWY info by season
+
+**HTTP GET Queries**
+- /puckiq/ws/wowy/getSeasonWowy/season/[season]
+- /puckiq/ws/wowy/getSeasonWowy/team/[team]
+- /puckiq/ws/wowy/getSeasonWowy/team/[team]/season/[season]
+- /puckiq/ws/wowy/getSeasonWowy/player/[playerid]
+- /puckiq/ws/wowy/getSeasonWowy/player/[playerid]/season/[season]
+- /puckiq/ws/wowy/getSeasonWowy/player1/[playerid]/player2/[playerid]
+- /puckiq/ws/wowy/getSeasonWowy/player1/[playerid]/player2/[playerid]/season/[season]
+
+## WOWY Season Queries
+### Methods
+
+**getSeasonWoodWowy:** Returns WoodWOWY info by season
+
+**HTTP GET Queries**
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/season/[season]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/team/[team]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/team/[team]/season/[season]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/player/[playerid]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/player/[playerid]/season/[season]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/player1/[playerid]/player2/[playerid]
+- /puckiq/ww/woodwowy/getSeasonWoodWowy/player1/[playerid]/player2/[playerid]/season/[season]
