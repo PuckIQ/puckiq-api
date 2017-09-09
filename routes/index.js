@@ -3,6 +3,12 @@ var PuckIQHandler = require('./puckiq');
 module.exports = exports = function (app, cache, request) {
   var puckIQHandler = new PuckIQHandler(request);
 
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
   app.get('/puckiq/0/:qtype/:qmethod', puckIQHandler.getPuckIQData);
   app.get('/puckiq/m2/:qtype/:qmethod', cache.withTtl('2 minutes'), puckIQHandler.getPuckIQData);
   app.get('/puckiq/m5/:qtype/:qmethod', cache.withTtl('5 minutes'), puckIQHandler.getPuckIQData);
