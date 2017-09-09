@@ -35,6 +35,7 @@ module.exports = exports = function (app, cache, request) {
   app.get('/puckiq/p/:qtype/:qmethod/player/:playerid/team/:teamabbr', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/p/:qtype/:qmethod/player/:playerid/team/:teamabbr/season/:season', puckIQHandler.getOptionPuckIQ);
   app.get('/puckiq/p/:qtype/:qmethod/player/:playerid/season/:season', puckIQHandler.getOptionPuckIQ);
+  app.get('/puckiq/p/:qtype/:qmethod/playername/:fullName', puckIQHandler.getOptionPuckIQ);
 
   // WoodMoney
   app.get('/puckiq/wm/:qtype/:qmethod/season/:season', cache.withTtl('1 hour'), puckIQHandler.getOptionPuckIQ);

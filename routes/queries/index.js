@@ -57,6 +57,18 @@ function preCannedQueries() {
 
     return collection.find().sort({ season: 1, conference: 1, division: 1 });
   }
+
+  this.getTeamSearch = function (options, colname, collection) {
+    if (colname != 'teams')
+      throw Error(colname + ': Method not available');
+
+    var regex = new RegExp('^' + options.abbr + '.*', 'i');
+
+    return collection.aggregate([
+      { $match: { abbr: regex } },
+      { $group: { _id: { name: '$abbr' } } }
+    ]);
+  }
   /* ------------Team Queries------------ */
 
 
@@ -69,6 +81,20 @@ function preCannedQueries() {
 
     var query = helper.mongoQueryBuilder(options);
     return collection.find(query).sort({ conference: 1, division: 1 });
+  }
+
+  this.getPlayerSearch = function (options, colname, collection) {
+    if (colname != 'players')
+      throw Error(colname + ': Method not available');
+
+    var regex = new RegExp('.*' + options.fullName + '.*', 'i');
+
+    return collection.aggregate([
+      { $match: { fullName: regex } },
+      { $group: { _id: { fullName: '$fullName', playerid: '$playerid' } } },
+      { $limit: 10 },
+      { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
+    ]);
   }
   /* ------------Players Queries------------ */
 
