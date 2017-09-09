@@ -8,7 +8,7 @@ function PuckIQHandler(request) {
   this.getOptionPuckIQ = function (req, res) {
     var qtype = req.params.qtype;
     var qmethod = req.params.qmethod;
-    var options = req.params;
+    var options = req.query;
     puckIQOptionQuery(qtype, qmethod, options, (data) => {
       res.contentType('application/json');
       if (data.length > 0) {
@@ -30,6 +30,31 @@ function PuckIQHandler(request) {
         res.status(404).send('Not Found');
       }
     });
+  }
+
+  this.getPuckIQData = function (req, res) {
+    var qtype = req.params.qtype;
+    var qmethod = req.params.qmethod;
+    if (Object.keys(req.query).length == 0) {
+      puckIQStaticQuery(qtype, qmethod, (data) => {
+        res.contentType('application/json');
+        if (data.length > 0) {
+          res.send(JSON.stringify(data));
+        } else {
+          res.status(404).send('Not Found');
+        }
+      });
+    } else {
+      var options = req.query;
+      puckIQOptionQuery(qtype, qmethod, options, (data) => {
+        res.contentType('application/json');
+        if (data.length > 0) {
+          res.send(JSON.stringify(data));
+        } else {
+          res.status(404).send('Not Found');
+        }
+      });
+    }
   }
 
   // Query Functions

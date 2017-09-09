@@ -196,7 +196,7 @@ function preCannedQueries() {
           } else if (name.substr(2) === 'team') {
             q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
           } else {
-            q1[name.substr(2)] = options[name];
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
           }
         } else {
           q2['wowy.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
