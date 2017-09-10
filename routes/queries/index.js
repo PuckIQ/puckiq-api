@@ -67,7 +67,7 @@ function preCannedQueries() {
     return collection.aggregate([
       { $match: { abbr: regex } },
       { $group: { _id: { name: '$abbr' } } },
-      { $project: { team: '$_id.abbr', _id: 0 } }
+      { $project: { team: '$_id.name', _id: 0 } }
     ]);
   }
   /* ------------Team Queries------------ */
