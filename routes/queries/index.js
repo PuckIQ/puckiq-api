@@ -205,7 +205,7 @@ function preCannedQueries() {
       }
     });
 
-    var primequery = (dateset) ? { $match: { gamedate: { $gte: q1.datestart, $lte: q1.dateend } } } : { $match: q1 };
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
 
     return collection.aggregate([
       primequery,
@@ -322,7 +322,9 @@ function preCannedQueries() {
           },
         }
       }
-    ]);
+    ],
+      { allowDiskUse: true }
+    );
   }
   /* ------------WOWY Queries------------ */
 
