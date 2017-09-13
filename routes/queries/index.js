@@ -321,6 +321,9 @@ function preCannedQueries() {
             $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dz', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
         }
+      },
+      { 
+        $sort: { evtoi: -1 }
       }
     ],
       { allowDiskUse: true }
