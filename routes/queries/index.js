@@ -249,76 +249,76 @@ function preCannedQueries() {
           _id: 0, type: '$_id.type', team: '$_id.team', season: '$_id.season', gametype: '$_id.gametype', player1: '$_id.player1', player2: '$_id.player2',
           cf: 1, ca: 1, ff: 1, fa: 1, sf: 1, sa: 1, gf: 1, ga: 1, evtoi: 1, oz: 1, nz: 1, dz: 1,
           cfpct: {
-            $cond: { if: { $gt: [{ $add: ['$cf', '$ca'] }, 0] }, then: round({ $multiply: [{ $divide: ['$cf', { $add: ['$cf', '$ca'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$cf', '$ca'] }, 0] }, then: round({ $multiply: [{ $divide: ['$cf', { $add: ['$cf', '$ca'] }] }, 100] }, 1), else: 0 }
           },
           cf60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$cf', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$cf', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           ca60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ca', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ca', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           ffpct: {
-            $cond: { if: { $gt: [{ $add: ['$ff', '$fa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$ff', { $add: ['$ff', '$fa'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$ff', '$fa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$ff', { $add: ['$ff', '$fa'] }] }, 100] }, 1), else: 0 }
           },
           ff60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ff', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ff', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           fa60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$fa', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$fa', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           sfpct: {
-            $cond: { if: { $gt: [{ $add: ['$sf', '$sa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$sf', { $add: ['$sf', '$sa'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$sf', '$sa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$sf', { $add: ['$sf', '$sa'] }] }, 100] }, 1), else: 0 }
           },
           sf60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sf', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sf', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           sa60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sa', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sa', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           gfpct: {
-            $cond: { if: { $gt: [{ $add: ['$gf', '$ga'] }, 0] }, then: round({ $multiply: [{ $divide: ['$gf', { $add: ['$gf', '$ga'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$gf', '$ga'] }, 0] }, then: round({ $multiply: [{ $divide: ['$gf', { $add: ['$gf', '$ga'] }] }, 100] }, 1), else: 0 }
           },
           gf60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$gf', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$gf', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           ga60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ga', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$ga', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           dffpct: {
-            $cond: { if: { $gt: [{ $add: ['$dff', '$dfa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$dff', { $add: ['$dff', '$dfa'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$dff', '$dfa'] }, 0] }, then: round({ $multiply: [{ $divide: ['$dff', { $add: ['$dff', '$dfa'] }] }, 100] }, 1), else: 0 }
           },
           dff60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dff', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dff', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           dfa60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dfa', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dfa', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           sacfpct: {
-            $cond: { if: { $gt: [{ $add: ['$sacf', '$saca'] }, 0] }, then: round({ $multiply: [{ $divide: ['$sacf', { $add: ['$sacf', '$saca'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$sacf', '$saca'] }, 0] }, then: round({ $multiply: [{ $divide: ['$sacf', { $add: ['$sacf', '$saca'] }] }, 100] }, 1), else: 0 }
           },
           sacf60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sacf', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$sacf', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           saca60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$saca', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$saca', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           ozpct: {
-            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$oz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$oz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 1), else: 0 }
           },
           oz60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$oz', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$oz', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           nzpct: {
-            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$nz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$nz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 1), else: 0 }
           },
           nz60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$nz', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$nz', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
           dzpct: {
-            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$dz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 2), else: 0 }
+            $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: round({ $multiply: [{ $divide: ['$dz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, 1), else: 0 }
           },
           dz60: {
-            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dz', 3600] }, '$evtoi'] }, 2), else: 0 }
+            $cond: { if: { $gt: ['$evtoi', 0] }, then: round({ $divide: [{ $multiply: ['$dz', 3600] }, '$evtoi'] }, 1), else: 0 }
           },
         }
       }
