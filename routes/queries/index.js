@@ -249,7 +249,7 @@ function preCannedQueries() {
       {
         $project: {
           _id: 0, type: '$_id.type', team: '$_id.team', season: '$_id.season', gametype: '$_id.gametype', player1: '$_id.player1', player2: '$_id.player2',
-          cf: 1, ca: 1, ff: 1, fa: 1, sf: 1, sa: 1, gf: 1, ga: 1, evtoi: 1, oz: 1, nz: 1, dz: 1,
+          cf: 1, ca: 1, ff: 1, fa: 1, sf: 1, sa: 1, gf: 1, ga: 1, dff: 1, dfa: 1, sacf: 1, saca: 1, evtoi: 1, oz: 1, nz: 1, dz: 1,
           cfpct: {
             $cond: { if: { $gt: [{ $add: ['$cf', '$ca'] }, 0] }, then: round({ $multiply: [{ $divide: ['$cf', { $add: ['$cf', '$ca'] }] }, 100] }, 1), else: 0 }
           },
