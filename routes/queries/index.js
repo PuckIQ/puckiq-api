@@ -139,6 +139,7 @@ function preCannedQueries() {
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
+    console.log(query);
     return collection.aggregate([
       { $match: query },
       { $lookup: { from: 'nhlplayers', localField: "playerseasonid", foreignField: "_id", as: "playerinfo" } },
@@ -157,6 +158,7 @@ function preCannedQueries() {
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
+    console.log(query);
     if (Object.keys(options).length > 2) {
       return collection.aggregate([
         { $match: query },

@@ -5,10 +5,21 @@ function PuckIQHelpers() {
     var queryBuilder = new Object();
     Object.keys(options).forEach(function (key) {
       if (key != 'qmethod' && key != 'qtype') {
-        if (isNumeric(options[key]))
+        if (isArray(options[key])) {
+          var qarr = new Array();
+          options[key].forEach(function(val) {
+            if(isNumeric(val)) {
+              qarr.push(parseInt(val));
+            } else {
+              qarr.push(val);
+            }
+          });
+          queryBuilder[key] = { $in: qarr }
+        } else if (isNumeric(options[key])) {
           queryBuilder[key] = parseInt(options[key]);
-        else
+        } else {
           queryBuilder[key] = options[key];
+        }
       }
     });
 
@@ -38,6 +49,10 @@ function PuckIQHelpers() {
 
   function isFloat(n) {
     return n % 1 === 0;
+  }
+
+  function isArray(n) {
+    return Array.isArray(n);
   }
 }
 
