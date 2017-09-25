@@ -182,7 +182,7 @@ function preCannedQueries() {
   }
 
   // Although this is a WOWY calculation it uses the schedule collection as its base
-  this.getRangeWowy = function (options, colname, collection) {
+  /*this.getRangeWowy = function (options, colname, collection) {
     if (colname != 'schedule')
       throw Error(colname + ': Method not available');
 
@@ -324,13 +324,139 @@ function preCannedQueries() {
           },
         }
       },
-      { 
+      {
         $sort: { evtoi: -1 }
       }
     ],
       { allowDiskUse: true }
     );
-  }
+  }*/
+
+  this.getRangeWowy = function (options, colname, collection) {
+    if (colname != 'schedule')
+      throw Error(colname + ': Method not available');
+
+    var q1 = new Object();
+    var q2 = new Object();
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        if (name.substr(0, 2) === 'q1') {
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+        } else {
+          q2['wowy.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
+      }
+    });
+
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+
+    return collection.aggregate([
+      primequery,
+      { $lookup: { from: config.dbCollections.gamewowy, localField: '_id', foreignField: 'gameid', as: 'wowy' } },
+      { $unwind: '$wowy' },
+      { $match: q2 },
+      { $lookup: { from: config.dbCollections.players, localField: 'wowy.playerkey1', foreignField: '_id', as: 'wowy.player1info' } },
+      { $lookup: { from: config.dbCollections.players, localField: 'wowy.playerkey2', foreignField: '_id', as: 'wowy.player2info' } },
+      { $unwind: '$wowy.player1info' },
+      { $unwind: '$wowy.player2info' },
+      {
+        $group: {
+          _id: {
+            p1id: '$wowy.player1info.playerid',
+            p1fullname: '$wowy.player1info.fullName',
+            p1firstname: '$wowy.player1info.firstName',
+            p1lastname: '$wowy.player1info.lastName',
+            p1possible: '$wowy.player1info.possible',
+            p2id: '$wowy.player2info.playerid',
+            p2fullname: '$wowy.player2info.fullName',
+            p2firstname: '$wowy.player2info.firstName',
+            p2lastname: '$wowy.player2info.lastName',
+            p2possible: '$wowy.player2info.possible',
+            wowytype: '$wowy.recordtype',
+            team: '$wowy.team',
+          },
+          cf: { $sum: '$wowy.cf' },
+          ca: { $sum: '$wowy.ca' },
+          gf: { $sum: '$wowy.gf' },
+          ga: { $sum: '$wowy.ga' },
+          ff: { $sum: '$wowy.ff' },
+          fa: { $sum: '$wowy.fa' },
+          sf: { $sum: '$wowy.sf' },
+          sa: { $sum: '$wowy.sa' },
+          oz: { $sum: '$wowy.oz' },
+          dz: { $sum: '$wowy.dz' },
+          nz: { $sum: '$wowy.nz' },
+          dff: { $sum: '$wowy.dff' },
+          dfa: { $sum: '$wowy.dfa' },
+          sacf: { $sum: '$wowy.sacf' },
+          saca: { $sum: '$wowy.saca' },
+          evtoi: { $sum: '$wowy.evtoi' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            p1id: '$_id.p1id',
+            p2id: '$_id.p2id'
+          },
+          wowy: {
+            $push: {
+              pinfo: '$_id',
+              cf: '$cf',
+              ca: '$ca',
+              cfpct: { $cond: { if: { $gt: [{ $add: ['$cf', '$ca'] }, 0] }, then: { $multiply: [{ $divide: ['$cf', { $add: ['$cf', '$ca'] }] }, 100] }, else: 0 } },
+              cf60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$cf', 3600] }, '$evtoi'] }, else: 0 } },
+              ca60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$ca', 3600] }, '$evtoi'] }, else: 0 } },
+              gf: '$gf',
+              ga: '$ga',
+              gfpct: { $cond: { if: { $gt: [{ $add: ['$gf', '$ga'] }, 0] }, then: { $multiply: [{ $divide: ['$gf', { $add: ['$gf', '$ga'] }] }, 100] }, else: 0 } },
+              gf60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$gf', 3600] }, '$evtoi'] }, else: 0 } },
+              ga60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$ga', 3600] }, '$evtoi'] }, else: 0 } },
+              ff: '$ff',
+              fa: '$fa',
+              ffpct: { $cond: { if: { $gt: [{ $add: ['$ff', '$fa'] }, 0] }, then: { $multiply: [{ $divide: ['$ff', { $add: ['$ff', '$fa'] }] }, 100] }, else: 0 } },
+              ff60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$ff', 3600] }, '$evtoi'] }, else: 0 } },
+              fa60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$fa', 3600] }, '$evtoi'] }, else: 0 } },
+              sf: '$sf',
+              sa: '$sa',
+              sfpct: { $cond: { if: { $gt: [{ $add: ['$sf', '$sa'] }, 0] }, then: { $multiply: [{ $divide: ['$sf', { $add: ['$sf', '$sa'] }] }, 100] }, else: 0 } },
+              sf60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$sf', 3600] }, '$evtoi'] }, else: 0 } },
+              sa60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$sa', 3600] }, '$evtoi'] }, else: 0 } },
+              oz: '$oz',
+              ozpct: { $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: { $multiply: [{ $divide: ['$oz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, else: 0 } },
+              oz60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$oz', 3600] }, '$evtoi'] }, else: 0 } },
+              dz: '$dz',
+              dzpct: { $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: { $multiply: [{ $divide: ['$dz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, else: 0 } },
+              dz60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$dz', 3600] }, '$evtoi'] }, else: 0 } },
+              nz: '$nz',
+              nzpct: { $cond: { if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] }, then: { $multiply: [{ $divide: ['$nz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] }, else: 0 } },
+              nz60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$nz', 3600] }, '$evtoi'] }, else: 0 } },
+              dff: '$dff',
+              dfa: '$dfa',
+              dffpct: { $cond: { if: { $gt: [{ $add: ['$dff', '$dfa'] }, 0] }, then: { $multiply: [{ $divide: ['$dff', { $add: ['$dff', '$dfa'] }] }, 100] }, else: 0 } },
+              dff60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$dff', 3600] }, '$evtoi'] }, else: 0 } },
+              dfa60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$dfa', 3600] }, '$evtoi'] }, else: 0 } },
+              sacf: '$sacf',
+              saca: '$saca',
+              sacfpct: { $cond: { if: { $gt: [{ $add: ['$sacf', '$saca'] }, 0] }, then: { $multiply: [{ $divide: ['$sacf', { $add: ['$sacf', '$saca'] }] }, 100] }, else: 0 } },
+              sacf60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$sacf', 3600] }, '$evtoi'] }, else: 0 } },
+              saca60: { $cond: { if: { $gt: ['$evtoi', 0] }, then: { $divide: [{ $multiply: ['$saca', 3600] }, '$evtoi'] }, else: 0 } },
+              evtoi: '$evtoi',
+            }
+          }
+        }
+      }
+    ], { allowDiskUse: true });
+  };
   /* ------------WOWY Queries------------ */
 
 
