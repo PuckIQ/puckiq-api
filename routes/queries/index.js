@@ -148,36 +148,8 @@ function preCannedQueries() {
   }
   /* ------------WoodMoney Queries------------ */
 
-
-
   /* ------------WOWY Queries------------ */
   // Use these methods in conjunction with /w/wowy
-  /*this.getSeasonWowy = function (options, colname, collection) {
-    if (colname != 'seasonwowy')
-      throw Error(colname + ': Method not available');
-
-    var query = helper.mongoQueryBuilder(options);
-    if (Object.keys(options).length > 2) {
-      return collection.aggregate([
-        { $match: query },
-        { $lookup: { from: 'nhlplayers', localField: "playerkey1", foreignField: "_id", as: "player1info" } },
-        { $lookup: { from: 'nhlplayers', localField: "playerkey2", foreignField: "_id", as: "player2info" } },
-        { $unwind: "$player1info" },
-        { $unwind: "$player2info" },
-        { $sort: { 'player1id': 1, 'player2id': 1 } },
-      ]);
-    } else {
-      return collection.aggregate([
-        { $match: query },
-        { $lookup: { from: 'nhlplayers', localField: "playerkey1", foreignField: "_id", as: "player1info" } },
-        { $lookup: { from: 'nhlplayers', localField: "playerkey2", foreignField: "_id", as: "player2info" } },
-        { $unwind: "$player1info" },
-        { $unwind: "$player2info" },
-        { $sort: { 'player1id': 1, 'player2id': 1 } },
-        { $limit: 1000 }
-      ]);
-    }
-  }*/
 
   this.getSeasonWowy = function (options, colname, collection) {
     if (colname != 'seasonwowy')
