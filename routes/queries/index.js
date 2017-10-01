@@ -202,7 +202,8 @@ function preCannedQueries() {
         $group: {
           _id: {
             p1id: '$_id.p1id',
-            p2id: '$_id.p2id'
+            p2id: '$_id.p2id',
+            season: '$_id.season',
           },
           wowy: {
             $push: {
