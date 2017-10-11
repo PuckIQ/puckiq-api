@@ -141,7 +141,191 @@ function preCannedQueries() {
 
   //#region Box Car Queries
   this.getSeasonBoxCar = function (options, colname, collection) {
+    if (colname != 'seasonboxcar')
+      throw Error(colname + ': Method not available');
 
+    var query = helper.mongoQueryBuilder(options);
+
+    return collection.aggregate([
+      { $match: query },
+      { $lookup: { from: config.dbCollections.players, localField: 'playerkey', foreignField: '_id', as: 'playerinfo' } },
+      { $unwind: '$playerinfo' },
+      { $match: { 'recordtype': 'boxcar' } },
+      {
+        $group: {
+          _id: {
+            pid: '$playerinfo.playerid',
+            pfullname: '$playerinfo.fullName',
+            pfirstname: '$playerinfo.firstName',
+            plastname: '$playerinfo.lastName',
+            ppossible: '$playerinfo.possible',
+            team: '$team',
+            recordtype: '$recordtype',
+            situation: '$situation',
+          },
+          iP: { $sum: '$iP' },
+          iG: { $sum: '$iG' },
+          iA: { $sum: '$iA' },
+          iA1: { $sum: '$iA1' },
+          iA2: { $sum: '$iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            recordtype: '$_id.recordtype',
+          },
+          boxcar: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              situation: '$_id.situation',
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
+  }
+
+  this.getSeasonBoxCarWM = function (options, colname, collection) {
+    if (colname != 'seasonboxcar')
+      throw Error(colname + ': Method not available');
+
+    var query = helper.mongoQueryBuilder(options);
+
+    return collection.aggregate([
+      { $match: query },
+      { $lookup: { from: config.dbCollections.players, localField: 'playerkey', foreignField: '_id', as: 'playerinfo' } },
+      { $unwind: '$playerinfo' },
+      { $match: { 'recordtype': 'woodbox' } },
+      {
+        $group: {
+          _id: {
+            pid: '$playerinfo.playerid',
+            pfullname: '$playerinfo.fullName',
+            pfirstname: '$playerinfo.firstName',
+            plastname: '$playerinfo.lastName',
+            ppossible: '$playerinfo.possible',
+            team: '$team',
+            recordtype: '$recordtype',
+            woodmoneytier: '$woodmoneytier'
+          },
+          iP: { $sum: '$iP' },
+          iG: { $sum: '$iG' },
+          iA: { $sum: '$iA' },
+          iA1: { $sum: '$iA1' },
+          iA2: { $sum: '$iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            recordtype: '$_id.recordtype',
+          },
+          boxcar: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              woodmoneytier: '$_id.woodmoneytier',
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
+  }
+
+  this.getSeasonBoxCarWowy = function (options, colname, collection) {
+    if (colname != 'seasonboxcar')
+      throw Error(colname + ': Method not available');
+
+    var query = helper.mongoQueryBuilder(options);
+
+    return collection.aggregate([
+      { $match: query },
+      { $lookup: { from: config.dbCollections.players, localField: 'player1key', foreignField: '_id', as: 'player1info' } },
+      { $lookup: { from: config.dbCollections.players, localField: 'player2key', foreignField: '_id', as: 'player2info' } },
+      { $unwind: '$player1info' },
+      { $unwind: '$player2info' },
+      { $match: { 'recordtype': 'wowybox' } },
+      {
+        $group: {
+          _id: {
+            p1id: '$player1info.playerid',
+            p1fullname: '$player1info.fullName',
+            p1firstname: '$player1info.firstName',
+            p1lastname: '$player1info.lastName',
+            p1possible: '$player1info.possible',
+            p2id: '$player2info.playerid',
+            p2fullname: '$player2info.fullName',
+            p2firstname: '$player2info.firstName',
+            p2lastname: '$player2info.lastName',
+            p2possible: '$player2info.possible',
+            team: '$team',
+            recordtype: '$recordtype',
+          },
+          iP: { $sum: '$iP' },
+          iG: { $sum: '$iG' },
+          iA: { $sum: '$iA' },
+          iA1: { $sum: '$iA1' },
+          iA2: { $sum: '$iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            p1id: '$_id.p1id',
+            p2id: '$_id.p2id',
+            recordtype: '$_id.recordtype'
+          },
+          boxcar: {
+            $push: {
+              p1info: {
+                p1id: '$_id.p1id',
+                p1fullname: '$_id.p1fullname',
+                p1firstname: '$_id.p1firstname',
+                p1lastname: '$_id.p1lastname',
+                p1possible: '$_id.p1possible',
+                p2id: '$_id.p2id',
+                p2fullname: '$_id.p2fullname',
+                p2firstname: '$_id.p2firstname',
+                p2lastname: '$_id.p2lastname',
+                p2possible: '$_id.p2possible',
+                team: '$_id.team'
+              },
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
   }
 
   this.getRangeBoxCar = function (options, colname, collection) {
@@ -164,7 +348,173 @@ function preCannedQueries() {
             q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
           }
         } else {
-          q2['wowy.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          q2['boxcar.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
+      }
+    });
+
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+
+    return collection.aggregate([
+      primequery,
+      { $lookup: { from: config.dbCollections.gameboxcar, localField: '_id', foreignField: 'gamekey', as: 'boxcar' } },
+      { $unwind: '$boxcar' },
+      { $match: q2 },
+      { $lookup: { from: config.dbCollections.players, localField: 'boxcar.playerkey', foreignField: '_id', as: 'boxcar.playerinfo' } },
+      { $unwind: '$boxcar.playerinfo' },
+      { $match: { 'boxcar.recordtype': 'boxcar' } },
+      {
+        $group: {
+          _id: {
+            pid: '$boxcar.playerinfo.playerid',
+            pfullname: '$boxcar.playerinfo.fullName',
+            pfirstname: '$boxcar.playerinfo.firstName',
+            plastname: '$boxcar.playerinfo.lastName',
+            ppossible: '$boxcar.playerinfo.possible',
+            team: '$boxcar.team',
+            recordtype: '$boxcar.recordtype',
+            situation: '$boxcar.situation',
+          },
+          iP: { $sum: '$boxcar.iP' },
+          iG: { $sum: '$boxcar.iG' },
+          iA: { $sum: '$boxcar.iA' },
+          iA1: { $sum: '$boxcar.iA1' },
+          iA2: { $sum: '$boxcar.iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            recordtype: '$_id.recordtype',
+          },
+          boxcar: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              situation: '$_id.situation',
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
+  }
+
+  this.getRangeBoxCarWM = function (options, colname, collection) {
+    if (colname != 'schedule')
+      throw Error(colname + ': Method not available');
+
+    var q1 = new Object();
+    var q2 = new Object();
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        if (name.substr(0, 2) === 'q1') {
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+        } else {
+          q2['boxcar.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
+      }
+    });
+
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+
+    return collection.aggregate([
+      primequery,
+      { $lookup: { from: config.dbCollections.gameboxcar, localField: '_id', foreignField: 'gamekey', as: 'boxcar' } },
+      { $unwind: '$boxcar' },
+      { $match: q2 },
+      { $lookup: { from: config.dbCollections.players, localField: 'boxcar.playerkey', foreignField: '_id', as: 'boxcar.playerinfo' } },
+      { $unwind: '$boxcar.playerinfo' },
+      { $match: { 'boxcar.recordtype': 'woodbox' } },
+      {
+        $group: {
+          _id: {
+            pid: '$boxcar.playerinfo.playerid',
+            pfullname: '$boxcar.playerinfo.fullName',
+            pfirstname: '$boxcar.playerinfo.firstName',
+            plastname: '$boxcar.playerinfo.lastName',
+            ppossible: '$boxcar.playerinfo.possible',
+            team: '$boxcar.team',
+            recordtype: '$boxcar.recordtype',
+            woodmoneytier: '$boxcar.woodmoneytier'
+          },
+          iP: { $sum: '$boxcar.iP' },
+          iG: { $sum: '$boxcar.iG' },
+          iA: { $sum: '$boxcar.iA' },
+          iA1: { $sum: '$boxcar.iA1' },
+          iA2: { $sum: '$boxcar.iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            recordtype: '$_id.recordtype'
+          },
+          boxcar: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              woodmoneytier: '$_id.woodmoneytier',
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
+  }
+
+  this.getRangeBoxCarWowy = function (options, colname, collection) {
+    if (colname != 'schedule')
+      throw Error(colname + ': Method not available');
+
+    var q1 = new Object();
+    var q2 = new Object();
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        if (name.substr(0, 2) === 'q1') {
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+        } else {
+          q2['boxcar.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
         }
       }
     });
@@ -180,6 +530,7 @@ function preCannedQueries() {
       { $lookup: { from: config.dbCollections.players, localField: 'boxcar.player2key', foreignField: '_id', as: 'boxcar.player2info' } },
       { $unwind: '$boxcar.player1info' },
       { $unwind: '$boxcar.player2info' },
+      { $match: { 'boxcar.recordtype': 'wowybox' } },
       {
         $group: {
           _id: {
@@ -193,8 +544,8 @@ function preCannedQueries() {
             p2firstname: '$boxcar.player2info.firstName',
             p2lastname: '$boxcar.player2info.lastName',
             p2possible: '$boxcar.player2info.possible',
-            wowytype: '$boxcar.recordtype',
             team: '$boxcar.team',
+            recordtype: '$boxcar.recordtype',
           },
           iP: { $sum: '$boxcar.iP' },
           iG: { $sum: '$boxcar.iG' },
@@ -206,12 +557,25 @@ function preCannedQueries() {
       {
         $group: {
           _id: {
-            p1id: '$_id.p1id',
-            p2id: '$_id.p2id'
+            pid: '$_id.p1id',
+            pid: '$_id.p2id',
+            recordtype: '$_id.recordtype'
           },
           boxcar: {
             $push: {
-              pinfo: '$_id',
+              p1info: {
+                p1id: '$_id.p1id',
+                p1fullname: '$_id.p1fullname',
+                p1firstname: '$_id.p1firstname',
+                p1lastname: '$_id.p1lastname',
+                p1possible: '$_id.p1possible',
+                p2id: '$_id.p2id',
+                p2fullname: '$_id.p2fullname',
+                p2firstname: '$_id.p2firstname',
+                p2lastname: '$_id.p2lastname',
+                p2possible: '$_id.p2possible',
+                team: '$_id.team'
+              },
               iP: '$iP',
               iG: '$iG',
               iA: '$iA',
@@ -235,8 +599,8 @@ function preCannedQueries() {
 
     return collection.aggregate([
       { $match: query },
-      { $lookup: { from: 'nhlplayers', localField: "playerkey1", foreignField: "_id", as: "player1info" } },
-      { $lookup: { from: 'nhlplayers', localField: "playerkey2", foreignField: "_id", as: "player2info" } },
+      { $lookup: { from: config.dbCollections.players, localField: "playerkey1", foreignField: "_id", as: "player1info" } },
+      { $lookup: { from: config.dbCollections.players, localField: "playerkey2", foreignField: "_id", as: "player2info" } },
       { $unwind: "$player1info" },
       { $unwind: "$player2info" },
       {
