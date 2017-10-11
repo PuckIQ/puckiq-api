@@ -6,7 +6,7 @@ function preCannedQueries() {
   "use strict";
   var helper = new PuckIQHelper();
 
-  /* ------------Generic Queries------------ */
+  //#region Generic Queries
   // Use these methods in conjunction with /g
   this.getSeasonList = function (colname, collection) {
     return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season" } }, { $sort: { _id: -1 } }]);
@@ -15,11 +15,9 @@ function preCannedQueries() {
   this.getSeasonCount = function (colname, collection) {
     return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season", count: { $sum: 1 } } }, { $sort: { "_id": -1 } }]);
   };
-  /* ------------Generic Queries------------ */
+  //#endregion
 
-
-
-  /* ------------Schedule Queries------------ */
+  //#region Schedule Queries
   // Use these methods in conjunction with /s/schedule
   this.getSchedule = function (options, colname, collection) {
     if (colname != 'schedule')
@@ -37,11 +35,9 @@ function preCannedQueries() {
     var team = options.tm;
     return collection.find({ season: season, $or: [{ home: team }, { away: team }] });
   }
-  /* ------------Schedule Queries------------ */
+  //#endregion
 
-
-
-  /* ------------Team Queries------------ */
+  //#region Team Queries
   // Use these methods in conjunction with /t/teams
   this.getTeam = function (options, colname, collection) {
     if (colname != 'teams')
@@ -70,11 +66,9 @@ function preCannedQueries() {
       { $project: { team: '$_id.name', _id: 0 } }
     ]);
   }
-  /* ------------Team Queries------------ */
+  //#endregion
 
-
-
-  /* ------------Players Queries------------ */
+  //#region Player Queries
   // Use these methods in conjunction with /p/players
   this.getPlayer = function (options, colname, collection) {
     if (colname != 'players')
@@ -97,11 +91,9 @@ function preCannedQueries() {
       { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
     ]);
   }
-  /* ------------Players Queries------------ */
+  //#endregion
 
-
-
-  /* ------------Rosters Queries------------ */
+  //#region Roster Queries
   // Use these methods in conjunction with /r/roster
   this.getGameRoster = function (options, colname, collection) {
     if (colname != 'roster')
@@ -128,29 +120,113 @@ function preCannedQueries() {
       { $match: query }
     ]);
   }
-  /* ------------Rosters Queries------------ */
+  //#endregion
 
-
-
-  /* ------------WoodMoney Queries------------ */
+  //#region WoodMoney Queries
   // Use these methods in conjunction with /wm/woodmoney
-  this.getWoodMoney = function (options, colname, collection) {
-    if (colname != 'woodmoney')
+  this.getSeasonWoodMoney = function (options, colname, collection) {
+    if (colname != 'seasonwoodmoney')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
+    console.log(query);
     return collection.aggregate([
       { $match: query },
-      { $lookup: { from: 'nhlplayers', localField: "playerseasonid", foreignField: "_id", as: "playerinfo" } },
+      { $lookup: { from: config.dbCollections.players, localField: "playerkey", foreignField: "_id", as: "playerinfo" } },
       { $unwind: "$playerinfo" },
-      { $sort: { 'PlayerId': 1 } }
+      { $sort: { 'playerid': 1 } }
     ]);
   }
-  /* ------------WoodMoney Queries------------ */
+  //#endregion
 
-  /* ------------WOWY Queries------------ */
+  //#region Box Car Queries
+  this.getSeasonBoxCar = function (options, colname, collection) {
+
+  }
+
+  this.getRangeBoxCar = function (options, colname, collection) {
+    if (colname != 'schedule')
+      throw Error(colname + ': Method not available');
+
+    var q1 = new Object();
+    var q2 = new Object();
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        if (name.substr(0, 2) === 'q1') {
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+        } else {
+          q2['wowy.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
+      }
+    });
+
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+
+    return collection.aggregate([
+      primequery,
+      { $lookup: { from: config.dbCollections.gameboxcar, localField: '_id', foreignField: 'gamekey', as: 'boxcar' } },
+      { $unwind: '$boxcar' },
+      { $match: q2 },
+      { $lookup: { from: config.dbCollections.players, localField: 'boxcar.player1key', foreignField: '_id', as: 'boxcar.player1info' } },
+      { $lookup: { from: config.dbCollections.players, localField: 'boxcar.player2key', foreignField: '_id', as: 'boxcar.player2info' } },
+      { $unwind: '$boxcar.player1info' },
+      { $unwind: '$boxcar.player2info' },
+      {
+        $group: {
+          _id: {
+            p1id: '$boxcar.player1info.playerid',
+            p1fullname: '$boxcar.player1info.fullName',
+            p1firstname: '$boxcar.player1info.firstName',
+            p1lastname: '$boxcar.player1info.lastName',
+            p1possible: '$boxcar.player1info.possible',
+            p2id: '$boxcar.player2info.playerid',
+            p2fullname: '$boxcar.player2info.fullName',
+            p2firstname: '$boxcar.player2info.firstName',
+            p2lastname: '$boxcar.player2info.lastName',
+            p2possible: '$boxcar.player2info.possible',
+            wowytype: '$boxcar.recordtype',
+            team: '$boxcar.team',
+          },
+          iP: { $sum: '$boxcar.iP' },
+          iG: { $sum: '$boxcar.iG' },
+          iA: { $sum: '$boxcar.iA' },
+          iA1: { $sum: '$boxcar.iA1' },
+          iA2: { $sum: '$boxcar.iA2' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            p1id: '$_id.p1id',
+            p2id: '$_id.p2id'
+          },
+          boxcar: {
+            $push: {
+              pinfo: '$_id',
+              iP: '$iP',
+              iG: '$iG',
+              iA: '$iA',
+              iA1: '$iA1',
+              iA2: '$iA2'
+            }
+          }
+        }
+      }
+    ]);
+  }
+  //#endregion
+
+  //#region WOWY Queries
   // Use these methods in conjunction with /w/wowy
-
   this.getSeasonWowy = function (options, colname, collection) {
     if (colname != 'seasonwowy')
       throw Error(colname + ': Method not available');
@@ -286,7 +362,7 @@ function preCannedQueries() {
 
     return collection.aggregate([
       primequery,
-      { $lookup: { from: config.dbCollections.gamewowy, localField: '_id', foreignField: 'gameid', as: 'wowy' } },
+      { $lookup: { from: config.dbCollections.gamewowy, localField: '_id', foreignField: 'gamekey', as: 'wowy' } },
       { $unwind: '$wowy' },
       { $match: q2 },
       { $lookup: { from: config.dbCollections.players, localField: 'wowy.playerkey1', foreignField: '_id', as: 'wowy.player1info' } },
@@ -382,11 +458,9 @@ function preCannedQueries() {
       }
     ], { allowDiskUse: true });
   };
-  /* ------------WOWY Queries------------ */
+  //#endregion
 
-
-
-  /* ------------WoodWOWY Queries------------ */
+  //#region WoodWOWY Queries
   // Use these methods in conjunction with /w/woodmoney
   this.getWoodWowy = function (options, colname, collection) {
     if (colname != 'woodwowy')
@@ -414,7 +488,7 @@ function preCannedQueries() {
       ]);
     }
   }
-  /* ------------WoodWOWY Queries------------ */
+  //#endregion
 }
 
 module.exports = preCannedQueries;
