@@ -129,14 +129,269 @@ function preCannedQueries() {
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
-    console.log(query);
+
     return collection.aggregate([
       { $match: query },
       { $lookup: { from: config.dbCollections.players, localField: "playerkey", foreignField: "_id", as: "playerinfo" } },
       { $unwind: "$playerinfo" },
-      { $sort: { 'playerid': 1 } }
+      {
+        $group: {
+          _id: {
+            pid: '$playerinfo.playerid',
+            pfullname: '$playerinfo.fullName',
+            pfirstname: '$playerinfo.firstName',
+            plastname: '$playerinfo.lastName',
+            ppossible: '$playerinfo.possible',
+            team: '$team',
+            season: '$season',
+            gametype: '$gametype',
+            onoff: '$onoff',
+            wowytype: '$wowytype',
+            woodmoneytier: '$woodmoneytier'
+          },
+          sacf: { $sum: '$sacf' },
+          saca: { $sum: '$saca' },
+          sfpct: { $sum: '$sfpct' },
+          ca: { $sum: '$ca' },
+          cf: { $sum: '$cf' },
+          gf: { $sum: '$gf' },
+          saca60: { $sum: '$saca60' },
+          ga: { $sum: '$ga' },
+          sacfpct: { $sum: '$sacfpct' },
+          gf60: { $sum: '$gf60' },
+          evtoi: { $sum: '$evtoi' },
+          ga60: { $sum: '$ga60' },
+          cfpct: { $sum: '$cfpct' },
+          sa60: { $sum: '$sa60' },
+          nz: { $sum: '$nz' },
+          dff: { $sum: '$dff' },
+          dfa: { $sum: '$dfa' },
+          ca60: { $sum: '$ca60' },
+          fa: { $sum: '$fa' },
+          dz: { $sum: '$dz' },
+          sf60: { $sum: '$sf60' },
+          ff: { $sum: '$ff' },
+          fa60: { $sum: '$fa60' },
+          sacf60: { $sum: '$sacf60' },
+          ffpct: { $sum: '$ffpct' },
+          cf60: { $sum: '$cf60' },
+          ff60: { $sum: '$ff60' },
+          dff60: { $sum: '$dff60' },
+          dffpct: { $sum: '$dffpct' },
+          oz: { $sum: '$oz' },
+          dfa60: { $sum: '$dfa60' },
+          sa: { $sum: '$sa' },
+          sf: { $sum: '$sf' },
+          gfpct: { $sum: '$gfpct' },
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            season: '$_id.season',
+            gametype: '$_id.gametype',
+          },
+          woodmoney: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              onoff: '$_id.onoff',
+              wowytype: '$_id.wowytype',
+              woodmoneytier: '$_id.woodmoneytier',
+              sacf: '$sacf',
+              saca: '$saca',
+              sfpct: '$sfpct',
+              ca: '$ca',
+              cf: '$cf',
+              gf: '$gf',
+              saca60: '$saca60',
+              ga: '$ga',
+              sacfpct: '$sacfpct',
+              gf60: '$gf60',
+              evtoi: '$evtoi',
+              ga60: '$ga60',
+              cfpct: '$cfpct',
+              sa60: '$sa60',
+              nz: '$nz',
+              dff: '$dff',
+              dfa: '$dfa',
+              ca60: '$ca60',
+              fa: '$fa',
+              dz: '$dz',
+              sf60: '$sf60',
+              ff: '$ff',
+              fa60: '$fa60',
+              sacf60: '$sacf60',
+              ffpct: '$ffpct',
+              cf60: '$cf60',
+              ff60: '$ff60',
+              dff60: '$dff60',
+              dffpct: '$dffpct',
+              oz: '$oz',
+              dfa60: '$dfa60',
+              sa: '$sa',
+              sf: '$sf',
+              gfpct: '$gfpct',
+            }
+          }
+        }
+      }
     ]);
   }
+
+  this.getRangeWoodMoney = function (options, colname, collection) {
+    if (colname != 'schedule')
+      throw Error(colname + ': Method not available');
+
+    var q1 = new Object();
+    var q2 = new Object();
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        if (name.substr(0, 2) === 'q1') {
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+        } else {
+          q2['woodmoney.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
+      }
+    });
+
+    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+
+    return collection.aggregate([
+      primequery,
+      { $lookup: { from: config.dbCollections.gamewoodmoney, localField: '_id', foreignField: 'gamekey', as: 'woodmoney' } },
+      { $unwind: '$woodmoney' },
+      { $match: q2 },
+      { $lookup: { from: config.dbCollections.players, localField: 'woodmoney.playerkey', foreignField: '_id', as: 'woodmoney.playerinfo' } },
+      { $unwind: '$woodmoney.playerinfo' },
+      {
+        $group: {
+          _id: {
+            pid: '$woodmoney.playerinfo.playerid',
+            pfullname: '$woodmoney.playerinfo.fullName',
+            pfirstname: '$woodmoney.playerinfo.firstName',
+            plastname: '$woodmoney.playerinfo.lastName',
+            ppossible: '$woodmoney.playerinfo.possible',
+            team: '$woodmoney.team',
+            recordtype: '$woodmoney.recordtype',
+            situation: '$woodmoney.situation',
+            gametype: '$woodmoney.gametype',
+            onoff: '$woodmoney.onoff',
+            wowytype: '$woodmoney.wowytype',
+            woodmoneytier: '$woodmoney.woodmoneytier'
+          },
+          sacf: { $sum: '$woodmoney.sacf' },
+          saca: { $sum: '$woodmoney.saca' },
+          sfpct: { $sum: '$woodmoney.sfpct' },
+          ca: { $sum: '$woodmoney.ca' },
+          cf: { $sum: '$woodmoney.cf' },
+          gf: { $sum: '$woodmoney.gf' },
+          saca60: { $sum: '$woodmoney.saca60' },
+          ga: { $sum: '$woodmoney.ga' },
+          sacfpct: { $sum: '$woodmoney.sacfpct' },
+          gf60: { $sum: '$woodmoney.gf60' },
+          evtoi: { $sum: '$woodmoney.evtoi' },
+          ga60: { $sum: '$woodmoney.ga60' },
+          cfpct: { $sum: '$woodmoney.cfpct' },
+          sa60: { $sum: '$woodmoney.sa60' },
+          nz: { $sum: '$woodmoney.nz' },
+          dff: { $sum: '$woodmoney.dff' },
+          dfa: { $sum: '$woodmoney.dfa' },
+          ca60: { $sum: '$woodmoney.ca60' },
+          fa: { $sum: '$woodmoney.fa' },
+          dz: { $sum: '$woodmoney.dz' },
+          sf60: { $sum: '$woodmoney.sf60' },
+          ff: { $sum: '$woodmoney.ff' },
+          fa60: { $sum: '$woodmoney.fa60' },
+          sacf60: { $sum: '$woodmoney.sacf60' },
+          ffpct: { $sum: '$woodmoney.ffpct' },
+          cf60: { $sum: '$woodmoney.cf60' },
+          ff60: { $sum: '$woodmoney.ff60' },
+          dff60: { $sum: '$woodmoney.dff60' },
+          dffpct: { $sum: '$woodmoney.dffpct' },
+          oz: { $sum: '$woodmoney.oz' },
+          dfa60: { $sum: '$woodmoney.dfa60' },
+          sa: { $sum: '$woodmoney.sa' },
+          sf: { $sum: '$woodmoney.sf' },
+          gfpct: { $sum: '$woodmoney.gfpct' },
+        }
+      },
+      {
+        $group: {
+          _id: {
+            pid: '$_id.pid',
+            gametype: '$_id.gametype',
+          },
+          woodmoney: {
+            $push: {
+              pinfo: {
+                pid: '$_id.pid',
+                pfullname: '$_id.pfullname',
+                pfirstname: '$_id.pfirstname',
+                plastname: '$_id.plastname',
+                ppossible: '$_id.ppossible',
+                team: '$_id.team'
+              },
+              onoff: '$_id.onoff',
+              wowytype: '$_id.wowytype',
+              woodmoneytier: '$_id.woodmoneytier',
+              sacf: '$sacf',
+              saca: '$saca',
+              sfpct: '$sfpct',
+              ca: '$ca',
+              cf: '$cf',
+              gf: '$gf',
+              saca60: '$saca60',
+              ga: '$ga',
+              sacfpct: '$sacfpct',
+              gf60: '$gf60',
+              evtoi: '$evtoi',
+              ga60: '$ga60',
+              cfpct: '$cfpct',
+              sa60: '$sa60',
+              nz: '$nz',
+              dff: '$dff',
+              dfa: '$dfa',
+              ca60: '$ca60',
+              fa: '$fa',
+              dz: '$dz',
+              sf60: '$sf60',
+              ff: '$ff',
+              fa60: '$fa60',
+              sacf60: '$sacf60',
+              ffpct: '$ffpct',
+              cf60: '$cf60',
+              ff60: '$ff60',
+              dff60: '$dff60',
+              dffpct: '$dffpct',
+              oz: '$oz',
+              dfa60: '$dfa60',
+              sa: '$sa',
+              sf: '$sf',
+              gfpct: '$gfpct',
+            }
+          }
+        }
+      }
+    ]);
+  }
+
   //#endregion
 
   //#region Box Car Queries
@@ -162,6 +417,7 @@ function preCannedQueries() {
             team: '$team',
             recordtype: '$recordtype',
             situation: '$situation',
+            season: '$season',
           },
           iP: { $sum: '$iP' },
           iG: { $sum: '$iG' },
@@ -174,6 +430,7 @@ function preCannedQueries() {
         $group: {
           _id: {
             pid: '$_id.pid',
+            season: '$_id.season',
             recordtype: '$_id.recordtype',
           },
           boxcar: {
@@ -729,8 +986,8 @@ function preCannedQueries() {
       { $lookup: { from: config.dbCollections.gamewowy, localField: '_id', foreignField: 'gamekey', as: 'wowy' } },
       { $unwind: '$wowy' },
       { $match: q2 },
-      { $lookup: { from: config.dbCollections.players, localField: 'wowy.playerkey1', foreignField: '_id', as: 'wowy.player1info' } },
-      { $lookup: { from: config.dbCollections.players, localField: 'wowy.playerkey2', foreignField: '_id', as: 'wowy.player2info' } },
+      { $lookup: { from: config.dbCollections.players, localField: 'wowy.player1key', foreignField: '_id', as: 'wowy.player1info' } },
+      { $lookup: { from: config.dbCollections.players, localField: 'wowy.player2key', foreignField: '_id', as: 'wowy.player2info' } },
       { $unwind: '$wowy.player1info' },
       { $unwind: '$wowy.player2info' },
       {
