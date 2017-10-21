@@ -852,12 +852,21 @@ function preCannedQueries() {
     if (colname != 'seasonwowy')
       throw Error(colname + ': Method not available');
 
-    var query = helper.mongoQueryBuilder(options);
+    //var query = helper.mongoQueryBuilder(options);
+    var q1 = new Object();
+
+    Object.keys(options).forEach((name) => {
+      if (name != 'qtype' && name != 'qmethod') {
+        q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+      }
+    });
+
+    var query = { $match: q1 };
 
     return collection.aggregate([
-      { $match: query },
-      { $lookup: { from: config.dbCollections.players, localField: "playerkey1", foreignField: "_id", as: "player1info" } },
-      { $lookup: { from: config.dbCollections.players, localField: "playerkey2", foreignField: "_id", as: "player2info" } },
+      query,
+      { $lookup: { from: config.dbCollections.players, localField: "player1key", foreignField: "_id", as: "player1info" } },
+      { $lookup: { from: config.dbCollections.players, localField: "player2key", foreignField: "_id", as: "player2info" } },
       { $unwind: "$player1info" },
       { $unwind: "$player2info" },
       {
