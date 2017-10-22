@@ -854,10 +854,18 @@ function preCannedQueries() {
 
     //var query = helper.mongoQueryBuilder(options);
     var q1 = new Object();
+    var s1 = new Array();
 
     Object.keys(options).forEach((name) => {
-      if (name != 'qtype' && name != 'qmethod') {
-        q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+      if (name != 'qtype' && name != 'qmethod' && name.substr(0, 2) !== 'q3') {
+        if (name.substr(2) === 'season') {
+          for(var i = 0; i < options[name].length; i++) {
+            s1.push(parseInt(options[name][i]));
+          }
+          q1[name.substr(2)] = {'$in': s1};
+        } else {
+          q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+        }
       }
     });
 
