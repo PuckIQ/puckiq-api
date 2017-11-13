@@ -250,26 +250,10 @@ function preCannedQueries() {
     if (colname != 'schedule')
       throw Error(colname + ': Method not available');
 
-    var q1 = new Object();
-    var q2 = new Object();
-    var dateset = false;
-
-    Object.keys(options).forEach((name) => {
-      if (name != 'qtype' && name != 'qmethod') {
-        if (name.substr(0, 2) === 'q1') {
-          if (name.substr(2, 4) === 'date') {
-            dateset = true;
-            q1[name.substr(2)] = new Date(options[name]);
-          } else if (name.substr(2) === 'team') {
-            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
-          } else {
-            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
-          }
-        } else {
-          q2['woodmoney.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
-        }
-      }
-    });
+    var queries = helper.mongoRangeQueryBuilder('woodmoney', options);
+    var q1 = queries.q1;
+    var q2 = queries.q2;
+    var dateset = queries.dateset;
 
     var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
 
@@ -859,10 +843,10 @@ function preCannedQueries() {
     Object.keys(options).forEach((name) => {
       if (name != 'qtype' && name != 'qmethod' && name.substr(0, 2) !== 'q3') {
         if (name.substr(2) === 'season') {
-          for(var i = 0; i < options[name].length; i++) {
+          for (var i = 0; i < options[name].length; i++) {
             s1.push(parseInt(options[name][i]));
           }
-          q1[name.substr(2)] = {'$in': s1};
+          q1[name.substr(2)] = { '$in': s1 };
         } else {
           q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
         }
@@ -1133,4 +1117,8 @@ module.exports = preCannedQueries;
 
 function isNumeric(n) {
   return !isNaN(n) && isFinite(n);
+}
+
+function isArray(n) {
+  return Array.isArray(n);
 }

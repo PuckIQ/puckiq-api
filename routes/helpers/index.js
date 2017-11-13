@@ -7,8 +7,8 @@ function PuckIQHelpers() {
       if (key != 'qmethod' && key != 'qtype') {
         if (isArray(options[key])) {
           var qarr = new Array();
-          options[key].forEach(function(val) {
-            if(isNumeric(val)) {
+          options[key].forEach(function (val) {
+            if (isNumeric(val)) {
               qarr.push(parseInt(val));
             } else {
               qarr.push(val);
@@ -40,6 +40,43 @@ function PuckIQHelpers() {
       });
       return fieldBuilder;
     }
+  }
+
+  this.mongoRangeQueryBuilder = function (colName, options) {
+    var q1 = {};
+    var q2 = {};
+    var dateset = false;
+
+    Object.keys(options).forEach((name) => {
+      switch (name.substr(0, 2)) {
+        case 'q1':
+          if (name.substr(2, 4) === 'date') {
+            dateset = true;
+            q1[name.substr(2)] = new Date(options[name]);
+          } else if (name.substr(2) === 'team') {
+            q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
+          } else {
+            q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+          break;
+        case 'q2':
+          if (isArray(options[name])) {
+            var optArr = [];
+            for (var i = 0; i < options[name].length; i++) {
+              var d = isNumeric(options[name][i]) ? parseInt(options[name][i]) : options[name][i];
+              optArr.push(d);
+            }
+            q2[colName + '.' + name.substr(2)] = { $in: optArr };
+          } else {
+            q2[colName + '.' + name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+          }
+          break;
+      }
+    });
+
+    return {q1, q2, dateset};
+
+    //var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
   }
 
   /* Helper Functions */
