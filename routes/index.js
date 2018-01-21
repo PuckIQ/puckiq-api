@@ -1,7 +1,9 @@
 var PuckIQHandler = require('./puckiq');
+var NHLHandler = require('./nhl');
 
 module.exports = exports = function (app, cache, request) {
   var puckIQHandler = new PuckIQHandler(request);
+  var nhlHandler = new NHLHandler(request);
 
   app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -23,4 +25,6 @@ module.exports = exports = function (app, cache, request) {
   app.get('/puckiq/d7/:qtype/:qmethod', cache.withTtl('7 days'), puckIQHandler.getPuckIQData);
   app.get('/puckiq/d15/:qtype/:qmethod', cache.withTtl('15 days'), puckIQHandler.getPuckIQData);
   app.get('/puckiq/d30/:qtype/:qmethod', cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
+
+  app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
 }
