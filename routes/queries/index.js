@@ -66,6 +66,13 @@ function preCannedQueries() {
       { $project: { team: '$_id.name', _id: 0 } }
     ]);
   }
+
+  this.getTeamStats = function (colname, collection) {
+    if (colname != 'teamstats')
+      throw Error(colname + ": Method not available");
+
+    return collection.find({}, { _id: 0 }).sort({ team: 1 });
+  }
   //#endregion
 
   //#region Player Queries
@@ -90,6 +97,29 @@ function preCannedQueries() {
       { $limit: 10 },
       { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
     ]);
+  }
+
+  this.getAllPlayers = function (colname, collection) {
+    if (colname != 'players')
+      throw Error(colname + ": Method not available");
+
+    return collection.aggregate([
+      {
+        $group: {
+          _id: {
+            playerid: "$playerid",
+            fullName: "$fullName"
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          playerid: "$_id.playerid",
+          fullName: "$_id.fullName"
+        }
+      }
+    ])
   }
   //#endregion
 
