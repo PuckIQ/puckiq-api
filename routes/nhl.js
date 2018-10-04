@@ -1,16 +1,17 @@
 // For functions directly calling NHL game data
-var config = require('../config.js');
-var nhlAPI = 'https://statsapi.web.nhl.com/api/v1/';
+const config = require('../config.js')["local"]; //TODO
+const nhlAPI = 'https://statsapi.web.nhl.com/api/v1/';
 
-var timezone = require('moment-timezone');
-var moment = require('moment');
-var rq = require('request');
+const timezone = require('moment-timezone');
+const moment = require('moment');
+const rq = require('request');
 
-var today = moment.tz('America/New_York').subtract(4, 'hours');
-var adjToday = today.format('YYYY-MM-DD');
-var season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
+const today = moment.tz('America/New_York').subtract(4, 'hours');
+const adjToday = today.format('YYYY-MM-DD');
+const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
 
 function NHLHandler(request) {
+
   this.getTodaysGames = function (req, res) {
     var schedOptions = 'schedule?startDate=' + adjToday + '&endDate=' + adjToday + '&expand=schedule.linescore,schedule.teams';
     rq.get({ url: nhlAPI + schedOptions, json: true }, (err, response, data) => {
@@ -31,6 +32,7 @@ function NHLHandler(request) {
       res.send(gms);
     });
   }
+
 }
 
 module.exports = NHLHandler;

@@ -1,26 +1,34 @@
+"use strict";
+
 var round = require('mongo-round');
 var config = require('../../config');
 var PuckIQHelper = require('../helpers');
 
 function preCannedQueries() {
-  "use strict";
+
   var helper = new PuckIQHelper();
 
   //#region Generic Queries
   // Use these methods in conjunction with /g
   this.getSeasonList = function (colname, collection) {
-    return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season" } }, { $sort: { _id: -1 } }]);
+    return collection.aggregate([
+        { $match: { season: { $exists: true } } },
+        { $group: { _id: "$season" } },
+        { $sort: { _id: -1 } }]);
   };
 
   this.getSeasonCount = function (colname, collection) {
-    return collection.aggregate([{ $match: { season: { $exists: true } } }, { $group: { _id: "$season", count: { $sum: 1 } } }, { $sort: { "_id": -1 } }]);
+    return collection.aggregate([
+        { $match: { season: { $exists: true } } },
+        { $group: { _id: "$season", count: { $sum: 1 } } },
+        { $sort: { "_id": -1 } }]);
   };
   //#endregion
 
   //#region Schedule Queries
   // Use these methods in conjunction with /s/schedule
   this.getSchedule = function (options, colname, collection) {
-    if (colname != 'schedule')
+    if (colname !== 'schedule')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -28,7 +36,7 @@ function preCannedQueries() {
   }
 
   this.getTeamSchedule = function (options, colname, collection) {
-    if (colname != 'schedule')
+    if (colname !== 'schedule')
       throw Error(colname + ': Method not available');
 
     var season = parseInt(options.season);
@@ -40,7 +48,7 @@ function preCannedQueries() {
   //#region Team Queries
   // Use these methods in conjunction with /t/teams
   this.getTeam = function (options, colname, collection) {
-    if (colname != 'teams')
+    if (colname !== 'teams')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -48,14 +56,14 @@ function preCannedQueries() {
   }
 
   this.getTeamList = function (colname, collection) {
-    if (colname != 'teams')
+    if (colname !== 'teams')
       throw Error(colname + ': Method not available');
 
     return collection.find().sort({ season: 1, conference: 1, division: 1 });
   }
 
   this.getTeamSearch = function (options, colname, collection) {
-    if (colname != 'teams')
+    if (colname !== 'teams')
       throw Error(colname + ': Method not available');
 
     var regex = new RegExp('^' + options.abbr + '.*', 'i');
@@ -65,28 +73,29 @@ function preCannedQueries() {
       { $group: { _id: { name: '$abbr' } } },
       { $project: { team: '$_id.name', _id: 0 } }
     ]);
-  }
+  };
 
   this.getTeamStats = function (colname, collection) {
-    if (colname != 'teamstats')
+    if (colname !== 'teamstats')
       throw Error(colname + ": Method not available");
 
     return collection.find({}, { _id: 0 }).sort({ team: 1 });
-  }
+  };
   //#endregion
 
   //#region Player Queries
   // Use these methods in conjunction with /p/players
   this.getPlayer = function (options, colname, collection) {
-    if (colname != 'players')
+    if (colname !== 'players')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
     return collection.find(query).sort({ conference: 1, division: 1 });
-  }
+  };
 
   this.getPlayerSearch = function (options, colname, collection) {
-    if (colname != 'players')
+
+    if (colname !== 'players')
       throw Error(colname + ': Method not available');
 
     var regex = new RegExp('.*' + options.fullName + '.*', 'i');
@@ -97,9 +106,10 @@ function preCannedQueries() {
       { $limit: 10 },
       { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
     ]);
-  }
+  };
 
   this.getAllPlayers = function (colname, collection) {
+
     if (colname != 'players')
       throw Error(colname + ": Method not available");
 
@@ -120,13 +130,13 @@ function preCannedQueries() {
         }
       }
     ])
-  }
+  };
   //#endregion
 
   //#region Roster Queries
   // Use these methods in conjunction with /r/roster
   this.getGameRoster = function (options, colname, collection) {
-    if (colname != 'roster')
+    if (colname !== 'roster')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -137,7 +147,7 @@ function preCannedQueries() {
   }
 
   this.getRosters = function (options, colname, collection) {
-    if (colname != 'roster')
+    if (colname !== 'roster')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -153,9 +163,11 @@ function preCannedQueries() {
   //#endregion
 
   //#region WoodMoney Queries
+
   // Use these methods in conjunction with /wm/woodmoney
   this.getSeasonWoodMoney = function (options, colname, collection) {
-    if (colname != 'seasonwoodmoney')
+
+    if (colname !== 'seasonwoodmoney')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -285,7 +297,9 @@ function preCannedQueries() {
     var q2 = queries.q2;
     var dateset = queries.dateset;
 
-    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+    var primequery = (dateset) ?
+        { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } :
+        { $match: q1 };
 
     return collection.aggregate([
       primequery,
@@ -398,7 +412,8 @@ function preCannedQueries() {
 
   //#region Box Car Queries
   this.getSeasonBoxCar = function (options, colname, collection) {
-    if (colname != 'seasonboxcar')
+
+    if (colname !== 'seasonboxcar')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -515,10 +530,11 @@ function preCannedQueries() {
         }
       }
     ]);
-  }
+  };
 
   this.getSeasonBoxCarWowy = function (options, colname, collection) {
-    if (colname != 'seasonboxcar')
+
+    if (colname !== 'seasonboxcar')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);
@@ -585,10 +601,11 @@ function preCannedQueries() {
         }
       }
     ]);
-  }
+  };
 
   this.getRangeBoxCar = function (options, colname, collection) {
-    if (colname != 'schedule')
+
+    if (colname !== 'schedule')
       throw Error(colname + ': Method not available');
 
     var q1 = new Object();
@@ -596,7 +613,7 @@ function preCannedQueries() {
     var dateset = false;
 
     Object.keys(options).forEach((name) => {
-      if (name != 'qtype' && name != 'qmethod') {
+      if (name !== 'qtype' && name !== 'qmethod') {
         if (name.substr(0, 2) === 'q1') {
           if (name.substr(2, 4) === 'date') {
             dateset = true;
@@ -612,7 +629,9 @@ function preCannedQueries() {
       }
     });
 
-    var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+    var primequery = (dateset) ?
+        { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } :
+        { $match: q1 };
 
     return collection.aggregate([
       primequery,
@@ -970,11 +989,12 @@ function preCannedQueries() {
       }
     ],
       { allowDiskUse: true })
-  }
+  };
 
   // Although this is a WOWY calculation it uses the schedule collection as its base
   this.getRangeWowy = function (options, colname, collection) {
-    if (colname != 'schedule')
+
+    if (colname !== 'schedule')
       throw Error(colname + ': Method not available');
 
     var q1 = new Object();
@@ -982,7 +1002,7 @@ function preCannedQueries() {
     var dateset = false;
 
     Object.keys(options).forEach((name) => {
-      if (name != 'qtype' && name != 'qmethod') {
+      if (name !== 'qtype' && name !== 'qmethod') {
         if (name.substr(0, 2) === 'q1') {
           if (name.substr(2, 4) === 'date') {
             dateset = true;
@@ -1103,7 +1123,8 @@ function preCannedQueries() {
   //#region WoodWOWY Queries
   // Use these methods in conjunction with /w/woodmoney
   this.getWoodWowy = function (options, colname, collection) {
-    if (colname != 'woodwowy')
+
+    if (colname !== 'woodwowy')
       throw Error(colname + ': Method not available');
 
     var query = helper.mongoQueryBuilder(options);

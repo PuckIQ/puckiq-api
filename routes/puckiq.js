@@ -1,10 +1,14 @@
-var config = require('../config.js');
-var MongoClient = require('mongodb').MongoClient;
-var preQuery = require('./queries');
+"use strict";
 
-var dbUri = 'mongodb://' + config.dbUser + ':' + config.dbPass + '@' + config.dbUri + ':' + config.dbPort + '/' + config.dbName;
+const config = require('../config.js')['local']; //TODO
+const MongoClient = require('mongodb').MongoClient;
+const preQuery = require('./queries');
+
+const dbUri = `mongodb://${config.dbs.puckiq.user}:${config.dbs.puckiq.password}@${config.dbs.puckiq.host}:${config.dbs.puckiq.port}/${config.dbs.puckiq.database}`;
+console.log("dbUri", dbUri);
 
 function PuckIQHandler(request) {
+  
   this.getOptionPuckIQ = function (req, res) {
     var qtype = req.params.qtype;
     var qmethod = req.params.qmethod;
@@ -30,7 +34,7 @@ function PuckIQHandler(request) {
         res.status(404).send('Not Found');
       }
     });
-  }
+  };
 
   this.getPuckIQData = function (req, res) {
     var qtype = req.params.qtype;
@@ -55,7 +59,7 @@ function PuckIQHandler(request) {
         }
       });
     }
-  }
+  };
 
   // Query Functions
   var puckIQStaticQuery = function (qtype, qmethod, callback) {
@@ -85,7 +89,7 @@ function PuckIQHandler(request) {
       console.log(exception);
       callback(exception);
     }
-  }
+  };
 
   var puckIQOptionQuery = function (qtype, qmethod, options, callback) {
     try {
@@ -114,7 +118,7 @@ function PuckIQHandler(request) {
       console.log(exception);
       callback(exception);
     }
-  }
+  };
 
   var collectionName = function (colname) {
     if (typeof config.dbCollections[colname] === 'undefined')

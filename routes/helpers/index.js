@@ -1,10 +1,11 @@
+"use strict";
+
 function PuckIQHelpers() {
-  "use strict";
 
   this.mongoQueryBuilder = function (options) {
     var queryBuilder = new Object();
     Object.keys(options).forEach(function (key) {
-      if (key != 'qmethod' && key != 'qtype') {
+      if (key !== 'qmethod' && key !== 'qtype') {
         if (isArray(options[key])) {
           var qarr = new Array();
           options[key].forEach(function (val) {
@@ -24,7 +25,7 @@ function PuckIQHelpers() {
     });
 
     return queryBuilder;
-  }
+  };
 
   this.mongoFieldBuilder = function (fields) {
     if (typeof fields === 'undefined')
@@ -40,9 +41,10 @@ function PuckIQHelpers() {
       });
       return fieldBuilder;
     }
-  }
+  };
 
   this.mongoRangeQueryBuilder = function (colName, options) {
+
     var q1 = {};
     var q2 = {};
     var dateset = false;
@@ -77,7 +79,7 @@ function PuckIQHelpers() {
     return {q1, q2, dateset};
 
     //var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
-  }
+  };
 
   /* Helper Functions */
   function isNumeric(n) {
