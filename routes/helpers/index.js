@@ -3,11 +3,11 @@
 function PuckIQHelpers() {
 
   this.mongoQueryBuilder = function (options) {
-    var queryBuilder = new Object();
+    let queryBuilder = new Object();
     Object.keys(options).forEach(function (key) {
       if (key !== 'qmethod' && key !== 'qtype') {
         if (isArray(options[key])) {
-          var qarr = new Array();
+          let qarr = new Array();
           options[key].forEach(function (val) {
             if (isNumeric(val)) {
               qarr.push(parseInt(val));
@@ -31,8 +31,8 @@ function PuckIQHelpers() {
     if (typeof fields === 'undefined')
       return {};
     else {
-      var fieldBuilder = new Object();
-      var fieldList = fields.split(',');
+      let fieldBuilder = new Object();
+      let fieldList = fields.split(',');
       fieldList.forEach((val) => {
         if (val === '-_id')
           fieldBuilder[val.substr(1)] = 0;
@@ -45,9 +45,9 @@ function PuckIQHelpers() {
 
   this.mongoRangeQueryBuilder = function (colName, options) {
 
-    var q1 = {};
-    var q2 = {};
-    var dateset = false;
+    let q1 = {};
+    let q2 = {};
+    let dateset = false;
 
     Object.keys(options).forEach((name) => {
       switch (name.substr(0, 2)) {
@@ -63,9 +63,9 @@ function PuckIQHelpers() {
           break;
         case 'q2':
           if (isArray(options[name])) {
-            var optArr = [];
-            for (var i = 0; i < options[name].length; i++) {
-              var d = isNumeric(options[name][i]) ? parseInt(options[name][i]) : options[name][i];
+            let optArr = [];
+            for (let i = 0; i < options[name].length; i++) {
+              let d = isNumeric(options[name][i]) ? parseInt(options[name][i]) : options[name][i];
               optArr.push(d);
             }
             q2[colName + '.' + name.substr(2)] = { $in: optArr };
@@ -78,7 +78,7 @@ function PuckIQHelpers() {
 
     return {q1, q2, dateset};
 
-    //var primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
+    //let primequery = (dateset) ? { $match: { gamedate: { $gte: new Date(q1.datestart.toISOString()), $lte: new Date(q1.dateend.toISOString()) } } } : { $match: q1 };
   };
 
   /* Helper Functions */

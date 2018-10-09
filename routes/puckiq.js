@@ -1,130 +1,128 @@
 "use strict";
 
-const config = require('../config.js')['local']; //TODO
 const MongoClient = require('mongodb').MongoClient;
 const preQuery = require('./queries');
 
-const dbUri = `mongodb://${config.dbs.puckiq.user}:${config.dbs.puckiq.password}@${config.dbs.puckiq.host}:${config.dbs.puckiq.port}/${config.dbs.puckiq.database}`;
-console.log("dbUri", dbUri);
+function PuckIQHandler(config) {
 
-function PuckIQHandler(request) {
-  
-  this.getOptionPuckIQ = function (req, res) {
-    var qtype = req.params.qtype;
-    var qmethod = req.params.qmethod;
-    var options = req.query;
-    puckIQOptionQuery(qtype, qmethod, options, (data) => {
-      res.contentType('application/json');
-      if (data.length > 0) {
-        res.send(JSON.stringify(data));
-      } else {
-        res.status(404).send('Not Found');
-      }
-    });
-  }
+    const dbUri = `mongodb://${config.dbs.puckiq.user}:${config.dbs.puckiq.password}@${config.dbs.puckiq.host}:${config.dbs.puckiq.port}/${config.dbs.puckiq.database}`;
+    console.log("dbUri", dbUri);
 
-  this.getStaticPuckIQ = function (req, res) {
-    var qtype = req.params.qtype;
-    var qmethod = req.params.qmethod;
-    puckIQStaticQuery(qtype, qmethod, (data) => {
-      res.contentType('application/json');
-      if (data.length > 0) {
-        res.send(JSON.stringify(data));
-      } else {
-        res.status(404).send('Not Found');
-      }
-    });
-  };
-
-  this.getPuckIQData = function (req, res) {
-    var qtype = req.params.qtype;
-    var qmethod = req.params.qmethod;
-    if (Object.keys(req.query).length == 0) {
-      puckIQStaticQuery(qtype, qmethod, (data) => {
-        res.contentType('application/json');
-        if (data.length > 0) {
-          res.send(JSON.stringify(data));
-        } else {
-          res.status(404).send('Not Found');
-        }
-      });
-    } else {
-      var options = req.query;
-      puckIQOptionQuery(qtype, qmethod, options, (data) => {
-        res.contentType('application/json');
-        if (data.length > 0) {
-          res.send(JSON.stringify(data));
-        } else {
-          res.status(404).send('Not Found');
-        }
-      });
-    }
-  };
-
-  // Query Functions
-  var puckIQStaticQuery = function (qtype, qmethod, callback) {
-    try {
-      var pq = new preQuery();
-      MongoClient.connect(dbUri, (err, db) => {
-        try {
-          var colname = collectionName(qtype);
-          var Collection = db.collection(colname);
-          var results = pq[qmethod](qtype, Collection);
-
-          results.toArray((err, docs) => {
-            if (!err) {
-              callback(docs);
+    this.getOptionPuckIQ = function(req, res) {
+        let qtype = req.params.qtype;
+        let qmethod = req.params.qmethod;
+        let options = req.query;
+        puckIQOptionQuery(qtype, qmethod, options, (data) => {
+            res.contentType('application/json');
+            if(data.length > 0) {
+                res.send(JSON.stringify(data));
             } else {
-              console.log(err);
-              callback(err);
+                res.status(404).send('Not Found');
             }
-            db.close();
-          });
-        } catch (exception) {
-          console.log(exception);
-          callback(exception);
-        }
-      });
-    } catch (exception) {
-      console.log(exception);
-      callback(exception);
-    }
-  };
+        });
+    };
 
-  var puckIQOptionQuery = function (qtype, qmethod, options, callback) {
-    try {
-      var pq = new preQuery();
-      MongoClient.connect(dbUri, (err, db) => {
-        try {
-          var colname = collectionName(qtype);
-          var Collection = db.collection(colname);
-          var results = pq[qmethod](options, qtype, Collection);
-
-          results.toArray((err, docs) => {
-            if (!err) {
-              callback(docs);
+    this.getStaticPuckIQ = function(req, res) {
+        let qtype = req.params.qtype;
+        let qmethod = req.params.qmethod;
+        puckIQStaticQuery(qtype, qmethod, (data) => {
+            res.contentType('application/json');
+            if(data.length > 0) {
+                res.send(JSON.stringify(data));
             } else {
-              console.log(err);
-              callback(err);
+                res.status(404).send('Not Found');
             }
-            db.close();
-          });
-        } catch (exception) {
-          console.log(exception);
-          callback(exception);
-        }
-      });
-    } catch (exception) {
-      console.log(exception);
-      callback(exception);
-    }
-  };
+        });
+    };
 
-  var collectionName = function (colname) {
-    if (typeof config.dbCollections[colname] === 'undefined')
-      throw Error(colname + ': Query Type Does Not Exist');
-    return config.dbCollections[colname];
-  };
+    this.getPuckIQData = function(req, res) {
+        this._getPuckIQData(req.params.qtype, req.params.qmethod, req.query, (err, results) => {
+            if(err) {
+                //todo better
+                res.status(500).send("Query error");
+            } else {
+                res.jsonp(results);
+            }
+        });
+    };
+
+    this._getPuckIQData = function(qtype, qmethod, options, done) {
+        console.log(`---${qtype}/${qmethod}?${JSON.stringify(req.query || {})}`);
+        if(Object.keys(options).length === 0) {
+            puckIQStaticQuery(qtype, qmethod, (data) => {
+                return done(null, data);// todo error?
+            });
+        } else {
+            puckIQOptionQuery(qtype, qmethod, options, (data) => {
+                return done(null, data);// todo error?
+            });
+        }
+    };
+
+    // Query Functions
+    let puckIQStaticQuery = function(qtype, qmethod, callback) {
+        try {
+            let pq = new preQuery();
+            MongoClient.connect(dbUri, (err, db) => {
+                try {
+                    let colname = collectionName(qtype);
+                    let Collection = db.collection(colname);
+                    let results = pq[qmethod](qtype, Collection);
+
+                    results.toArray((err, docs) => {
+                        if(!err) {
+                            callback(docs);
+                        } else {
+                            console.log(err);
+                            callback(err);
+                        }
+                        db.close();
+                    });
+                } catch(exception) {
+                    console.log(exception);
+                    callback(exception);
+                }
+            });
+        } catch(exception) {
+            console.log(exception);
+            callback(exception);
+        }
+    };
+
+    let puckIQOptionQuery = function(qtype, qmethod, options, callback) {
+        try {
+            let pq = new preQuery();
+            MongoClient.connect(dbUri, (err, db) => {
+                try {
+                    let colname = collectionName(qtype);
+                    let Collection = db.collection(colname);
+                    let results = pq[qmethod](options, qtype, Collection);
+
+                    results.toArray((err, docs) => {
+                        if(!err) {
+                            callback(docs);
+                        } else {
+                            console.log(err);
+                            callback(err);
+                        }
+                        db.close();
+                    });
+                } catch(exception) {
+                    console.log(exception);
+                    callback(exception);
+                }
+            });
+        } catch(exception) {
+            console.log(exception);
+            callback(exception);
+        }
+    };
+
+    let collectionName = function(colname) {
+        if(typeof config.dbCollections[colname] === 'undefined')
+            throw Error(colname + ': Query Type Does Not Exist');
+        return config.dbCollections[colname];
+    };
 }
 
 module.exports = PuckIQHandler;
