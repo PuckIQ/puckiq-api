@@ -17,14 +17,15 @@
   },
   "homepage": "https://github.com/PuckIQ/puckiq-api#readme",
   "dependencies": {
-    "expeditious-engine-redis": "^0.1.1",
-    "express": "^4.15.3",
-    "express-expeditious": "^3.2.0",
-    "minimist": "^1.2.0",
-    "moment": "^2.20.1",
-    "moment-timezone": "^0.5.14",
-    "mongo-round": "^1.0.0",
-    "mongodb": "^2.2.30",
-    "request": "^2.81.0"
+    "expeditious-engine-redis": "0.1.1",
+    "express": "4.15.3",
+    "express-expeditious": "3.2.0",
+    "lodash": "4.17.11",
+    "minimist": "1.2.0",
+    "moment": "2.20.1",
+    "moment-timezone": "0.5.14",
+    "mongo-round": "1.0.0",
+    "mongodb": "2.2.30",
+    "request": "2.81.0"
   }
 }

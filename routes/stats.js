@@ -17,12 +17,13 @@ class StatsController {
     /**
      * query
      *  player_id* : string,
-     *  season_id : string,
+     *  season_id : int,
+     *  teammate_id : [],
      *  range : {from, to }
      *  position : string,
      *  teammate : [palyer_ids]
      */
-    getWowyStats(req, res) {
+    getWowyForPlayer(req, res) {
 
         let options = req.query;
 
@@ -32,18 +33,21 @@ class StatsController {
         });
     }
 
+    getWowyForTeam(req, res) {
+        res.jsonp([]);
+    }
+
     /**
      * query
      *  team : string,
      *  player_id : [],
-     *  player_id : [],
-     *  season_id : string,
+     *  season_id : [int],
      *  range : {from, to }
      *  position : string,
      *
      *  team or player_ids is required
      */
-    getWoodmoneyStats(req, res) {
+    getWoodmoneyForPlayer(req, res) {
 
         let options = req.query;
 
@@ -53,6 +57,36 @@ class StatsController {
         });
     }
 
+    /**
+     * team: ie 3 digit code
+     * season: if not set, current
+     * competition (woodmoneytier)
+     *  - possible values Middle/Elite/Gritensity
+     * game type (gametype)
+     *  - possible values Home, Away, vs East, vs West
+     * (position is client side)
+     * @param req
+     * @param res
+     */
+    getWoodmoneyForTeam(req, res) {
+
+        //TODO validate...
+
+        let options = { team: req.params.team};
+
+        if(req.query.season) {
+            if(_.isArray(req.query.season) && req.query.season.length > 1) {
+                options.season = { $in: req.query.season };
+            } else {
+                options.season = _.isArray(req.query.season) ? req.query.season[0] : req.query.season;
+            }
+        }
+
+        this.puckIQHandler._getPuckIQData('schedule', 'getSeasonWoodMoney', options, (err, results) => {
+            if(err) return this.error_handler.handle(err);
+            res.jsonp(results);
+        });
+    }
 }
 
 module.exports = StatsController;

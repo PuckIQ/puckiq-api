@@ -35,19 +35,8 @@ function PuckIQHandler(config) {
         });
     };
 
-    this.getPuckIQData = function(req, res) {
-        this._getPuckIQData(req.params.qtype, req.params.qmethod, req.query, (err, results) => {
-            if(err) {
-                //todo better
-                res.status(500).send("Query error");
-            } else {
-                res.jsonp(results);
-            }
-        });
-    };
-
-    this._getPuckIQData = function(qtype, qmethod, options, done) {
-        console.log(`---${qtype}/${qmethod}?${JSON.stringify(req.query || {})}`);
+    let _getPuckIQData = function(qtype, qmethod, options, done) {
+        console.log(`---${qtype}/${qmethod}?${JSON.stringify(options || {})}`);
         if(Object.keys(options).length === 0) {
             puckIQStaticQuery(qtype, qmethod, (data) => {
                 return done(null, data);// todo error?
@@ -57,6 +46,19 @@ function PuckIQHandler(config) {
                 return done(null, data);// todo error?
             });
         }
+    };
+
+    this._getPuckIQData = _getPuckIQData;
+
+    this.getPuckIQData = function(req, res) {
+        _getPuckIQData(req.params.qtype, req.params.qmethod, req.query, (err, results) => {
+            if(err) {
+                //todo better
+                res.status(500).send("Query error");
+            } else {
+                res.jsonp(results);
+            }
+        });
     };
 
     // Query Functions

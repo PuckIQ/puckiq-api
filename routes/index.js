@@ -39,8 +39,10 @@ module.exports = exports = function (app, cache, request, config) {
     app.get('/puckiq/d30/:qtype/:qmethod', cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
 
     let statsController = new StatsController(config, error_handler);
-    app.get('/puckiq/stats/wowy', statsController.getWowyStats);
-    app.get('/puckiq/stats/woodmoney', statsController.getWoodmoneyStats);
+    app.get('/wowy/player', statsController.getWowyForPlayer);
+    app.get('/wowy/team', statsController.getWowyForTeam);
+    app.get('/woodmoney/player/:player_id', statsController.getWoodmoneyForPlayer);
+    app.get('/woodmoney/team/:team', statsController.getWoodmoneyForTeam);
 
     app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
 };
