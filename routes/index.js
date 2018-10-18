@@ -38,11 +38,14 @@ module.exports = exports = function (app, cache, request, config) {
     app.get('/puckiq/d15/:qtype/:qmethod', cache.withTtl('15 days'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/d30/:qtype/:qmethod', cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
 
-    let statsController = new StatsController(config, error_handler);
-    app.get('/wowy/player', statsController.getWowyForPlayer);
-    app.get('/wowy/team', statsController.getWowyForTeam);
-    app.get('/woodmoney/player/:player_id', statsController.getWoodmoneyForPlayer);
-    app.get('/woodmoney/team/:team', statsController.getWoodmoneyForTeam);
+    let players = new PlayerController(config, error_handler);
+    app.get('/player/search', players.search);
+
+    let stats = new StatsController(config, error_handler);
+    app.get('/wowy/player/:player_id', stats.getWowyForPlayer);
+    // app.get('/wowy/team/:team', stats.getWowyForTeam);
+    app.get('/woodmoney/player/:player_id', stats.getWoodmoneyForPlayer);
+    app.get('/woodmoney/team/:team', stats.getWoodmoneyForTeam);
 
     app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
 };

@@ -1,6 +1,6 @@
 // For functions directly calling NHL game data
-const timezone = require('moment-timezone');
 const moment = require('moment');
+const timezone = require('moment-timezone');
 const PuckIQHandler = require('./puckiq');
 
 const today = moment.tz('America/New_York').subtract(4, 'hours');
@@ -17,24 +17,29 @@ class StatsController {
     /**
      * query
      *  player_id* : string,
-     *  season_id : int,
-     *  teammate_id : [],
-     *  range : {from, to }
-     *  position : string,
-     *  teammate : [palyer_ids]
+     *  teammate_id : [player_id],
+     *  season_id : [int],
+     *
+     *  Not supported: range
+     *
+     *  Client side: position
      */
     getWowyForPlayer(req, res) {
 
         let options = req.query;
 
+        if(!(req.query.teammate_id && req.query.teammate_id.length)) {
+            return res.send(400).jsonp({ message: 'invalid request' });
+        }
+
+        if(!req.query.season) {
+            //todo default season
+        }
+
         this.puckIQHandler._getPuckIQData('schedule', 'getRangeWowy', options, (err, results) => {
             if(err) return this.error_handler.handle(err);
             res.jsonp(results);
         });
-    }
-
-    getWowyForTeam(req, res) {
-        res.jsonp([]);
     }
 
     /**
@@ -72,7 +77,7 @@ class StatsController {
 
         //TODO validate...
 
-        let options = { team: req.params.team};
+        let options = { team: req.params.team };
 
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
