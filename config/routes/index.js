@@ -1,22 +1,27 @@
 const PuckIQHandler = require('./puckiq');
 const NHLHandler = require('./nhl');
-const StatsController = require('./stats');
 
-module.exports = exports = function (app, cache, request, config) {
+module.exports = exports = function (app, locator) {
 
-    let error_handler = {
-        handle: (err) => {
-            console.log(`ERROR: ${err}`);
-        }
-    };
+    let config = locator.get('config');
+    let error_handler = locator.get('error_handler');
 
-    let puckIQHandler = new PuckIQHandler(config, error_handler);
-    let nhlHandler = new NHLHandler(config, error_handler);
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
+
+    let cache = {
+        withTtl : (x) => {
+            return (req, res, next) => {
+                console.log('deprecated');
+                next();
+            };
+        }
+    };
+
+    let puckIQHandler = new PuckIQHandler(config, error_handler);
 
     //0/players/getPlayerSearch?_=1539037936003 -- get teamates of connor mcdavid
     app.get('/puckiq/0/:qtype/:qmethod', puckIQHandler.getPuckIQData);
@@ -38,14 +43,21 @@ module.exports = exports = function (app, cache, request, config) {
     app.get('/puckiq/d15/:qtype/:qmethod', cache.withTtl('15 days'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/d30/:qtype/:qmethod', cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
 
-    let players = new PlayerController(config, error_handler);
+    app.get('/', (req, res) => {
+        res.send('TODO docs');
+    });
+
+    let PlayerController = require('../../modules/players/controller');
+    let players = new PlayerController(locator);
     app.get('/player/search', players.search);
 
-    let stats = new StatsController(config, error_handler);
+    let StatsController = require('../../modules/stats/controller');
+    let stats = new StatsController(locator);
     app.get('/wowy/player/:player_id', stats.getWowyForPlayer);
     // app.get('/wowy/team/:team', stats.getWowyForTeam);
     app.get('/woodmoney/player/:player_id', stats.getWoodmoneyForPlayer);
     app.get('/woodmoney/team/:team', stats.getWoodmoneyForTeam);
 
-    app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
+    //TODO sean
+    //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
 };

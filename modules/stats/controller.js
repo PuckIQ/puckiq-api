@@ -1,7 +1,7 @@
 // For functions directly calling NHL game data
 const moment = require('moment');
 const timezone = require('moment-timezone');
-const PuckIQHandler = require('./puckiq');
+const PuckIQHandler = require('../../config/routes/puckiq');
 
 const today = moment.tz('America/New_York').subtract(4, 'hours');
 const adjToday = today.format('YYYY-MM-DD');
@@ -9,9 +9,9 @@ const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.
 
 class StatsController {
 
-    constructor(config, error_handler) {
-        this.puckIQHandler = new PuckIQHandler(config);
-        this.error_handler = error_handler;
+    constructor(locator) {
+        this.puckIQHandler = new PuckIQHandler(locator.get('config'));
+        this.error_handler = locator.get('error_handler');
     }
 
     /**

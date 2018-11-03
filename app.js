@@ -1,4 +1,24 @@
-const config = require('./config.js')["local"]; //TODO
+'use strict';
+
+const cluster = require('cluster');
+const env = process.env.NODE_ENV || 'local'; //TODO
+const port = process.env.PORT || 3010;
+
+const config = require('./config/config.js')[env];
+
+if (env === 'local') {
+    require('./config/processes/worker')(cluster, config, port, __dirname);
+} else {
+    if (cluster.isMaster) {
+        console.log('master is running on env', env, 'port', port);
+        require('./config/processes/master')(cluster, config);
+    } else {
+        console.log('worker is running on env', env, 'port', port);
+        require('./config/processes/worker')(cluster, config, port, __dirname);
+    }
+}
+
+
 
 // const getExpeditiousCache = require('express-expeditious');
 // const redisOptions = {

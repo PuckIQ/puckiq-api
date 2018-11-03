@@ -5,7 +5,7 @@ const preQuery = require('./queries');
 
 function PuckIQHandler(config) {
 
-    const dbUri = `mongodb://${config.dbs.puckiq.user}:${config.dbs.puckiq.password}@${config.dbs.puckiq.host}:${config.dbs.puckiq.port}/${config.dbs.puckiq.database}`;
+    const dbUri = config.dbs.puckiq;
     console.log("dbUri", dbUri);
 
     this.getOptionPuckIQ = function(req, res) {
