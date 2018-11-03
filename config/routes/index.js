@@ -1,5 +1,4 @@
 const PuckIQHandler = require('./puckiq');
-const NHLHandler = require('./nhl');
 
 module.exports = exports = function (app, locator) {
 
