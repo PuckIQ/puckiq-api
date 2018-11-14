@@ -42,8 +42,9 @@ module.exports = exports = function (app, locator) {
     app.get('/puckiq/d15/:qtype/:qmethod', cache.withTtl('15 days'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/d30/:qtype/:qmethod', cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
 
+
     app.get('/', (req, res) => {
-        res.send('TODO docs');
+        res.render('index', { message: 'Welcome to PuckIQ!' })
     });
 
     let PlayerController = require('../../modules/players/controller');

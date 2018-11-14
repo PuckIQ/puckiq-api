@@ -29,7 +29,7 @@ module.exports = function(app, locator) {
     // setting the fav icon and static folder
     app.use(favicon(__dirname + '/../public/img/favicon.ico'));
     //TODO figure this out better
-    app.use(express.static(path.join(__dirname, '/../../public'))); // path of js files
+    app.use(express.static(path.join(__dirname, '../public'))); // path of js files
 
     if(config.env === 'load' || config.env === 'production') {
         app.enable('view cache');
@@ -38,7 +38,9 @@ module.exports = function(app, locator) {
     }
 
     // set views path, template engine and default layout
-    app.set('views', config.root + '/views');
+    app.set('views', path.join(__dirname, '../views'));
+
+    app.set('view engine', 'pug');
 
     // enable jsonp
     app.enable('jsonp callback');
