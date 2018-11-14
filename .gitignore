@@ -43,3 +43,4 @@ games/playbyplay.js
 # Config Files
 config.js
 scratch
+.gitsecret/keys/random_seed
