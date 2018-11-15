@@ -3,7 +3,7 @@
 const cluster = require('cluster');
 const env = process.env.NODE_ENV || 'local'; //TODO
 const config = require('./config/config.js')[env];
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || config.httpPort;
 
 if (env === 'local') {
     require('./config/processes/worker')(cluster, config, port, __dirname);
