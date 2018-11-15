@@ -49,7 +49,7 @@ module.exports = exports = function (app, locator) {
 
     let PlayerController = require('../../modules/players/controller');
     let players = new PlayerController(locator);
-    app.get('/player/search', players.search);
+    app.get('/player/search', (req, res) => players.search(req, res));
 
     let StatsController = require('../../modules/stats/controller');
     let stats = new StatsController(locator);

@@ -18,6 +18,10 @@ module.exports = function(cluster, config, port) {
         });
     });
 
+    if(config.env === "local"){
+        mongoose.set('debug', true);
+    }
+
     let models_path = path.resolve(__dirname, '../../models');
     fs.readdirSync(models_path).forEach((file) => {
         require(models_path + '/' + file)(mongoose, config);

@@ -11,7 +11,7 @@ class StatsController {
      */
     search(req, res) {
 
-        let Player = locator.get('mongoose').model('Player');
+        let Player = this.locator.get('mongoose').model('Player');
 
         let regex = new RegExp('.*' + req.query.fullName + '.*', 'i');
 
@@ -21,8 +21,10 @@ class StatsController {
             { $limit: 10 },
             { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
         ]).then((results) => {
+            console.log("results", results);
             res.jsonp(results);
         }, (err) => {
+            console.log("exception", err);
             let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
             return this.error_handler.handle(ex);
         });
