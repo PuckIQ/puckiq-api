@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const compression = require('compression');
@@ -11,10 +10,12 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const constants = require('../common/constants');
 const AppException = require('../common/app_exception');
+const ExceptionMiddleware = require('./middlewares/exception');
 
 module.exports = function(app, locator) {
 
     let config = locator.get('config');
+    let error_handler = locator.get('error_handler');
 
     app.set('showStackError', true);
 
@@ -28,7 +29,6 @@ module.exports = function(app, locator) {
 
     // setting the fav icon and static folder
     app.use(favicon(__dirname + '/../public/img/favicon.ico'));
-    //TODO figure this out better
     app.use(express.static(path.join(__dirname, '../public'))); // path of js files
 
     if(config.env === 'load' || config.env === 'production') {
@@ -55,7 +55,7 @@ module.exports = function(app, locator) {
     app.use(bodyParser.text());
 
     // catch errors caused by garbled input
-    app.use(function(err, req, res, next) {
+    app.use((err, req, res, next) => {
         if(_.isNil(err) || !(err instanceof SyntaxError)) return next();
 
         error_handler.log(new AppException(constants.exceptions.invalid_request, 'Received Syntax Error parsing body content.'), { level: constants.log_levels.warn });
@@ -72,35 +72,12 @@ module.exports = function(app, locator) {
 
     app.disable('x-powered-by');
 
-    // dynamic helpers
-    // app.use(helpers(config.app.name));
-
     require('./routes')(app, locator);
 
-    // assume "not found" in the error msgs is a 404. this is somewhat silly,
-    // but valid, you can do whatever you like, set properties, use instanceof etc.
-    app.use(function(err, req, res, next) {
-
-        // Treat as 404
-        if(~err.message.indexOf('not found')) return next();
-
-        if(err.message === 'invalid csrf token') {
-            ErrorHandler.log(new AppException('invalid_csrf_token', 'Invalid CSRF Token'), req);
-            if(req && !req.xhr) {
-                req.session.invalid_csrf = true;
-                return res.redirect(req.headers.referer || '/signin');
-            } else {
-                return res.status(499).send();
-            }
-        }
-
-        next();
-    });
-
-    app.use(require('./middlewares/exception')(locator));
+    app.use(ExceptionMiddleware(locator));
 
     //Assume 404 since no middleware responded
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
         res.status(404).render('404', {
             url: req.originalUrl,
             error: 'Not found'

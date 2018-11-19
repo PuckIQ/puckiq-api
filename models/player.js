@@ -65,8 +65,7 @@ module.exports = function(mongoose, config) {
     schema.index({ playerid: 1 });
     schema.index({ fullname: 1 });
 
-
-    return mongoose.model('Player', schema, config.dbs.players, {
+    return mongoose.model('Player', schema, config.dbCollections.players, {
         connection: mongoose.dbs['puckiq']
     });
 };

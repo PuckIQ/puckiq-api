@@ -18,7 +18,7 @@ module.exports = function(cluster, config, port) {
         });
     });
 
-    if(config.env === "local"){
+    if(config.env === "local") {
         mongoose.set('debug', true);
     }
 
@@ -29,7 +29,7 @@ module.exports = function(cluster, config, port) {
 
     require('../service_locator').init(config, mongoose, (err, locator) => {
 
-        if(err){
+        if(err) {
             console.log("Error initializing service locator. Details: " + err);
             return process.exit(1);
         }

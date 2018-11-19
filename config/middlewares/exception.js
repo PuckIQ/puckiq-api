@@ -3,7 +3,9 @@
 const constants = require('../../common/constants');
 const AppException = require('../../common/app_exception');
 
-module.exports = function(error_handler) {
+module.exports = function(locator) {
+
+    let error_handler = locator.get("error_handler");
 
     return function(err, req, res, next) {
 
@@ -16,11 +18,11 @@ module.exports = function(error_handler) {
                 ex.stack = err.stack;
             }
 
-            error_handler.defaultErrorHandling(req, res, ex);
+            error_handler.handle(req, res, ex);
 
         } catch(ex) {
             try {
-                error_handler.log(err, req);
+                error_handler.handle(err, req);
             } catch(innerEx) {
                 console.log('serious issue here. log and notify failed', innerEx);
             } finally {

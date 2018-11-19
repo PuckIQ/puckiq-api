@@ -7,11 +7,45 @@ const today = moment.tz('America/New_York').subtract(4, 'hours');
 const adjToday = today.format('YYYY-MM-DD');
 const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
 
+const AppException = require('../../common/app_exception');
+const constants = require('../../common/constants');
+
 class StatsController {
 
     constructor(locator) {
+        this.locator = locator;
         this.puckIQHandler = new PuckIQHandler(locator.get('config'));
         this.error_handler = locator.get('error_handler');
+    }
+
+    wowySeasons(req, res) {
+
+        let WowySeason = this.locator.get('mongoose').model('SeasonWowy');
+
+        return WowySeason.aggregate([
+            { $match: { season: { $exists: true } } },
+            { $group: { _id: "$season" } },
+            { $sort: { _id: -1 } }]).then((results) => {
+            res.jsonp(results);
+        }, (err) => {
+            let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
+            return this.error_handler.handle(ex);
+        });
+    }
+
+    woodMoneySeasons(req, res) {
+
+        let WoodmoneySeason = this.locator.get('mongoose').model('SeasonWoodmoney');
+
+        return WoodmoneySeason.aggregate([
+            { $match: { season: { $exists: true } } },
+            { $group: { _id: "$season" } },
+            { $sort: { _id: -1 } }]).then((results) => {
+            res.jsonp(results);
+        }, (err) => {
+            let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
+            return this.error_handler.handle(ex);
+        });
     }
 
     /**

@@ -31,7 +31,6 @@ module.exports = exports = function (app, locator) {
     app.get('/puckiq/m5/:qtype/:qmethod', cache.withTtl('5 minutes'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/m10/:qtype/:qmethod', cache.withTtl('10 minutes'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/m30/:qtype/:qmethod', cache.withTtl('30 minutes'), puckIQHandler.getPuckIQData);
-    //h1/seasonwoodmoney/getSeasonList -- get seasons
     app.get('/puckiq/h1/:qtype/:qmethod', cache.withTtl('1 hour'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/h2/:qtype/:qmethod', cache.withTtl('2 hours'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/h6/:qtype/:qmethod', cache.withTtl('6 hours'), puckIQHandler.getPuckIQData);
@@ -53,10 +52,12 @@ module.exports = exports = function (app, locator) {
 
     let StatsController = require('../../modules/stats/controller');
     let stats = new StatsController(locator);
-    app.get('/wowy/player/:player_id', stats.getWowyForPlayer);
+    app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
+    app.get('/wowy/player/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
     // app.get('/wowy/team/:team', stats.getWowyForTeam);
-    app.get('/woodmoney/player/:player_id', stats.getWoodmoneyForPlayer);
-    app.get('/woodmoney/team/:team', stats.getWoodmoneyForTeam);
+    app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
+    app.get('/woodmoney/player/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
+    app.get('/woodmoney/team/:team', (req, res) => stats.getWoodmoneyForTeam(req, res));
 
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
