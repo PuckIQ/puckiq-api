@@ -625,7 +625,7 @@ function preCannedQueries() {
                 }
             }
         ]);
-    }
+    };
 
     //#endregion
 

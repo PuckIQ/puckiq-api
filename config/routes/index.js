@@ -57,6 +57,8 @@ module.exports = exports = function (app, locator) {
     // app.get('/wowy/team/:team', stats.getWowyForTeam);
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
     app.get('/woodmoney/player/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
+
+    //verify this one is good first....
     app.get('/woodmoney/team/:team', (req, res) => stats.getWoodmoneyForTeam(req, res));
 
     //TODO sean
