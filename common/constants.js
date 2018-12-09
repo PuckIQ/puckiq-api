@@ -26,5 +26,21 @@ module.exports = {
         info: 3,
         verbose: 4,
         debug: 5
+    },
+    //todo
+    on_off : {
+        //TODO
+        even_strength : 2
+    },
+    game_type : {
+        //TODO
+        even_strength : 2
+    },
+    wowy_type : {
+        woodmoney :'WoodMoney'
+    },
+    woodmoney_tier : {
+        elite :'Elite',
+
     }
 };
