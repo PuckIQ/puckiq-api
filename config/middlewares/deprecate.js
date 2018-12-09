@@ -8,6 +8,7 @@ module.exports = function(locator) {
     let ErrorHandler = locator.get("error_handler");
 
     return function(req, res, next) {
+        console.log("deprecated", req.url);
         // would normally be a 299 status code however, we just want to email and forget about it.
         // Needs 500 in order for email to go.
         ErrorHandler.logAndNotify(new AppException(constants.exceptions.deprecated_request, 'This endpoint has been deprecated'), req);

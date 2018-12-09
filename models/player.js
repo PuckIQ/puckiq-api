@@ -9,7 +9,7 @@ module.exports = function(mongoose, config) {
 
     let schema = new Schema({
         playerid: {
-            type: String,
+            type: Number,
             required: true
         },
         teamseasonid: {
@@ -53,7 +53,7 @@ module.exports = function(mongoose, config) {
             required: true
         },
         season: {
-            type: String,
+            type: Number,
             required: true
         },
         possible: [{
