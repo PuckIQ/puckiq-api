@@ -42,6 +42,7 @@ module.exports = exports = function (app, locator) {
     app.get('/puckiq/d15/:qtype/:qmethod', deprecated, cache.withTtl('15 days'), puckIQHandler.getPuckIQData);
     app.get('/puckiq/d30/:qtype/:qmethod', deprecated, cache.withTtl('30 days'), puckIQHandler.getPuckIQData);
 
+    // test for shawn...
     app.get('/', (req, res) => {
         res.render('index', { message: 'Welcome to PuckIQ!' })
     });
