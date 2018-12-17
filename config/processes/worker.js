@@ -55,7 +55,7 @@ module.exports = function(cluster, config, port) {
             return function(err, req, res) {
                 try {
                     console.log("UNHANDLED ERROR", err);
-                    error_handler.handle(err);
+                    error_handler.handle(req, res, err);
                 } catch(e) {
                     console.log("ERROR handling exception", err);
                 } finally {

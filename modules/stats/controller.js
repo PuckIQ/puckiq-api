@@ -32,7 +32,7 @@ class StatsController {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
-            return this.error_handler.handle(ex);
+            return this.error_handler.handle(req, res, ex);
         });
     }
 
@@ -47,7 +47,7 @@ class StatsController {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
-            return this.error_handler.handle(ex);
+            return this.error_handler.handle(req, res, ex);
         });
     }
 
@@ -79,7 +79,7 @@ class StatsController {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });
-            return this.error_handler.handle(ex);
+            return this.error_handler.handle(req, res, ex);
         });
 
     }
@@ -383,7 +383,7 @@ class StatsController {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });
-            return this.error_handler.handle(ex);
+            return this.error_handler.handle(req, res, ex);
         });
 
     }
@@ -401,9 +401,17 @@ class StatsController {
      */
     getWoodmoneyForTeam(req, res) {
 
-        //TODO validate...
+        let options = {
+            team: req.params.team,
+            onoff : "On Ice"
+        };
 
-        let options = { team: req.params.team };
+        if(!options.team) {
+            return this.error_handler.handle(req, res, new AppException(constants.exceptions.invalid_argument, "Invalid team", { team: options.team }));
+        }
+
+        //just in case
+        options.team = options.team.toUpperCase();
 
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
@@ -413,13 +421,13 @@ class StatsController {
             }
         }
 
-        //todo if range options, call getRangeWoodmoney
+        //todo if range options, call Queries.range_woodmoney
 
         Queries.season_woodmoney(this.mongoose, this.config)(options).then((results) => {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });
-            return this.error_handler.handle(ex);
+            return this.error_handler.handle(req, res, ex);
         });
     }
 }

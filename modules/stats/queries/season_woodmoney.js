@@ -83,14 +83,21 @@ module.exports = (mongoose, config) => {
                     },
                     woodmoney: {
                         $push: {
-                            pinfo: {
-                                pid: '$_id.pid',
-                                pfullname: '$_id.pfullname',
-                                pfirstname: '$_id.pfirstname',
-                                plastname: '$_id.plastname',
-                                ppossible: '$_id.ppossible',
-                                team: '$_id.team'
-                            },
+                            // pinfo: {
+                            //     pid: '$_id.pid',
+                            //     pfullname: '$_id.pfullname',
+                            //     pfirstname: '$_id.pfirstname',
+                            //     plastname: '$_id.plastname',
+                            //     ppossible: '$_id.ppossible',
+                            //     team: '$_id.team'
+                            // },
+                            pid: '$_id.pid',
+                            pfullname: '$_id.pfullname',
+                            pfirstname: '$_id.pfirstname',
+                            plastname: '$_id.plastname',
+                            ppossible: '$_id.ppossible',
+                            team: '$_id.team',
+                            //end player info
                             onoff: '$_id.onoff',
                             wowytype: '$_id.wowytype',
                             woodmoneytier: '$_id.woodmoneytier',

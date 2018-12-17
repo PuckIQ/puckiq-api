@@ -1,5 +1,7 @@
 "use strict";
 
+const _ = require("lodash");
+
 exports.getIpAddress = function(req) {
     if(!_.isObject(req)) return '';
 

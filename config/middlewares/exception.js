@@ -22,7 +22,7 @@ module.exports = function(locator) {
 
         } catch(ex) {
             try {
-                error_handler.handle(err, req);
+                error_handler.log(req, err);
             } catch(innerEx) {
                 console.log('serious issue here. log and notify failed', innerEx);
             } finally {

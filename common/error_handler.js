@@ -7,6 +7,8 @@ let EmailQueue = require('./email_queue');
 let AppException = require('./app_exception');
 let getIpAddress = require('./utils').getIpAddress;
 
+const logLevelNames = ['fatal', 'error', 'warn', 'info', 'verbose', 'debug'];
+
 let _config = null;
 let _email_queue = null;
 
@@ -45,7 +47,7 @@ exports.handle = function(req, res, err) {
 
 function log(req, err) {
 
-    let code = AppException.getCode();
+    let code = AppException.getCode(err);
 
     let ex = {};
 
@@ -77,7 +79,7 @@ function log(req, err) {
 
     let level = ex.data.level || constants.log_levels.error;
 
-    logger.log(constants.logLevelNames[level], JSON.stringify(ex), (err) => {
+    logger.log(logLevelNames[level], JSON.stringify(ex), (err) => {
         if(err) {
             //oh dear...
             console.log(err);
@@ -125,3 +127,5 @@ function sendEmail(code, error) {
 
     }
 }
+
+exports.log = log;
