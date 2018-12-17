@@ -1,12 +1,13 @@
 "use strict";
 
+const _ = require("lodash");
 const MongoHelpers = require('../../../common/mongo_helpers');
 
-module.exports = (mongoose) => {
+module.exports = (mongoose, config) => {
 
     return (options) => {
 
-        let SeasonWoodmoney = mongoose.get('mongoose').model('SeasonWoodmoney');
+        let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
 
         let query = helper.mongoQueryBuilder(options);

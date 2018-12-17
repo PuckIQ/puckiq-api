@@ -15,6 +15,7 @@ class StatsController {
 
     constructor(locator) {
         this.locator = locator;
+        this.config = locator.get('config');
         this.error_handler = locator.get('error_handler');
         this.mongoose = locator.get('mongoose');
         this.helper = new MongoHelpers();
@@ -74,7 +75,7 @@ class StatsController {
 
         //todo if range options, call getRangeWowy
 
-        Queries.season_wowy(this.mongoose)(options).then((results) => {
+        Queries.season_wowy(this.mongoose, this.config)(options).then((results) => {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });
@@ -414,7 +415,7 @@ class StatsController {
 
         //todo if range options, call getRangeWoodmoney
 
-        Queries.season_wowy(this.mongoose)(options).then((results) => {
+        Queries.season_woodmoney(this.mongoose, this.config)(options).then((results) => {
             res.jsonp(results);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });

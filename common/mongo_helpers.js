@@ -15,14 +15,14 @@ class MongoHelpers {
                 if(_.isArray(options[key])) {
                     let qarr = new Array();
                     options[key].forEach(function(val) {
-                        if(_.isNumeric(val)) {
+                        if(_.isNumber(val)) {
                             qarr.push(parseInt(val));
                         } else {
                             qarr.push(val);
                         }
                     });
                     queryBuilder[key] = { $in: qarr }
-                } else if(_.isNumeric(options[key])) {
+                } else if(_.isNumber(options[key])) {
                     queryBuilder[key] = parseInt(options[key]);
                 } else {
                     queryBuilder[key] = options[key];

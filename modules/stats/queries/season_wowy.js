@@ -1,15 +1,18 @@
 "use strict";
 
-module.exports = (mongoose) => {
+const _ = require("lodash");
+
+module.exports = (mongoose, config) => {
 
     return (options) => {
 
-        let SeasonWowy = mongoose.get('mongoose').model('SeasonWowy');
+        let SeasonWowy = mongoose.model('SeasonWowy');
 
         //let query = helper.mongoQueryBuilder(options);
         let q1 = new Object();
         let s1 = new Array();
 
+        console.log("TODO implement me...");
         Object.keys(options).forEach((name) => {
             if(name != 'qtype' && name != 'qmethod' && name.substr(0, 2) !== 'q3') {
                 if(name.substr(2) === 'season') {
@@ -18,7 +21,7 @@ module.exports = (mongoose) => {
                     }
                     q1[name.substr(2)] = { '$in': s1 };
                 } else {
-                    q1[name.substr(2)] = isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+                    q1[name.substr(2)] = _.isNumber(options[name]) ? parseInt(options[name]) : options[name];
                 }
             }
         });
