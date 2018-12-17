@@ -27,20 +27,25 @@ module.exports = {
         verbose: 4,
         debug: 5
     },
-    //todo
     on_off : {
-        //TODO
-        even_strength : 2
+        on_ice : "Off Ice",
+        off_ice : "On Ice"
     },
     game_type : {
-        //TODO
-        even_strength : 2
+        //TODO all swm_records have gametype of 2...
+        all : 'all',
+        east : 'east',
+        west : 'west',
+        home : 'home',
+        away : 'away'
     },
     wowy_type : {
         woodmoney :'WoodMoney'
     },
     woodmoney_tier : {
-        elite :'Elite',
-
+        all: 'All',
+        elite: 'Elite',
+        middle: 'Middle',
+        gritensity: 'Gritensity',
     }
 };
