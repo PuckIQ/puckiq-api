@@ -17,8 +17,6 @@ if (env === 'local') {
     }
 }
 
-
-
 // const getExpeditiousCache = require('express-expeditious');
 // const redisOptions = {
 //   host: config.redisHost,
@@ -30,29 +28,30 @@ if (env === 'local') {
 //   defaultTtl: '1 minute',
 //   engine: require('expeditious-engine-redis')({redis: redisOptions}),
 // });
-const cache = {
-  withTtl : function(time){
-    return function(req, res, next){
-      console.log(`${req.path}${JSON.stringify(req.query)}`);
-      return next();
-    };
-  }
-};
+// const cache = {
+//   withTtl : function(time){
+//     return function(req, res, next){
+//       console.log(`${req.path}${JSON.stringify(req.query)}`);
+//       return next();
+//     };
+//   }
+// };
 
-let express = require('express');
-let app = express();
-
-const request = require('request');
-const http = require('http');
-const routes = require('./routes');
-const server = http.createServer(app);
-
-console.log("bootstrapping routes");
-routes(app, cache, request, config);
-
-console.log("listening on port", config.httpPort);
-server.listen(config.httpPort, function () {
-  server.close(function () {
-    server.listen(config.httpPort);
-  });
-});
+// console.log("asdfasdfasdf");
+// let express = require('express');
+// let app = express();
+//
+// const request = require('request');
+// const http = require('http');
+// const routes = require('./routes');
+// const server = http.createServer(app);
+//
+// console.log("bootstrapping routes");
+// routes(app, cache, request, config);
+//
+// console.log("listening on port", config.httpPort);
+// server.listen(config.httpPort, function () {
+//   server.close(function () {
+//     server.listen(config.httpPort);
+//   });
+// });

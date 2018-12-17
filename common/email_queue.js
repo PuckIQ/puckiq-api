@@ -15,7 +15,7 @@ class EmailQueue {
 
         if(this.settings && this.settings.interval) {
             console.log('setting error email queue interval to', this.settings.interval / 1000, 's');
-            setTimeout(this._queueTick, this.settings.interval);
+            setTimeout(() => this._queueTick(), this.settings.interval);
         }
     }
 
@@ -35,8 +35,14 @@ class EmailQueue {
     }
 
     _queueTick() {
+
+        if(!this._queue) {
+            console.log("config error...");
+            return;
+        }
+
         if(this._queue.length === 0) {
-            setTimeout(this._queueTick, this.settings.interval);
+            setTimeout(() => this._queueTick, this.settings.interval);
         } else {
             let items = this._queue.splice(0, this._queue.length);
             async.each(items, function(item, cb) {
@@ -45,7 +51,7 @@ class EmailQueue {
                 if(err) {
                     console.log("error sending email. details: " + err);
                 }
-                setTimeout(this._queueTick, this.settings.interval);
+                setTimeout(() => this._queueTick(), this.settings.interval);
             });
         }
     }

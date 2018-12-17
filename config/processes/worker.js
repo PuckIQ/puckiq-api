@@ -51,6 +51,7 @@ module.exports = function(cluster, config, port) {
         require('../../common/bus').init(locator);
 
         process.on('uncaughtException', (error_handler) => {
+            console.log("uncaughtException");
             return function(err, req, res) {
                 try {
                     console.log("UNHANDLED ERROR", err);
