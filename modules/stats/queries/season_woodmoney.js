@@ -139,6 +139,18 @@ module.exports = (mongoose, config) => {
                     }
                 }
             }
-        ]);
+        ]).then((data) => {
+
+            let results = _.chain(data).map(x => {
+                return _.map(x.woodmoney, (y) => {
+                    return _.extend({}, x._id, y);
+                });
+            }).flatten().value();
+
+            return Promise.resolve(results);
+
+        }, (err) => {
+            return Promise.reject(err);
+        });
     };
 };
