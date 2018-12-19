@@ -1,4 +1,5 @@
 // For functions directly calling NHL game data
+const _ = require('lodash');
 const moment = require('moment');
 const timezone = require('moment-timezone');
 
@@ -415,9 +416,9 @@ class StatsController {
 
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
-                options.season = { $in: req.query.season };
+                options.season = { $in: _.map(req.query.season, x => parseInt(x)) };
             } else {
-                options.season = _.isArray(req.query.season) ? req.query.season[0] : req.query.season;
+                options.season = _.isArray(req.query.season) ? parseInt(req.query.season[0]) : parseInt(req.query.season);
             }
         }
 

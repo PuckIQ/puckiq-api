@@ -40,7 +40,10 @@ module.exports = function(app, locator) {
     // set views path, template engine and default layout
     app.set('views', path.join(__dirname, '../views'));
 
-    app.set('view engine', 'pug');
+    app.set('view engine', 'ejs');
+    app.use(require('express-ejs-layouts'));
+    app.set('layout', 'layout');
+
 
     // enable jsonp
     app.enable('jsonp callback');
