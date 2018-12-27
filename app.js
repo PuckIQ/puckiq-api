@@ -1,9 +1,10 @@
 'use strict';
 
+const env = process.env.NODE_ENV || 'local';
+const config = require('./config/config').getFor(env);
+
 const cluster = require('cluster');
-const env = process.env.NODE_ENV || 'local'; //TODO
-const config = require('./config/config.js')[env];
-const port = process.env.PORT || config.httpPort;
+const port = config.httpPort;
 
 if (env === 'local') {
     require('./config/processes/worker')(cluster, config, port, __dirname);

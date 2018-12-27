@@ -76,7 +76,7 @@ class MongoHelpers {
                         }
                         q2[colName + '.' + name.substr(2)] = { $in: optArr };
                     } else {
-                        q2[colName + '.' + name.substr(2)] = _.isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+                        q2[colName + '.' + name.substr(2)] = _.isNumber(options[name]) ? parseInt(options[name]) : options[name];
                     }
                     break;
             }

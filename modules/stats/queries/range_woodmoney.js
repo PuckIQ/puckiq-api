@@ -7,7 +7,7 @@ module.exports = (mongoose, config) => {
 
     return (options) => {
 
-        let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
+        let GameWoodmoney = mongoose.model('GameWoodmoney');
         let helper = new MongoHelpers();
 
         let queries = helper.mongoRangeQueryBuilder('woodmoney', options);
@@ -26,10 +26,7 @@ module.exports = (mongoose, config) => {
             } :
             { $match: q1 };
 
-        //TODO what collection do you use for range queries
-        throw new Exception("what collection do you use for range queries");
-
-        return SeasonWoodmoney.aggregate([
+        return GameWoodmoney.aggregate([
             primequery,
             {
                 $lookup: {

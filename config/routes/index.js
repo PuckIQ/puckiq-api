@@ -55,13 +55,12 @@ module.exports = exports = function (app, locator) {
     let StatsController = require('../../modules/stats/controller');
     let stats = new StatsController(locator);
     app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
-    app.get('/wowy/player/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
+    app.get('/wowy/players/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
     // app.get('/wowy/team/:team', stats.getWowyForTeam);
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
-    app.get('/woodmoney/player/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
+    app.get('/woodmoney/players/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
 
-    //verify this one is good first....
-    app.get('/woodmoney/team/:team', (req, res) => stats.getWoodmoneyForTeam(req, res));
+    app.get('/woodmoney/teams/:team', (req, res) => stats.getWoodmoneyForTeam(req, res));
 
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
