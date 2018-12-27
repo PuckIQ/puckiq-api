@@ -64,14 +64,14 @@ class MongoHelpers {
                     } else if(name.substr(2) === 'team') {
                         q1['$or'] = [{ 'home': options[name] }, { 'away': options[name] }];
                     } else {
-                        q1[name.substr(2)] = _.isNumeric(options[name]) ? parseInt(options[name]) : options[name];
+                        q1[name.substr(2)] = _.isNumber(options[name]) ? parseInt(options[name]) : options[name];
                     }
                     break;
                 case 'q2':
                     if(_.isArray(options[name])) {
                         let optArr = [];
                         for(let i = 0; i < options[name].length; i++) {
-                            let d = _.isNumeric(options[name][i]) ? parseInt(options[name][i]) : options[name][i];
+                            let d = _.isNumber(options[name][i]) ? parseInt(options[name][i]) : options[name][i];
                             optArr.push(d);
                         }
                         q2[colName + '.' + name.substr(2)] = { $in: optArr };
