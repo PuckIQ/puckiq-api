@@ -2,6 +2,32 @@
 
 //ALPHABETICAL
 module.exports = {
+    dbCollections: {
+
+        /*
+        gameboxcars
+        gameroster
+        gamewoodmoney
+        gamewoodwowy
+        gamewowy
+        schedule
+        seasonboxcars
+        seasonroster
+        seasonwoodmoney
+        seasonwoodwowy
+        seasonwowy
+        */
+
+        players: 'nhlplayers',
+        gameboxcar: 'gameboxcars',
+        gamewoodmoney: 'gamewoodmoney',
+        gamewowy: 'gamewowy',
+        schedule: 'schedule',
+        seasonboxcar: 'seasonboxcars',
+        seasonwoodmoney: 'seasonwoodmoney',
+        seasonwowy: 'seasonwowy',
+        seasonwoodwowy: 'seasonwoodwowy'
+    },
     exceptions: {
         invalid_argument: 'invalid_argument', // 400
         invalid_request: 'invalid_request', // 400

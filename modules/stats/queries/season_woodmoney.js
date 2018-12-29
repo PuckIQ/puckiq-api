@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("lodash");
+const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 
 module.exports = (mongoose, config) => {
@@ -10,13 +11,15 @@ module.exports = (mongoose, config) => {
         let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
 
+        console.log("options", JSON.stringify(options, null, 2));
         let query = helper.mongoQueryBuilder(options);
+        // console.log("query", JSON.stringify(query, null, 2));
 
         return SeasonWoodmoney.aggregate([
             { $match: query },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: "playerkey",
                     foreignField: "_id",
                     as: "playerinfo"
@@ -141,9 +144,25 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
+            console.log((data || []).length, "results");
             let results = _.chain(data).map(x => {
                 return _.map(x.woodmoney, (y) => {
-                    return _.extend({}, x._id, y);
+
+                    // till we get a real nhlplayers collection
+                    y.ppossible = y.ppossible || ['C'];
+
+                    let rel_comp_stats = {
+                        'cf60rc': y.cf/(y.evtoi * 60),
+                        'ca60rc': y.ca/(y.evtoi * 60),
+                        'cfpctrc': y.cfpct/(y.evtoi * 60),
+                        'cfpctra': 0, //TODO
+                        'dff60rc': y.dff60/(y.evtoi * 60),
+                        'dfa60rc': y.dfa60/(y.evtoi * 60),
+                        'dffpctrc': y.dffpct/(y.evtoi * 60),
+                        'dffpctra': 0 //TODO
+                    };
+
+                    return _.extend(rel_comp_stats, x._id, y);
                 });
             }).flatten().value();
 

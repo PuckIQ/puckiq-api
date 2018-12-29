@@ -121,9 +121,9 @@ function PuckIQHandler(config) {
     };
 
     let collectionName = function(colname) {
-        if(typeof config.dbCollections[colname] === 'undefined')
+        if(typeof constants.dbCollections[colname] === 'undefined')
             throw Error(colname + ': Query Type Does Not Exist');
-        return config.dbCollections[colname];
+        return constants.dbCollections[colname];
     };
 }
 

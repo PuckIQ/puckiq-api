@@ -115,7 +115,7 @@ module.exports = function(mongoose, config) {
 
     schema.index({ season: 1 });
 
-    return mongoose.model('SeasonWoodmoney', schema, config.dbCollections.seasonwoodmoney, {
+    return mongoose.model('SeasonWoodmoney', schema, constants.dbCollections.seasonwoodmoney, {
         connection: mongoose.dbs['puckiq']
     });
 };

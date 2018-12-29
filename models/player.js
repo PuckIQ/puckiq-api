@@ -8,6 +8,10 @@ module.exports = function(mongoose, config) {
     let Schema = mongoose.Schema;
 
     let schema = new Schema({
+        season: {
+            type: Number,
+            required: true
+        },
         playerid: {
             type: Number,
             required: true
@@ -52,10 +56,6 @@ module.exports = function(mongoose, config) {
             type: String,
             required: true
         },
-        season: {
-            type: Number,
-            required: true
-        },
         possible: [{
             type: String,
             required: true
@@ -65,7 +65,7 @@ module.exports = function(mongoose, config) {
     schema.index({ playerid: 1 });
     schema.index({ fullname: 1 });
 
-    return mongoose.model('Player', schema, config.dbCollections.players, {
+    return mongoose.model('Player', schema, constants.dbCollections.players, {
         connection: mongoose.dbs['puckiq']
     });
 };

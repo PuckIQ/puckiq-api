@@ -175,7 +175,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: "playerseasonid",
                     foreignField: "_id",
                     as: "playerseasonid"
@@ -222,7 +222,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: "playerkey",
                     foreignField: "_id",
                     as: "playerinfo"
@@ -366,7 +366,7 @@ function preCannedQueries() {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gamewoodmoney,
+                    from: constants.dbCollections.gamewoodmoney,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'woodmoney'
@@ -376,7 +376,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'woodmoney.playerkey',
                     foreignField: '_id',
                     as: 'woodmoney.playerinfo'
@@ -641,7 +641,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'playerkey',
                     foreignField: '_id',
                     as: 'playerinfo'
@@ -710,7 +710,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'playerkey',
                     foreignField: '_id',
                     as: 'playerinfo'
@@ -777,7 +777,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'player1key',
                     foreignField: '_id',
                     as: 'player1info'
@@ -785,7 +785,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'player2key',
                     foreignField: '_id',
                     as: 'player2info'
@@ -892,7 +892,7 @@ function preCannedQueries() {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gameboxcar,
+                    from: constants.dbCollections.gameboxcar,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'boxcar'
@@ -902,7 +902,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'boxcar.playerkey',
                     foreignField: '_id',
                     as: 'boxcar.playerinfo'
@@ -997,7 +997,7 @@ function preCannedQueries() {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gameboxcar,
+                    from: constants.dbCollections.gameboxcar,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'boxcar'
@@ -1007,7 +1007,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'boxcar.playerkey',
                     foreignField: '_id',
                     as: 'boxcar.playerinfo'
@@ -1102,7 +1102,7 @@ function preCannedQueries() {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gameboxcar,
+                    from: constants.dbCollections.gameboxcar,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'boxcar'
@@ -1112,7 +1112,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'boxcar.player1key',
                     foreignField: '_id',
                     as: 'boxcar.player1info'
@@ -1120,7 +1120,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'boxcar.player2key',
                     foreignField: '_id',
                     as: 'boxcar.player2info'
@@ -1217,7 +1217,7 @@ function preCannedQueries() {
                 query,
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "player1key",
                         foreignField: "_id",
                         as: "player1info"
@@ -1225,7 +1225,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "player2key",
                         foreignField: "_id",
                         as: "player2info"
@@ -1510,7 +1510,7 @@ function preCannedQueries() {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gamewowy,
+                    from: constants.dbCollections.gamewowy,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'wowy'
@@ -1520,7 +1520,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'wowy.player1key',
                     foreignField: '_id',
                     as: 'wowy.player1info'
@@ -1528,7 +1528,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'wowy.player2key',
                     foreignField: '_id',
                     as: 'wowy.player2info'
@@ -1784,7 +1784,7 @@ function preCannedQueries() {
                 { $match: query },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "playerkey1",
                         foreignField: "_id",
                         as: "player1info"
@@ -1792,7 +1792,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "playerkey2",
                         foreignField: "_id",
                         as: "player2info"
@@ -1807,7 +1807,7 @@ function preCannedQueries() {
                 { $match: query },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "playerkey1",
                         foreignField: "_id",
                         as: "player1info"
@@ -1815,7 +1815,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "playerkey2",
                         foreignField: "_id",
                         as: "player2info"

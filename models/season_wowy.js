@@ -16,7 +16,7 @@ module.exports = function(mongoose, config) {
 
     schema.index({ season: 1 });
 
-    return mongoose.model('SeasonWowy', schema, config.dbCollections.seasonwowy, {
+    return mongoose.model('SeasonWowy', schema, constants.dbCollections.seasonwowy, {
         connection: mongoose.dbs['puckiq']
     });
 };

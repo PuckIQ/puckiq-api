@@ -19,7 +19,6 @@ class StatsController {
         this.config = locator.get('config');
         this.error_handler = locator.get('error_handler');
         this.mongoose = locator.get('mongoose');
-        this.helper = new MongoHelpers();
     }
 
     wowySeasons(req, res) {
@@ -117,7 +116,7 @@ class StatsController {
             query = Queries.range_woodmoney;
         } else {
             //TODO once we have data options.season = season;
-            // options.season = season;
+            // options.season = parseInt(season);
         }
 
         query(this.mongoose, this.config)(options).then((results) => {
@@ -165,7 +164,7 @@ class StatsController {
             query = Queries.range_woodmoney;
         } else {
             //TODO once we have data
-            // options.season = season;
+            // options.season = parseInt(season);
         }
 
         query(this.mongoose, this.config)(options).then((results) => {

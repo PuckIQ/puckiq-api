@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("lodash");
+const constants = require('../../../common/constants');
 
 module.exports = (mongoose, config) => {
 
@@ -32,7 +33,7 @@ module.exports = (mongoose, config) => {
                 query,
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "player1key",
                         foreignField: "_id",
                         as: "player1info"
@@ -40,7 +41,7 @@ module.exports = (mongoose, config) => {
                 },
                 {
                     $lookup: {
-                        from: config.dbCollections.players,
+                        from: constants.dbCollections.players,
                         localField: "player2key",
                         foreignField: "_id",
                         as: "player2info"

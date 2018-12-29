@@ -1,6 +1,7 @@
 "use strict";
 
 const _ = require("lodash");
+const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 
 module.exports = (mongoose, config) => {
@@ -30,7 +31,7 @@ module.exports = (mongoose, config) => {
             primequery,
             {
                 $lookup: {
-                    from: config.dbCollections.gamewoodmoney,
+                    from: constants.dbCollections.gamewoodmoney,
                     localField: '_id',
                     foreignField: 'gamekey',
                     as: 'woodmoney'
@@ -40,7 +41,7 @@ module.exports = (mongoose, config) => {
             { $match: q2 },
             {
                 $lookup: {
-                    from: config.dbCollections.players,
+                    from: constants.dbCollections.players,
                     localField: 'woodmoney.playerkey',
                     foreignField: '_id',
                     as: 'woodmoney.playerinfo'
