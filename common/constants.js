@@ -2,6 +2,9 @@
 
 //ALPHABETICAL
 module.exports = {
+    //TODO is this needed or is it based off data?
+    //const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
+    current_season : 20172018,
     dbCollections: {
 
         /*

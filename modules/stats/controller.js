@@ -5,7 +5,6 @@ const timezone = require('moment-timezone');
 
 const today = moment.tz('America/New_York').subtract(4, 'hours');
 const adjToday = today.format('YYYY-MM-DD');
-const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
 
 const AppException = require('../../common/app_exception');
 const constants = require('../../common/constants');
@@ -115,8 +114,8 @@ class StatsController {
         } else if(req.query.range_from && req.query.range_to) {
             query = Queries.range_woodmoney;
         } else {
-            //TODO once we have data options.season = season;
-            // options.season = parseInt(season);
+            //todo error?
+            options.season = constants.current_season;
         }
 
         query(this.mongoose, this.config)(options).then((results) => {
@@ -163,8 +162,8 @@ class StatsController {
         } else if(req.query.range_from && req.query.range_to) {
             query = Queries.range_woodmoney;
         } else {
-            //TODO once we have data
-            // options.season = parseInt(season);
+            //todo error?
+            options.season = constants.current_season;
         }
 
         query(this.mongoose, this.config)(options).then((results) => {
