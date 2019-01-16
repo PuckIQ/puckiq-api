@@ -108,6 +108,8 @@ class StatsController {
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
                 options.season = { $in: _.map(req.query.season, x => parseInt(x)) };
+            } else if(_.isString(req.query.season) && req.query.season.toLowerCase() === "all") {
+                //dont set season
             } else {
                 options.season = _.isArray(req.query.season) ? parseInt(req.query.season[0]) : parseInt(req.query.season);
             }
@@ -156,6 +158,8 @@ class StatsController {
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
                 options.season = { $in: _.map(req.query.season, x => parseInt(x)) };
+            } else if(_.isString(req.query.season) && req.query.season.toLowerCase() === "all") {
+              //dont set season
             } else {
                 options.season = _.isArray(req.query.season) ? parseInt(req.query.season[0]) : parseInt(req.query.season);
             }
