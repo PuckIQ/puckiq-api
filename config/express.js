@@ -28,7 +28,7 @@ module.exports = function(app, locator) {
     }));
 
     // setting the fav icon and static folder
-    app.use(favicon(__dirname + '/../public/img/favicon.ico'));
+    app.use(favicon(path.join(__dirname, '/../public/img/favicon.ico')));
     app.use(express.static(path.join(__dirname, '../public'))); // path of js files
 
     if(config.env === 'load' || config.env === 'production') {
@@ -43,7 +43,6 @@ module.exports = function(app, locator) {
     app.set('view engine', 'ejs');
     app.use(require('express-ejs-layouts'));
     app.set('layout', 'layout');
-
 
     // enable jsonp
     app.enable('jsonp callback');

@@ -1,9 +1,98 @@
-<html>
-    <head>
-        <title>PuckIQ</title>
-    </head>
-    <body>
-        <h1>Welcome to PuckIQ!</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Hockey Analytics">
+    <meta name="author" content="PuckIQ Team &lt;info@puckiq.com&gt;">
+
+    <title> PuckIQ API Documentation</title>
+
+    <link href="/css/puckiq.css" rel="stylesheet">
+    <link href="http://puckiq.com/css/theme.default.min.css" rel="stylesheet">
+
+    <style>
+        body table {
+            font-size: 12px;
+            color: black;
+        }
+
+        table {
+            margin: 0 0 0 16px;
+        }
+
+        tr.hidden {
+            display:none;
+        }
+
+        .page-header {
+            margin: 0px;
+            border-bottom: none;
+        }
+
+        .page-header h2 {
+            margin: 0px;
+        }
+
+        .page-header h4 {
+            margin: 0 0 16px 0;
+        }
+    </style>
+
+</head>
+
+<body>
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://puckiq.com"><div class="logo-mask"><img style="max-height:200px; margin-top:-80px;" src="/img/main-puckiq.svg" /></div></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#search">Terms of Service</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+
+<!-- this has to be above body... fix-->
+<!--TODO include in codebase/build?-->
+<script src="http://puckiq.com/js/app.js"></script>
+<script src="http://puckiq.com/js/fixes/ie10-viewport-bug-workaround.js"></script>
+<script src="http://puckiq.com/js/tablesort.js"></script>
+<script src="http://puckiq.com/js/widgets.js"></script>
+
+<div style="padding: 17px">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            API Documentation
+        </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
         <%- body %>
-    </body>
+    </section>
+    <!-- /.content -->
+
+</div>
+
+
+</body>
 </html>
+
+
