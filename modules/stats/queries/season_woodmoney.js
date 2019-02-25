@@ -11,7 +11,10 @@ module.exports = (mongoose, config) => {
         let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
 
-        console.log("options", JSON.stringify(options, null, 2));
+        //NOTE: we need both and calculate the rels
+        if(options.onoff) delete options.onoff;
+
+        // console.log("options", JSON.stringify(options, null, 2));
         let query = helper.mongoQueryBuilder(options);
         // console.log("query", JSON.stringify(query, null, 2));
 
@@ -86,14 +89,6 @@ module.exports = (mongoose, config) => {
                     },
                     woodmoney: {
                         $push: {
-                            // pinfo: {
-                            //     pid: '$_id.pid',
-                            //     pfullname: '$_id.pfullname',
-                            //     pfirstname: '$_id.pfirstname',
-                            //     plastname: '$_id.plastname',
-                            //     ppossible: '$_id.ppossible',
-                            //     team: '$_id.team'
-                            // },
                             pid: '$_id.pid',
                             pfullname: '$_id.pfullname',
                             pfirstname: '$_id.pfirstname',
@@ -144,27 +139,69 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            console.log((data || []).length, "results");
             let results = _.chain(data).map(x => {
-                return _.map(x.woodmoney, (y) => {
 
-                    // till we get a real nhlplayers collection
-                    y.ppossible = y.ppossible || ['C'];
+                //NOTE: wowytype is always Woodmoney in this query
+
+                let all = _.find(x.woodmoney, z => {
+                    return z.onoff === constants.on_off.on_ice &&
+                        z.wowytype === constants.wowy_type.woodmoney &&
+                        z.woodmoneytier === constants.woodmoney_tier.all;
+                });
+
+                if (!all) {
+                    console.log("data issue.... (missing all)");
+                    return null;
+                }
+
+                let all_toi = all.evtoi;
+
+                return _.chain(x.woodmoney).map((y) => {
+
+                    if (y.onoff === constants.on_off.off_ice) return null;
+
+                    let off = _.find(x.woodmoney, z => {
+                        return z.onoff === constants.on_off.off_ice && y.wowytype === z.wowytype && y.woodmoneytier === z.woodmoneytier;
+                    });
+
+                    if (!off) {
+                        console.log("data issue.... (missing off)");
+                        return null;
+                    }
 
                     let rel_comp_stats = {
-                        'cf60rc': y.cf/(y.evtoi * 60),
-                        'ca60rc': y.ca/(y.evtoi * 60),
-                        'cfpctrc': y.cfpct/(y.evtoi * 60),
+                        'ctoipct': (y.evtoi / all_toi) * 100,
+                        'cf60rc': y.cf60 - off.cf60,
+                        'ca60rc': y.ca60 - off.ca60,
+                        'cfpctrc': y.cfpct - off.cfpct,
                         'cfpctra': 0, //TODO
-                        'dff60rc': y.dff60/(y.evtoi * 60),
-                        'dfa60rc': y.dfa60/(y.evtoi * 60),
-                        'dffpctrc': y.dffpct/(y.evtoi * 60),
+                        'dff60rc': y.dff60 - off.dff60,
+                        'dfa60rc': y.dfa60 - off.dfa60,
+                        'dffpctrc': y.dffpct - off.dffpct,
                         'dffpctra': 0 //TODO
                     };
 
-                    return _.extend(rel_comp_stats, x._id, y);
-                });
+                    // y.evtoi = y.evtoi/60;// convert to minutes
+                    // till we get a real nhlplayers collection
+                    y.ppossible = y.ppossible || ['C'];
+
+                    let formatted_data = {
+                        evtoi: y.evtoi/60
+                    };
+
+                    return _.extend(rel_comp_stats, x._id, y, formatted_data);
+
+                }).compact().value();
+
             }).flatten().value();
+
+            // console.log("summary");
+            // _.each(results, x => {
+            //     if(x.season === 20182019){
+            //         console.log(x.season, x.woodmoneytier, x.evtoi, x.ctoipct);
+            //     }
+            // });
+            // console.log("summary2");
 
             return Promise.resolve(results);
 

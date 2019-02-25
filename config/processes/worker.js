@@ -10,7 +10,6 @@ module.exports = function(cluster, config, port) {
 
     let mongoose = require('mongoose');
 
-    console.log("creating connection");
     mongoose.dbs = {};
     _.each(_.keys(config.dbs), (db) => {
         mongoose.dbs[db] = mongoose.createConnection(config.dbs[db], {
@@ -19,7 +18,6 @@ module.exports = function(cluster, config, port) {
 
         });
     });
-    console.log("done creating connection");
 
     if(config.env === "local") {
         mongoose.set('debug', true);

@@ -57,8 +57,8 @@ module.exports = {
         debug: 5
     },
     on_off : {
-        on_ice : "Off Ice",
-        off_ice : "On Ice"
+        on_ice : "On Ice",
+        off_ice : "Off Ice"
     },
     game_type : {
         //TODO all swm_records have gametype of 2...
