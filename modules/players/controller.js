@@ -37,15 +37,25 @@ class StatsController {
      */
     search(req, res) {
 
+        if(!req.query.q){
+            let ex = new AppException(constants.exceptions.missing_argument, "Missing argument: q");
+            return this.error_handler.handle(req, res, ex);
+        }
+
         let Player = this.locator.get('mongoose').model('Player');
 
-        let regex = new RegExp('.*' + req.query.fullName + '.*', 'i');
+        let regex = new RegExp('.*' + req.query.q + '.*', 'i');
 
         return Player.aggregate([
             { $match: { fullName: regex } },
-            { $group: { _id: { fullName: '$fullName', playerid: '$playerid' } } },
+            { $group: { _id: { playerid: '$playerid', fullName: '$fullName', possible : '$possible' } } },
             { $limit: 10 },
-            { $project: { fullName: '$_id.fullName', playerid: '$_id.playerid', _id: 0 } }
+            { $project: {
+                fullName: '$_id.fullName',
+                playerid: '$_id.playerid',
+                possible : '$_id.possible',
+                _id: 0 }
+            }
         ]).then((results) => {
             res.jsonp(results);
         }, (err) => {
