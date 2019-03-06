@@ -175,7 +175,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: "playerseasonid",
                     foreignField: "_id",
                     as: "playerseasonid"
@@ -222,7 +222,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: "playerkey",
                     foreignField: "_id",
                     as: "playerinfo"
@@ -376,7 +376,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'woodmoney.playerkey',
                     foreignField: '_id',
                     as: 'woodmoney.playerinfo'
@@ -641,7 +641,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'playerkey',
                     foreignField: '_id',
                     as: 'playerinfo'
@@ -710,7 +710,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'playerkey',
                     foreignField: '_id',
                     as: 'playerinfo'
@@ -777,7 +777,7 @@ function preCannedQueries() {
             { $match: query },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'player1key',
                     foreignField: '_id',
                     as: 'player1info'
@@ -785,7 +785,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'player2key',
                     foreignField: '_id',
                     as: 'player2info'
@@ -902,7 +902,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'boxcar.playerkey',
                     foreignField: '_id',
                     as: 'boxcar.playerinfo'
@@ -1007,7 +1007,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'boxcar.playerkey',
                     foreignField: '_id',
                     as: 'boxcar.playerinfo'
@@ -1112,7 +1112,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'boxcar.player1key',
                     foreignField: '_id',
                     as: 'boxcar.player1info'
@@ -1120,7 +1120,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'boxcar.player2key',
                     foreignField: '_id',
                     as: 'boxcar.player2info'
@@ -1217,7 +1217,7 @@ function preCannedQueries() {
                 query,
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "player1key",
                         foreignField: "_id",
                         as: "player1info"
@@ -1225,7 +1225,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "player2key",
                         foreignField: "_id",
                         as: "player2info"
@@ -1520,7 +1520,7 @@ function preCannedQueries() {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'wowy.player1key',
                     foreignField: '_id',
                     as: 'wowy.player1info'
@@ -1528,7 +1528,7 @@ function preCannedQueries() {
             },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'wowy.player2key',
                     foreignField: '_id',
                     as: 'wowy.player2info'
@@ -1784,7 +1784,7 @@ function preCannedQueries() {
                 { $match: query },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "playerkey1",
                         foreignField: "_id",
                         as: "player1info"
@@ -1792,7 +1792,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "playerkey2",
                         foreignField: "_id",
                         as: "player2info"
@@ -1807,7 +1807,7 @@ function preCannedQueries() {
                 { $match: query },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "playerkey1",
                         foreignField: "_id",
                         as: "player1info"
@@ -1815,7 +1815,7 @@ function preCannedQueries() {
                 },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "playerkey2",
                         foreignField: "_id",
                         as: "player2info"

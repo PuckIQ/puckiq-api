@@ -41,7 +41,7 @@ module.exports = (mongoose, config) => {
             { $match: q2 },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: 'woodmoney.playerkey',
                     foreignField: '_id',
                     as: 'woodmoney.playerinfo'

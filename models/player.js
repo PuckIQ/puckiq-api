@@ -8,62 +8,33 @@ module.exports = function(mongoose, config) {
     let Schema = mongoose.Schema;
 
     let schema = new Schema({
-        season: {
-            type: Number,
-            required: true
-        },
         playerid: {
             type: Number,
-            required: true
-        },
-        teamseasonid: {
-            type: String,
-            required: true
-        },
-        teamabbr: {
-            type: String,
-            required: true
-        },
-        teampxp: {
-            type: String,
             required: true
         },
         fullName: {
             type: String,
             required: true
         },
-        firstName: {
-            type: String,
-            required: true
+        weight: {
+            type: String
         },
-        lastName: {
+        height: {
             type: String,
-            required: true
         },
-        position: {
+        hand: {
             type: String,
-            required: true
         },
-        type: {
+        birthcountry: {
             type: String,
-            required: true
         },
-        conference: {
-            type: String,
-            required: true
-        },
-        division: {
-            type: String,
-            required: true
-        },
-        possible: [{
-            type: String,
-            required: true
-        }]
+        team: { type: String },
+        seasons: [{ type: Number }],
+        positions: [{type: String}]
     });
 
     schema.index({ playerid: 1 });
-    schema.index({ fullname: 1 });
+    schema.index({ fullName: 1 });
 
     return mongoose.model('Player', schema, constants.dbCollections.players, {
         connection: mongoose.dbs['puckiq']

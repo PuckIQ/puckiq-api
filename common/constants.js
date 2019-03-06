@@ -21,7 +21,9 @@ module.exports = {
         seasonwowy
         */
 
-        players: 'nhlplayers',
+        players: 'players',
+        playerseasons: 'playerseasons',
+        nhlplayers: 'nhlplayers', //old
         gameboxcar: 'gameboxcars',
         gamewoodmoney: 'gamewoodmoney',
         gamewowy: 'gamewowy',

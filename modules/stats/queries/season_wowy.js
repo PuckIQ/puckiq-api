@@ -33,7 +33,7 @@ module.exports = (mongoose, config) => {
                 query,
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "player1key",
                         foreignField: "_id",
                         as: "player1info"
@@ -41,7 +41,7 @@ module.exports = (mongoose, config) => {
                 },
                 {
                     $lookup: {
-                        from: constants.dbCollections.players,
+                        from: constants.dbCollections.nhlplayers,
                         localField: "player2key",
                         foreignField: "_id",
                         as: "player2info"

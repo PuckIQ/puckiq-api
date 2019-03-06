@@ -22,7 +22,7 @@ module.exports = (mongoose, config) => {
             { $match: query },
             {
                 $lookup: {
-                    from: constants.dbCollections.players,
+                    from: constants.dbCollections.nhlplayers,
                     localField: "playerkey",
                     foreignField: "_id",
                     as: "playerinfo"
