@@ -120,10 +120,16 @@ class StatsController {
             options.season = constants.current_season;
         }
 
-        query(this.mongoose, this.config)(options).then((results) => {
-            res.jsonp(results);
-        }, (err) => {
-            let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", { err: err });
+        this.locator.get('player_cache').all().then((player_dict) => {
+            query(this.mongoose, this.config)(options, player_dict).then((results) => {
+                console.log(results.length, "total results");
+                res.jsonp(results);
+            }, (err) => {
+                let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", { err: err });
+                return this.error_handler.handle(req, res, ex);
+            });
+        }, (e) => {
+            let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", { err: e });
             return this.error_handler.handle(req, res, ex);
         });
 
@@ -145,35 +151,40 @@ class StatsController {
         // TODO this is almost the same as getWoodmoneyForPlayer
         let options = {
             team: req.params.team,
-            onoff : "On Ice"
+            onoff: "On Ice"
         };
 
-        if(!options.team) {
-            return this.error_handler.handle(req, res, new AppException(constants.exceptions.invalid_argument, "Invalid team", { team: options.team }));
+        if (!options.team) {
+            return this.error_handler.handle(req, res, new AppException(constants.exceptions.invalid_argument, "Invalid team", {team: options.team}));
         }
 
         options.team = options.team.toUpperCase();
 
         let query = Queries.season_woodmoney;
-        if(req.query.season) {
-            if(_.isArray(req.query.season) && req.query.season.length > 1) {
-                options.season = { $in: _.map(req.query.season, x => parseInt(x)) };
-            } else if(_.isString(req.query.season) && req.query.season.toLowerCase() === "all") {
-              //dont set season
+        if (req.query.season) {
+            if (_.isArray(req.query.season) && req.query.season.length > 1) {
+                options.season = {$in: _.map(req.query.season, x => parseInt(x))};
+            } else if (_.isString(req.query.season) && req.query.season.toLowerCase() === "all") {
+                //dont set season
             } else {
                 options.season = _.isArray(req.query.season) ? parseInt(req.query.season[0]) : parseInt(req.query.season);
             }
-        } else if(req.query.range_from && req.query.range_to) {
+        } else if (req.query.range_from && req.query.range_to) {
             query = Queries.range_woodmoney;
         } else {
             //todo error?
             options.season = constants.current_season;
         }
 
-        query(this.mongoose, this.config)(options).then((results) => {
-            res.jsonp(results);
-        }, (err) => {
-            let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", { err: err });
+        this.locator.get('player_cache').all().then((player_dict) => {
+            query(this.mongoose, this.config)(options, player_dict).then((results) => {
+                res.jsonp(results);
+            }, (err) => {
+                let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", {err: err});
+                return this.error_handler.handle(req, res, ex);
+            });
+        }, (e) => {
+            let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", {err: e});
             return this.error_handler.handle(req, res, ex);
         });
     }

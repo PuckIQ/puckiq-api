@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const AppException = require('../../common/app_exception');
 const constants = require('../../common/constants');
 
@@ -21,6 +22,7 @@ class StatsController {
             let ex = new AppException(constants.exceptions.invalid_argument, "Invalid argument: playerid", {player_id});
             return this.error_handler.handle(req, res, ex);
         }
+
         let Player = this.locator.get('mongoose').model('Player');
 
         Player.find({playerid : player_id}).sort({ conference: 1, division: 1 })
@@ -42,26 +44,50 @@ class StatsController {
             return this.error_handler.handle(req, res, ex);
         }
 
-        let Player = this.locator.get('mongoose').model('Player');
+        const regex = new RegExp('.*' + req.query.q + '.*', 'i');
 
-        let regex = new RegExp('.*' + req.query.q + '.*', 'i');
+        this.locator.get('player_cache').all().then((player_dict) => {
 
-        return Player.aggregate([
-            { $match: { fullName: regex } },
-            { $group: { _id: { playerid: '$playerid', fullName: '$fullName', possible : '$possible' } } },
-            { $limit: 10 },
-            { $project: {
-                fullName: '$_id.fullName',
-                playerid: '$_id.playerid',
-                possible : '$_id.possible',
-                _id: 0 }
-            }
-        ]).then((results) => {
-            res.jsonp(results);
-        }, (err) => {
-            let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
+            let matches = [];
+            _.each(_.values(player_dict), (p) => {
+
+                if(regex.test(p.name)){
+                    matches.push({
+                        playerid : p.playerid,
+                        name : p.name,
+                        fullName : p.fullName,
+                        possible : p.positions,
+                        positions : p.positions
+                    });
+                }
+
+                if(matches.length > 10) return false;
+
+            });
+
+            res.jsonp(matches);
+
+        }, (e) => {
+            let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", { err: e });
             return this.error_handler.handle(req, res, ex);
         });
+
+        // return Player.aggregate([
+        //     { $match: { fullName: regex } },
+        //     { $group: { _id: { playerid: '$playerid', fullName: '$fullName', possible : '$possible' } } },
+        //     { $limit: 10 },
+        //     { $project: {
+        //         fullName: '$_id.fullName',
+        //         playerid: '$_id.playerid',
+        //         possible : '$_id.possible',
+        //         _id: 0 }
+        //     }
+        // ]).then((results) => {
+        //     res.jsonp(results);
+        // }, (err) => {
+        //     let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
+        //     return this.error_handler.handle(req, res, ex);
+        // });
     }
 
 }

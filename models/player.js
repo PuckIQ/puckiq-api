@@ -12,7 +12,7 @@ module.exports = function(mongoose, config) {
             type: Number,
             required: true
         },
-        fullName: {
+        name: {
             type: String,
             required: true
         },
@@ -33,8 +33,8 @@ module.exports = function(mongoose, config) {
         positions: [{type: String}]
     });
 
-    schema.index({ playerid: 1 });
-    schema.index({ fullName: 1 });
+    // schema.index({ playerid: 1 });
+    // schema.index({ name: 1 });
 
     return mongoose.model('Player', schema, constants.dbCollections.players, {
         connection: mongoose.dbs['puckiq']

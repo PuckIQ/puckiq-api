@@ -4,7 +4,7 @@ let _ = require('lodash');
 let path = require('path');
 let async = require('async');
 let ServiceLocator = require('../common/service_locator');
-let constants = require('../common/constants');
+let constants = require('../common/constants');;
 
 module.exports = {
     init: function(config, mongoose, done) {
@@ -23,11 +23,12 @@ module.exports = {
         locator.register('email_service', require('../modules/application/email_service')(locator));
 
         //TODO modules
+        locator.register('player_cache', new (require('../modules/players/player_cache'))(locator));
 
         async.eachSeries(locator.keys(), (key, cb) => {
             let service = locator.get(key);
             if (_.isFunction(service.initialize)) {
-                service.initialize(cb);
+                service.initialize().then(() => cb());
             } else {
                 cb();
             }

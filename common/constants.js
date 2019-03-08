@@ -29,6 +29,7 @@ module.exports = {
         gamewowy: 'gamewowy',
         schedule: 'schedule',
         seasonboxcar: 'seasonboxcars',
+        seasonroster: 'seasonroster',
         seasonwoodmoney: 'seasonwoodmoney',
         seasonwowy: 'seasonwowy',
         seasonwoodwowy: 'seasonwoodwowy'

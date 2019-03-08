@@ -6,7 +6,11 @@ const MongoHelpers = require('../../../common/mongo_helpers');
 
 module.exports = (mongoose, config) => {
 
-    return (options) => {
+    return (options, player_dict) => {
+
+        if(!player_dict) {
+            console.log("adfadfasasdfadsf");
+        }
 
         let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
@@ -14,91 +18,26 @@ module.exports = (mongoose, config) => {
         //NOTE: we need both and calculate the rels
         if(options.onoff) delete options.onoff;
 
-        // console.log("options", JSON.stringify(options, null, 2));
+        //console.log("options", JSON.stringify(options, null, 2));
         let query = helper.mongoQueryBuilder(options);
         // console.log("query", JSON.stringify(query, null, 2));
 
         return SeasonWoodmoney.aggregate([
             { $match: query },
             {
-                $lookup: {
-                    from: constants.dbCollections.nhlplayers,
-                    localField: "playerkey",
-                    foreignField: "_id",
-                    as: "playerinfo"
-                }
-            },
-            { $unwind: "$playerinfo" },
-            {
                 $group: {
                     _id: {
-                        pid: '$playerinfo.playerid',
-                        pfullname: '$playerinfo.fullName',
-                        pfirstname: '$playerinfo.firstName',
-                        plastname: '$playerinfo.lastName',
-                        ppossible: '$playerinfo.possible',
-                        team: '$team',
+                        pid: '$playerid',
                         season: '$season',
-                        gametype: '$gametype',
-                        onoff: '$onoff',
-                        wowytype: '$wowytype',
-                        woodmoneytier: '$woodmoneytier'
-                    },
-                    sacf: { $sum: '$sacf' },
-                    saca: { $sum: '$saca' },
-                    sfpct: { $sum: '$sfpct' },
-                    ca: { $sum: '$ca' },
-                    cf: { $sum: '$cf' },
-                    gf: { $sum: '$gf' },
-                    saca60: { $sum: '$saca60' },
-                    ga: { $sum: '$ga' },
-                    sacfpct: { $sum: '$sacfpct' },
-                    gf60: { $sum: '$gf60' },
-                    evtoi: { $sum: '$evtoi' },
-                    ga60: { $sum: '$ga60' },
-                    cfpct: { $sum: '$cfpct' },
-                    sa60: { $sum: '$sa60' },
-                    nz: { $sum: '$nz' },
-                    dff: { $sum: '$dff' },
-                    dfa: { $sum: '$dfa' },
-                    ca60: { $sum: '$ca60' },
-                    fa: { $sum: '$fa' },
-                    dz: { $sum: '$dz' },
-                    sf60: { $sum: '$sf60' },
-                    ff: { $sum: '$ff' },
-                    fa60: { $sum: '$fa60' },
-                    sacf60: { $sum: '$sacf60' },
-                    ffpct: { $sum: '$ffpct' },
-                    cf60: { $sum: '$cf60' },
-                    ff60: { $sum: '$ff60' },
-                    dff60: { $sum: '$dff60' },
-                    dffpct: { $sum: '$dffpct' },
-                    oz: { $sum: '$oz' },
-                    dfa60: { $sum: '$dfa60' },
-                    sa: { $sum: '$sa' },
-                    sf: { $sum: '$sf' },
-                    gfpct: { $sum: '$gfpct' },
-                }
-            },
-            {
-                $group: {
-                    _id: {
-                        pid: '$_id.pid',
-                        season: '$_id.season',
-                        gametype: '$_id.gametype',
+                        //gametype: '$gametype',
                     },
                     woodmoney: {
                         $push: {
                             pid: '$_id.pid',
-                            pfullname: '$_id.pfullname',
-                            pfirstname: '$_id.pfirstname',
-                            plastname: '$_id.plastname',
-                            ppossible: '$_id.ppossible',
-                            team: '$_id.team',
-                            //end player info
-                            onoff: '$_id.onoff',
-                            wowytype: '$_id.wowytype',
-                            woodmoneytier: '$_id.woodmoneytier',
+                            team: '$team',
+                            onoff: '$onoff',
+                            wowytype : '$wowytype',
+                            woodmoneytier : '$woodmoneytier',
                             sacf: '$sacf',
                             saca: '$saca',
                             sfpct: '$sfpct',
@@ -156,6 +95,23 @@ module.exports = (mongoose, config) => {
 
                 let all_toi = all.evtoi;
 
+                //todo kill pfullname and ppossible
+                let player_info = {
+                    name : 'unknown',
+                    pfullname : 'unknown',
+                    positions : ['?'],
+                    ppossible : ['?']
+                };
+
+                // y.evtoi = y.evtoi/60;// convert to minutes
+                // till we get a real nhlplayers collection
+                if(_.has(player_dict, x._id.pid)) {
+                    player_info.name = player_info.pfullname = player_dict[x._id.pid].name;
+                    player_info.positions = player_info.ppossible = player_dict[x._id.pid].positions;
+                } else {
+                    console.log("cannot find player", x._id.pid);
+                }
+
                 return _.chain(x.woodmoney).map((y) => {
 
                     if (y.onoff === constants.on_off.off_ice) return null;
@@ -181,15 +137,11 @@ module.exports = (mongoose, config) => {
                         'dffpctra': 0 //TODO
                     };
 
-                    // y.evtoi = y.evtoi/60;// convert to minutes
-                    // till we get a real nhlplayers collection
-                    y.ppossible = y.ppossible || ['C'];
-
                     let formatted_data = {
                         evtoi: y.evtoi/60
                     };
 
-                    return _.extend(rel_comp_stats, x._id, y, formatted_data);
+                    return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
 
                 }).compact().value();
 
@@ -197,9 +149,9 @@ module.exports = (mongoose, config) => {
 
             // console.log("summary");
             // _.each(results, x => {
-            //     if(x.season === 20182019){
+            //     //if(x.season === 20182019){
             //         console.log(x.season, x.woodmoneytier, x.evtoi, x.ctoipct);
-            //     }
+            //     //}
             // });
             // console.log("summary2");
 
