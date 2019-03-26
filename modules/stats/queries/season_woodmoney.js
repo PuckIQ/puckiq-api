@@ -3,24 +3,31 @@
 const _ = require("lodash");
 const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
+const AppException = require('../../../common/app_exception');
 
 module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        if(!player_dict) {
-            console.log("adfadfasasdfadsf");
-        }
-
         let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
 
         //NOTE: we need both and calculate the rels
-        if(options.onoff) delete options.onoff;
+        if (options.onoff) delete options.onoff;
 
-        //console.log("options", JSON.stringify(options, null, 2));
+        // if (options.woodmoneytier) {
+        //     if (_.has(constants.woodmoney_tier, options.woodmoneytier)) {
+        //         options.woodmoneytier = constants.woodmoney_tier[options.woodmoneytier];
+        //     }
+        //     if (!!~_.values(constants.woodmoney_tier).indexOf(options.woodmoneytier)) {
+        //         return Promise.reject(new AppException(constants.exceptions.invalid_argument,
+        //             "Invalid woodmoneytier",
+        //             {woodmoneytier: options.woodmoneytier})
+        //         );
+        //     }
+        // }
+
         let query = helper.mongoQueryBuilder(options);
-        // console.log("query", JSON.stringify(query, null, 2));
 
         return SeasonWoodmoney.aggregate([
             { $match: query },
@@ -95,19 +102,16 @@ module.exports = (mongoose, config) => {
 
                 let all_toi = all.evtoi;
 
-                //todo kill pfullname and ppossible
                 let player_info = {
                     name : 'unknown',
-                    pfullname : 'unknown',
-                    positions : ['?'],
-                    ppossible : ['?']
+                    positions : ['?']
                 };
 
                 // y.evtoi = y.evtoi/60;// convert to minutes
                 // till we get a real nhlplayers collection
                 if(_.has(player_dict, x._id.pid)) {
-                    player_info.name = player_info.pfullname = player_dict[x._id.pid].name;
-                    player_info.positions = player_info.ppossible = player_dict[x._id.pid].positions;
+                    player_info.name = player_dict[x._id.pid].name;
+                    player_info.positions = player_dict[x._id.pid].positions;
                 } else {
                     console.log("cannot find player", x._id.pid);
                 }

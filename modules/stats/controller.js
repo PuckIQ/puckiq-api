@@ -104,6 +104,8 @@ class StatsController {
             return this.error_handler.handle(req, res, new AppException(constants.exceptions.invalid_argument, "Invalid player_id", { player_id: options.player_id }));
         }
 
+        //if(req.query.woodmoneytier) options.woodmoneytier = req.query.woodmoneytier;
+
         let query = Queries.season_woodmoney;
         if(req.query.season) {
             if(_.isArray(req.query.season) && req.query.season.length > 1) {
@@ -159,6 +161,8 @@ class StatsController {
         }
 
         options.team = options.team.toUpperCase();
+
+        //if(req.query.woodmoneytier) options.woodmoneytier = req.query.woodmoneytier;
 
         let query = Queries.season_woodmoney;
         if (req.query.season) {
