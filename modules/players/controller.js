@@ -53,10 +53,8 @@ class StatsController {
 
                 if(regex.test(p.name)){
                     matches.push({
-                        playerid : p.playerid,
+                        player_id : p.playerid,
                         name : p.name,
-                        fullName : p.fullName,
-                        possible : p.positions,
                         positions : p.positions
                     });
                 }
