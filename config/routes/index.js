@@ -56,10 +56,11 @@ module.exports = exports = function (app, locator) {
     let stats = new StatsController(locator);
     app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
     app.get('/wowy/players/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
-    // app.get('/wowy/team/:team', stats.getWowyForTeam);
-    app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
-    app.get('/woodmoney/players/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
 
+    app.get('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
+    app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
+    //these 2 are kinda deprecated...
+    app.get('/woodmoney/players/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
     app.get('/woodmoney/teams/:team', (req, res) => stats.getWoodmoneyForTeam(req, res));
 
     //TODO sean
