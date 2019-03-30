@@ -70,22 +70,6 @@ class StatsController {
             return this.error_handler.handle(req, res, ex);
         });
 
-        // return Player.aggregate([
-        //     { $match: { fullName: regex } },
-        //     { $group: { _id: { playerid: '$playerid', fullName: '$fullName', possible : '$possible' } } },
-        //     { $limit: 10 },
-        //     { $project: {
-        //         fullName: '$_id.fullName',
-        //         playerid: '$_id.playerid',
-        //         possible : '$_id.possible',
-        //         _id: 0 }
-        //     }
-        // ]).then((results) => {
-        //     res.jsonp(results);
-        // }, (err) => {
-        //     let ex = new AppException(constants.exceptions.database_error, "Error searching players", { err: err });
-        //     return this.error_handler.handle(req, res, ex);
-        // });
     }
 
 }
