@@ -34,13 +34,13 @@ module.exports = (mongoose, config) => {
             {
                 $group: {
                     _id: {
-                        pid: '$playerid',
+                        player_id: '$playerid',
                         season: '$season',
                         //gametype: '$gametype',
                     },
                     woodmoney: {
                         $push: {
-                            pid: '$_id.pid',
+                            player_id: '$_id.player_id',
                             team: '$team',
                             onoff: '$onoff',
                             wowytype : '$wowytype',
@@ -109,11 +109,11 @@ module.exports = (mongoose, config) => {
 
                 // y.evtoi = y.evtoi/60;// convert to minutes
                 // till we get a real nhlplayers collection
-                if(_.has(player_dict, x._id.pid)) {
-                    player_info.name = player_dict[x._id.pid].name;
-                    player_info.positions = player_dict[x._id.pid].positions;
+                if(_.has(player_dict, x._id.player_id)) {
+                    player_info.name = player_dict[x._id.player_id].name;
+                    player_info.positions = player_dict[x._id.player_id].positions;
                 } else {
-                    console.log("cannot find player", x._id.pid);
+                    console.log("cannot find player", x._id.player_id);
                 }
 
                 return _.chain(x.woodmoney).map((y) => {
@@ -130,7 +130,9 @@ module.exports = (mongoose, config) => {
                     }
 
                     let rel_comp_stats = {
-                        'ctoipct': (y.evtoi / all_toi) * 100,
+                        'ozspct': y.oz / ((y.oz + y.dz) || 1),
+                        'fo60' : (y.oz+y.nz+y.dz)/(all_toi||1)*60,
+                        'ctoipct': (y.evtoi / (all_toi||1)) * 100,
                         'cf60rc': y.cf60 - off.cf60,
                         'ca60rc': y.ca60 - off.ca60,
                         'cfpctrc': y.cfpct - off.cfpct,
@@ -142,7 +144,7 @@ module.exports = (mongoose, config) => {
                     };
 
                     let formatted_data = {
-                        evtoi: y.evtoi/60
+                        evtoi: y.evtoi / 60
                     };
 
                     return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
