@@ -131,7 +131,7 @@ module.exports = (mongoose, config) => {
 
                     let rel_comp_stats = {
                         'ozspct': (y.oz / ((y.oz + y.dz) || 1))*100,
-                        'fo60' : ((y.oz+y.nz+y.dz)/(y.evtoi||1))*60,
+                        'fo60' : (y.oz+y.nz+y.dz)/(y.evtoi||1)*3600,
                         'ctoipct': (y.evtoi / (all_toi||1)) * 100,
                         'cf60rc': y.cf60 - off.cf60,
                         'ca60rc': y.ca60 - off.ca60,
