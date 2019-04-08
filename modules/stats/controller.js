@@ -6,10 +6,13 @@ const timezone = require('moment-timezone');
 const today = moment.tz('America/New_York').subtract(4, 'hours');
 const adjToday = today.format('YYYY-MM-DD');
 
-const AppException = require('../../common/app_exception');
 const constants = require('../../common/constants');
+const utils = require('../../common/utils');
+const AppException = require('../../common/app_exception');
 const MongoHelpers = require('../../common/mongo_helpers');
+const InMemoryCache = require('../../common/in_memory_cache');
 const Queries = require('./queries');
+const WoodmoneyQuery = require('./woodmoney');
 
 class StatsController {
 
@@ -18,6 +21,7 @@ class StatsController {
         this.config = locator.get('config');
         this.error_handler = locator.get('error_handler');
         this.mongoose = locator.get('mongoose');
+        this.woodmoney_cache = new InMemoryCache({timeout: 600});//10 min
     }
 
     wowySeasons(req, res) {
@@ -97,47 +101,26 @@ class StatsController {
      */
     getWoodmoney(req, res) {
 
-        // TODO this is almost the same as getWoodmoneyForPlayer
-        let options = {
-            team: req.params.team,
-            onoff: "On Ice"
-        };
+        console.log("\ngetWoodmoney");
 
-        if (!options.team) {
-            return this.error_handler.handle(req, res, new AppException(constants.exceptions.invalid_argument, "Invalid team", {team: options.team}));
-        }
+        let query = new WoodmoneyQuery(this.locator, { queries : Queries, cache : this.woodmoney_cache});
 
-        options.team = options.team.toUpperCase();
+        console.log("validate");
+        query.validate(req.query).then((options) => {
 
-        //if(req.query.woodmoneytier) options.woodmoneytier = req.query.woodmoneytier;
-
-        let query = Queries.season_woodmoney;
-        if (req.query.season) {
-            if (_.isArray(req.query.season) && req.query.season.length > 1) {
-                options.season = {$in: _.map(req.query.season, x => parseInt(x))};
-            } else if (_.isString(req.query.season) && req.query.season.toLowerCase() === "all") {
-                //dont set season
-            } else {
-                options.season = _.isArray(req.query.season) ? parseInt(req.query.season[0]) : parseInt(req.query.season);
-            }
-        } else if (req.query.range_from && req.query.range_to) {
-            query = Queries.range_woodmoney;
-        } else {
-            //todo error?
-            options.season = constants.current_season;
-        }
-
-        this.locator.get('player_cache').all().then((player_dict) => {
-            query(this.mongoose, this.config)(options, player_dict).then((results) => {
-                res.jsonp(results);
+            console.log("fetch", options);
+            query.fetch(options).then((results) => {
+                console.log("results", results.length);
+                res.jsonp({ request_id : req.query.request_id || utils.uid(20), results});
             }, (err) => {
-                let ex = new AppException(constants.exceptions.database_error, "Error searching Woodmoney", {err: err});
-                return this.error_handler.handle(req, res, ex);
+                return this.error_handler.handle(req, res, err);
             });
-        }, (e) => {
-            let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", {err: e});
-            return this.error_handler.handle(req, res, ex);
+
+        }, (err) => {
+            console.log("validation error", err);
+            return this.error_handler.handle(req, res, err);
         });
+
     }
 
     /**

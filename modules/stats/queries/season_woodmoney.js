@@ -5,6 +5,13 @@ const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 const AppException = require('../../../common/app_exception');
 
+const woodmoney_tier_sort = {
+    'All': 1,
+    'Elite': 2,
+    'Middle': 3,
+    'Gritensity': 4
+};
+
 module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
@@ -14,20 +21,15 @@ module.exports = (mongoose, config) => {
 
         //NOTE: we need both and calculate the rels
         if (options.onoff) delete options.onoff;
-
-        // if (options.woodmoneytier) {
-        //     if (_.has(constants.woodmoney_tier, options.woodmoneytier)) {
-        //         options.woodmoneytier = constants.woodmoney_tier[options.woodmoneytier];
-        //     }
-        //     if (!!~_.values(constants.woodmoney_tier).indexOf(options.woodmoneytier)) {
-        //         return Promise.reject(new AppException(constants.exceptions.invalid_argument,
-        //             "Invalid woodmoneytier",
-        //             {woodmoneytier: options.woodmoneytier})
-        //         );
-        //     }
-        // }
+        if (options.positions === 'all') delete options.positions;
 
         let query = helper.mongoQueryBuilder(options);
+
+        if (_.isArray(options.season) && options.season.length > 1) {
+            query.season = {$in: _.map(options.season, x => parseInt(x))};
+        } else if (options.season) {
+            options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
+        }
 
         return SeasonWoodmoney.aggregate([
             { $match: query },
@@ -151,7 +153,7 @@ module.exports = (mongoose, config) => {
 
                 }).compact().value();
 
-            }).flatten().value();
+            }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
             // console.log("summary");
             // _.each(results, x => {

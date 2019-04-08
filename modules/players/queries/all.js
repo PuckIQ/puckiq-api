@@ -34,7 +34,7 @@ module.exports = (mongoose, config) => {
                 },
                 {
                     $project: {
-                        "_id": {$concat: [{$toString: "$_id.playerid"}]},
+                        //"_id": {$concat: [{$toString: "$_id.playerid"}]},
                         "playerid": "$_id.playerid",
                         "seasons": "$seasons",
                         "positions": "$positions",
@@ -48,7 +48,9 @@ module.exports = (mongoose, config) => {
                 },
             ]).allowDiskUse(true).exec((err, players) => {
                 if (err) reject(err);
-
+                _.each(players, p => {
+                    p._id = p.playerid.toString();
+                });
                 resolve(players);
             });
         })

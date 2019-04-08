@@ -6,21 +6,6 @@ module.exports = {
     //const season = parseInt(today.format('M')) >= 10 ? today.format('YYYY') + today.add(1, 'year').format('YYYY') : today.subtract(1, 'year').format('YYYY') + today.format('YYYY');
     current_season : 20172018,
     dbCollections: {
-
-        /*
-        gameboxcars
-        gameroster
-        gamewoodmoney
-        gamewoodwowy
-        gamewowy
-        schedule
-        seasonboxcars
-        seasonroster
-        seasonwoodmoney
-        seasonwoodwowy
-        seasonwowy
-        */
-
         players: 'players',
         playerseasons: 'playerseasons',
         nhlplayers: 'nhlplayers', //old
@@ -70,6 +55,16 @@ module.exports = {
         west : 'west',
         home : 'home',
         away : 'away'
+    },
+    positions : {
+        l : 'LW',
+        r : 'RW',
+        c : 'C',
+        d : 'D'
+    },
+    sort : {
+        ascending : 'asc',
+        descending : 'desc'
     },
     wowy_type : {
         woodmoney :'WoodMoney'

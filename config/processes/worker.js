@@ -51,19 +51,16 @@ module.exports = function(cluster, config, port) {
         error_handler.init(locator);
         require('../../common/bus').init(locator);
 
-        process.on('uncaughtException', (error_handler) => {
-            console.log("uncaughtException");
-            return function(err, req, res) {
-                try {
-                    console.log("UNHANDLED ERROR", err);
-                    error_handler.handle(req, res, err);
-                } catch(e) {
-                    console.log("ERROR handling exception", err);
-                } finally {
-                    if(cluster.worker) cluster.worker.disconnect();
-                    else process.exit(1);
-                }
-            };
+        process.on('uncaughtException', (err) => {
+            try {
+                console.log("UNHANDLED ERROR", err);
+                error_handler.log(null, err);
+            } catch (e) {
+                console.log("ERROR handling exception", err);
+            } finally {
+                if (cluster.worker) cluster.worker.disconnect();
+                else process.exit(1);
+            }
         });
 
     });
