@@ -5,6 +5,13 @@ const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 const AppException = require('../../../common/app_exception');
 
+const woodmoney_tier_sort = {
+    'All': 1,
+    'Elite': 2,
+    'Middle': 3,
+    'Gritensity': 4
+};
+
 module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
@@ -149,7 +156,7 @@ module.exports = (mongoose, config) => {
 
                     return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
 
-                }).compact().value();
+                }).compact().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
             }).flatten().value();
 
