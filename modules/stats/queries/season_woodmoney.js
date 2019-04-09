@@ -151,7 +151,7 @@ module.exports = (mongoose, config) => {
 
                     return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
 
-                }).compact().value();
+                }).compact().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
             }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
