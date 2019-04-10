@@ -101,16 +101,31 @@ class StatsController {
      */
     getWoodmoney(req, res) {
 
-        let query = new WoodmoneyQuery(this.locator, { queries : Queries, cache : this.woodmoney_cache});
+        let query = new WoodmoneyQuery(this.locator, {
+            queries : Queries,
+            cache : this.woodmoney_cache
+        });
 
         query.validate(req.query).then((options) => {
 
             query.fetch(options).then((results) => {
-                res.jsonp({
-                    request: _.extend({
-                        _id : req.query.request_id || utils.uid(20)
-                    }, options);
-                    results});
+
+                let response = {
+                    request: _.extend({ _id: req.query.request_id || utils.uid(20)}, options),
+                    results
+                };
+
+                if (options.player) {
+                    this.locator.get('player_cache').all().then((player_dict) => {
+                        response.player = player_dict[options.player.toString()];
+                        res.jsonp(response);
+                    }, (err) => {
+                        return this.error_handler.handle(req, res, err);
+                    });
+                } else {
+                    res.jsonp(response);
+                }
+
             }, (err) => {
                 return this.error_handler.handle(req, res, err);
             });
