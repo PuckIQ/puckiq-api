@@ -31,7 +31,7 @@ class WoodmoneyQuery {
             let defaults = {
                 positions : 'all',
                 season: null,
-                playerid: null,
+                player: null,
                 team : null,
                 tier: null,
                 offset : 0,
@@ -43,6 +43,8 @@ class WoodmoneyQuery {
             options = _.extend({ }, defaults, options);
 
             if(options.team) options.team = options.team.toUpperCase();
+
+            //todo validate player?
 
             if (_.has(options, "from_date") && _.has(options, "to_date")) {
 
@@ -127,16 +129,14 @@ class WoodmoneyQuery {
         query = query(this.locator.get('mongoose'), this.locator.get('config'));
 
         return new Promise((resolve, reject) => {
+
             //dont need to cache if its just a player or team result (way less data)
             if (!options.player && !options.team && this.cache.has(date_key)) {
-                console.log("using cache");
                 let player_results = this.cache.get(date_key);
                 return resolve(this.select(player_results, options));
             } else {
 
                 this.locator.get('player_cache').all().then((player_dict) => {
-
-                    console.log("got player_cache");
 
                     //filter down to the queryable fields...
                     let query_options = {};
@@ -146,7 +146,6 @@ class WoodmoneyQuery {
 
                     query(query_options, player_dict).then((results) => {
 
-                        console.log("results", results.length);
                         let player_results = {};
                         _.each(results, x => {
                             if (!player_results[x.player_id]) {
@@ -157,7 +156,6 @@ class WoodmoneyQuery {
                             player_results[x.player_id][x.woodmoneytier] = x
                         });
 
-                        console.log("grouped by player", _.keys(player_results).length);
                         this.cache.set(date_key, player_results);
 
                         return resolve(this.select(player_results, options));

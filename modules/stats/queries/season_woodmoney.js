@@ -25,6 +25,11 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
+        if (query.player) {
+            query.playerid = query.player;
+            delete query.player;
+        }
+
         if (_.isArray(options.season) && options.season.length > 1) {
             query.season = {$in: _.map(options.season, x => parseInt(x))};
         } else if (options.season) {

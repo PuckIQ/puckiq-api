@@ -101,17 +101,16 @@ class StatsController {
      */
     getWoodmoney(req, res) {
 
-        console.log("\ngetWoodmoney");
-
         let query = new WoodmoneyQuery(this.locator, { queries : Queries, cache : this.woodmoney_cache});
 
-        console.log("validate");
         query.validate(req.query).then((options) => {
 
-            console.log("fetch", options);
             query.fetch(options).then((results) => {
-                console.log("results", results.length);
-                res.jsonp({ request_id : req.query.request_id || utils.uid(20), results});
+                res.jsonp({
+                    request: _.extend({
+                        _id : req.query.request_id || utils.uid(20)
+                    }, options);
+                    results});
             }, (err) => {
                 return this.error_handler.handle(req, res, err);
             });
