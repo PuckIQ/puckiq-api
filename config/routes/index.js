@@ -57,7 +57,7 @@ module.exports = exports = function (app, locator) {
     app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
     app.get('/wowy/players/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
 
-    app.get('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
+    app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
     //these 2 are kinda deprecated...
     app.get('/woodmoney/players/:player_id', (req, res) => stats.getWoodmoneyForPlayer(req, res));
