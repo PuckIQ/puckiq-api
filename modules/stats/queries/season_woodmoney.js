@@ -32,7 +32,7 @@ module.exports = (mongoose, config) => {
 
         if (_.isArray(options.season) && options.season.length > 1) {
             query.season = {$in: _.map(options.season, x => parseInt(x))};
-        } else if (options.season) {
+        } else if (options.season && options.season !== 'all') {
             options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
         }
 
@@ -91,6 +91,8 @@ module.exports = (mongoose, config) => {
                 }
             }
         ]).then((data) => {
+
+            console.log("data", data.length);
 
             let results = _.chain(data).map(x => {
 
@@ -160,13 +162,13 @@ module.exports = (mongoose, config) => {
 
             }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
-            // console.log("summary");
-            // _.each(results, x => {
-            //     //if(x.season === 20182019){
-            //         console.log(x.season, x.team, x.woodmoneytier, x.evtoi);
-            //     //}
-            // });
-            // console.log("summary2");
+            console.log("summary");
+            _.each(results, x => {
+                //if(x.season === 20182019){
+                    console.log(x.season, x.team, x.woodmoneytier, x.evtoi);
+                //}
+            });
+            console.log("summary2");
 
             return Promise.resolve(results);
 

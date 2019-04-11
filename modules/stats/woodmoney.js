@@ -172,15 +172,17 @@ class WoodmoneyQuery {
 
                         let player_results = {};
                         _.each(results, x => {
-                            if (!player_results[x.player_id]) {
-                                player_results[x.player_id] = {
+                            let key = `${x.season}-${x.player_id}`;
+                            if (!player_results[key]) {
+                                player_results[key] = {
                                     positions: _.map(x.positions, pos => pos.toLowerCase())
                                 };
                             }
-                            player_results[x.player_id][x.woodmoneytier] = x
+                            player_results[key][x.woodmoneytier] = x
                         });
 
                         if (!options.player && !options.team) {
+                            console.log("caching results", date_key);
                             this.cache.set(date_key, player_results);
                         }
 
@@ -203,7 +205,7 @@ class WoodmoneyQuery {
 
     select(player_results, options) {
 
-        console.log('select', JSON.stringify(options));
+        console.log('select', player_results.length, JSON.stringify(options));
 
         const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
         const filter_positions = _.map(options.positions, x => x);

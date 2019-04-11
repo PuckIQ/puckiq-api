@@ -8,6 +8,7 @@ let InMemoryCache = require('../../../../common/in_memory_cache');
 let WoodmoneyQuery = require('../../../../modules/stats/woodmoney');
 
 let oilers_20172018_data = require('../../../data/oilers_20172018');
+let oilers_20182019_data = require('../../../data/oilers_20182019');
 
 describe('woodmoney query tests', function() {
 
@@ -292,5 +293,68 @@ describe('woodmoney query tests', function() {
         });
 
     });
+
+});
+
+describe('woodmoney query tests with multiple seasons', function() {
+
+    let locator = new ServiceLocator();
+
+    let oilers_data = oilers_20172018_data.concat(oilers_20182019_data);
+
+    let request_count = 0;
+    let mock_queries = {
+        season_woodmoney : function() {
+            return function(options) {
+                request_count++;
+                if(options.player) {
+                    return Promise.resolve(_.filter(oilers_data, x => x.player_id === options.player));
+                } else {
+                    return Promise.resolve(oilers_data);
+                }
+            }
+        }
+    };
+
+    beforeEach(() => {
+        request_count = 0;
+    });
+
+    before(() => {
+        locator.register('mongoose', {});
+        locator.register('config', { api : { host : 'http://testenv'}});
+        locator.register('player_cache', {
+            all : function(){
+                let players = _.keyBy(oilers_data, x => x.player_id);
+                return Promise.resolve(players);
+            }
+        })
+    });
+
+
+    it('will return 1 result per season', function(done) {
+
+        let options = {
+            player: 8477498,
+            season: 'all'
+        };
+
+        let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+        query.exec(options).then((results) => {
+            console.log("results", results.length);
+            (results.length).should.equal(8);
+            _.each(results, x => {
+                (x.player_id).should.equal(8477498);
+            });
+            return done();
+
+        }, (err) => {
+            should.fail('this should not be called');
+            return done();
+        });
+
+    });
+
+
 
 });
