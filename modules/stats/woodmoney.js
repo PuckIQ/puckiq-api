@@ -34,6 +34,8 @@ class WoodmoneyQuery {
                 player: null,
                 team : null,
                 tier: null,
+                min_toi: null,
+                max_toi: null,
                 offset : 0,
                 sort : 'evtoi',
                 sort_direction : 'desc',
@@ -85,6 +87,26 @@ class WoodmoneyQuery {
                         ));
                     }
                 }
+            }
+
+            if (options.min_toi) {
+                options.min_toi = parseInt(options.min_toi);
+                let err = validator.validateInteger(options.min_toi, "min_toi", {nullable: true, min: 0});
+                if (err) return reject(err);
+            }
+
+            if (options.max_toi) {
+                options.max_toi = parseInt(options.max_toi);
+                let err = validator.validateInteger(options.max_toi, "max_toi", {nullable: true, min: 0});
+                if (err) return reject(err);
+            }
+
+            if(options.min_toi && options.max_toi && options.min_toi > options.max_toi){
+                return new AppException(
+                    constants.exceptions.invalid_argument,
+                    `Min toi cannot be greater than max toi`,
+                    {param: 'min_toi', value: value}
+                );
             }
 
             if (options.tier && !~_.values(constants.woodmoney_tier).indexOf(options.tier)) {
@@ -189,13 +211,22 @@ class WoodmoneyQuery {
         let result = _.chain(player_results)
             .filter(x => {
 
-                if (options.positions !== "all") {
-                    if (_.intersection(x.positions, filter_positions).length === 0) {
+                if(x.positions.length === 1 && x.positions[0] === 'g') return false;
+
+                if(options.positions !== "all") {
+                    if(_.intersection(x.positions, filter_positions).length === 0) {
                         return false;
                     }
-                } else {
-                    //lets ignore goalies...
-                    return !(x.positions.length === 1 && x.positions[0] === 'g');
+                }
+
+                if(options.min_toi) {
+                    let tier = options.tier || 'All';
+                    if(x[tier]['evtoi'] < options.min_toi) return false;
+                }
+
+                if(options.max_toi) {
+                    let tier = options.tier || 'All';
+                    if(x[tier]['evtoi'] > options.max_toi) return false;
                 }
 
                 return true;

@@ -52,9 +52,6 @@ describe('woodmoney query tests', function() {
             let query = new WoodmoneyQuery(locator, {queries: mock_queries});
             query.exec(options).then((results) => {
                 (results.length).should.equal(5);
-                // _.each(results, x => {
-                //    console.log(x.name, x.player_id, x.evtoi);
-                // });
                 (results[0].player_id).should.equal(8477498);
                 (results[0].evtoi).should.equal(537.1333333333333);
                 return done();
@@ -138,6 +135,35 @@ describe('woodmoney query tests', function() {
             });
 
         });
+
+        it('will filter by min_toi and max_toi', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 50,
+                tier: constants.woodmoney_tier.elite,
+                sort : 'evtoi',
+                sort_direction : 'desc',
+                min_toi : 100,
+                max_toi : 500
+            };
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+            query.exec(options).then((results) => {
+                (results.length).should.equal(4);
+                _.each(results, x => {
+                    // console.log(x.player, x.evtoi);
+                    (x.evtoi).should.be.greaterThanOrEqual(options.min_toi);
+                    (x.evtoi).should.be.lessThanOrEqual(options.max_toi);
+                });
+                return done();
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
 
         it('will sort results descending', function(done) {
 
