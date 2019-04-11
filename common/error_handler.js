@@ -29,24 +29,20 @@ exports.handle = function(req, res, err) {
         return;
     }
 
-    res.status(statusCode).jsonp({
-        error: error.error
-    });
-
-    // if(req && !req.xhr) {
-    //     if(statusCode === 403) {
-    //         res.render('404'); // hide this from the user
-    //     } else if(!!~_.indexOf([404, 500, 503], statusCode)) {
-    //         //known error pages
-    //         res.render(statusCode.toString());
-    //     } else {
-    //         res.render('500');
-    //     }
-    // } else {
-    //     res.status(statusCode).jsonp({
-    //         error: error.error
-    //     });
-    // }
+    if(req && !req.xhr) {
+        if(statusCode === 403) {
+            res.render('404'); // hide this from the user
+        } else if(!!~_.indexOf([404, 500, 503], statusCode)) {
+            //known error pages
+            res.render(statusCode.toString());
+        } else {
+            res.render('500');
+        }
+    } else {
+        res.status(statusCode).jsonp({
+            error: error.error
+        });
+    }
 };
 
 function log(req, err) {
