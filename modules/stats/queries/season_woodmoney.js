@@ -163,7 +163,7 @@ module.exports = (mongoose, config) => {
             // console.log("summary");
             // _.each(results, x => {
             //     //if(x.season === 20182019){
-            //         console.log(x.season, x.woodmoneytier, x.evtoi, x.ctoipct);
+            //         console.log(x.season, x.team, x.woodmoneytier, x.evtoi);
             //     //}
             // });
             // console.log("summary2");

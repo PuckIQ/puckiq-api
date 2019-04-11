@@ -133,6 +133,7 @@ class WoodmoneyQuery {
 
             //dont need to cache if its just a player or team result (way less data)
             if (!options.player && !options.team && this.cache.has(date_key)) {
+                console.log("pulling data from cache...", options.player, options.team, date_key);
                 let player_results = this.cache.get(date_key);
                 return resolve(this.select(player_results, options));
             } else {
@@ -141,8 +142,8 @@ class WoodmoneyQuery {
 
                     //filter down to the queryable fields...
                     let query_options = {};
-                    _.each(['season','from_date','to_date','player','team'], (key) => {
-                        if(options[key]) query_options[key] = options[key];
+                    _.each(['season', 'from_date', 'to_date', 'player', 'team'], (key) => {
+                        if (options[key]) query_options[key] = options[key];
                     });
 
                     query(query_options, player_dict).then((results) => {
@@ -157,7 +158,9 @@ class WoodmoneyQuery {
                             player_results[x.player_id][x.woodmoneytier] = x
                         });
 
-                        this.cache.set(date_key, player_results);
+                        if (!options.player && !options.team) {
+                            this.cache.set(date_key, player_results);
+                        }
 
                         return resolve(this.select(player_results, options));
 

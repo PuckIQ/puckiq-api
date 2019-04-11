@@ -123,12 +123,66 @@ describe('woodmoney query tests', function() {
             let options = {
                 positions: 'd',
                 count: 50,
-                tier: constants.woodmoney_tier.elite
+                tier: constants.woodmoney_tier.elite,
+                sort : 'evtoi',
+                sort_direction : 'desc'
             };
 
             let query = new WoodmoneyQuery(locator, {queries: mock_queries});
             query.exec(options).then((results) => {
                 (results.length).should.equal(11);
+                return done();
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
+        it('will sort results descending', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 50,
+                tier: constants.woodmoney_tier.elite,
+                sort : 'evtoi',
+                sort_direction : 'desc'
+            };
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+            query.exec(options).then((results) => {
+                (results.length).should.equal(11);
+                let last = Number.MAX_VALUE;
+                for(var i=0; i< results.length; i++){
+                    (results[i][options.sort]).should.be.belowOrEqual(last);
+                    last = results[i][options.sort];
+                }
+                return done();
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
+        it('will sort results ascending', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 50,
+                tier: constants.woodmoney_tier.elite,
+                sort : 'evtoi',
+                sort_direction : 'asc'
+            };
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+            query.exec(options).then((results) => {
+                (results.length).should.equal(11);
+                let last = 0;
+                for(var i=0; i< results.length; i++){
+                    (results[i][options.sort]).should.be.aboveOrEqual(last);
+                    last = results[i][options.sort];
+                }
                 return done();
             }, (err) => {
                 should.fail('this should not be called');
@@ -163,11 +217,35 @@ describe('woodmoney query tests', function() {
 
         });
 
+        it('will wont cache player results', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 50,
+                tier: constants.woodmoney_tier.elite,
+                player : 8479483
+            };
+
+            let cache = new InMemoryCache();
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries, cache: cache});
+
+            query.exec(options).then((results) => {
+                (request_count).should.equal(1);
+                (_.keys(cache.data).length).should.equal(0);
+                done();
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
     });
 
     describe('validation tests', function() {
 
-        it.only('will get top 5 dman vs elite tier2', function(done) {
+        it('will get top 5 dman vs elite tier2', function(done) {
 
             let options = {
                 positions: 'dx',
