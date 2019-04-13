@@ -1,0 +1,44 @@
+body table {
+    font-size: 12px;
+    color: black;
+}
+
+table {
+    margin: 0 0 0 16px;
+}
+
+tr.hidden {
+    display:none;
+}
+
+.page-header {
+    margin: 0px;
+    border-bottom: none;
+}
+
+.page-header h2 {
+    margin: 0px;
+}
+
+.page-header h4 {
+    margin: 0 0 16px 0;
+}
+
+h4 {
+    border-bottom: 1px solid #eee;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+table.method-list {
+    width: 800px;
+}
+
+table.method-list tbody td {
+    font-weight: bold;
+}
+
+table.method-list tbody td span {
+    font-weight: normal;
+    break-before: always;
+}

@@ -54,6 +54,9 @@ module.exports = exports = function (app, locator) {
 
     let StatsController = require('../../modules/stats/controller');
     let stats = new StatsController(locator);
+    app.get('/about', (req, res) => res.render("about"));
+    app.get('/contact', (req, res) => res.render("contact"));
+    app.get('/terms_of_service', (req, res) => res.render("tos"));
     app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
     app.get('/wowy/players/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
 

@@ -1,18 +1,59 @@
-<div style="padding: 17px;">
+<div style="padding-left: 17px;">
     <h3>Welcome to PuckIQ</h3>
-    <div>Please read our full terms of service here. Basically by using this data you agree that it
-        may disappear at any time to be friendly and to give us credit when you use it...
-        ( todo rate limit, give credit to use on pages you display data from puckiq)
+    <div>
+        Please read our <a href="/terms_of_service">full terms of service</a>.
     </div>
 
     <h3>Endpoints</h3>
-    <div style="padding: 17px;">
-        <h4>woodmoney/teams/&lt;team_id&gt;</h4>
-        <div>todo docs</div>
+    <div class="method-list">
+        <h4>POST /woodmoney</h4>
+        <div>
+            <h5>Arguments</h5>
+            <table class="method-list">
+                <tbody>
+                    <tr>
+                        <td style="width: 150px;">season</td>
+                        <td>Required: <span>The season to query for (ie 20182019 or all)</span></td>
+                    </tr>
+                    <tr>
+                        <td>player</td>
+                        <td>Optional: <span>The player id to get data for (ie 8478402 for Connor McDavid)</span></td>
+                    </tr>
+                    <tr>
+                        <td>team</td>
+                        <td>Optional: <span>The team to get data for (ie EDM)</span></td>
+                    </tr>
+                    <tr>
+                        <td>tier</td>
+                        <td>Optional: <span>The Woodmoney competition bin to get data against (possible values are All, Elite, Middle and Gritensity)</span></td>
+                    </tr>
+                    <tr>
+                        <td>max_toi</td>
+                        <td>Optional: <span>Max minutes played (evtoi) in the tier passed specified. If not supplied it will use All tier. Possible values are 1 - 10,000 inclusive and greater than min.</span></td>
+                    </tr>
+                    <tr>
+                        <td>min_toi</td>
+                        <td>Optional: <span>Min minutes played (evtoi) in the tier passed specified. If not supplied it will use All tier. Possible values are 1 - 10000 inclusive and less than max.</span></td>
+                    </tr>
+                    <tr>
+                        <td>sort</td>
+                        <td>Optional: <span>The column to sort by (default is evtoi)</span></td>
+                    </tr>
+                    <tr>
+                        <td>sort_direction</td>
+                        <td>Optional: <span>asc or desc (default is desc)</span></td>
+                    </tr>
+                    <tr>
+                        <td>count</td>
+                        <td>Optional: <span>Number of results to return (1-50 inclusive)</span></td>
+                    </tr>
+                    <tr>
+                        <td>offset</td>
+                        <td>Optional: <span>The number of results to skip. This lets you page result sets)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div style="padding: 17px;">
-        <h4>woodmoney/players/&lt;player_id&gt;</h4>
-        <div>todo docs</div>
-    </div>
 </div>
