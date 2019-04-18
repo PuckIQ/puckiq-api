@@ -341,20 +341,16 @@ describe('woodmoney query tests with multiple seasons', function() {
 
         let query = new WoodmoneyQuery(locator, {queries: mock_queries});
         query.exec(options).then((results) => {
-            console.log("results", results.length);
             (results.length).should.equal(8);
             _.each(results, x => {
                 (x.player_id).should.equal(8477498);
             });
             return done();
-
         }, (err) => {
             should.fail('this should not be called');
             return done();
         });
 
     });
-
-
 
 });

@@ -4,6 +4,8 @@ const validator = require('../../common/validator');
 const InMemoryCache = require('../../common/in_memory_cache');
 const AppException = require('../../common/app_exception');
 
+const MAX_COUNT = 100;
+
 class WoodmoneyQuery {
 
     constructor(locator, options = {}){
@@ -39,7 +41,7 @@ class WoodmoneyQuery {
                 offset : 0,
                 sort : 'evtoi',
                 sort_direction : 'desc',
-                count: 50
+                count: MAX_COUNT
             };
 
             options = _.extend({ }, defaults, options);
@@ -128,7 +130,7 @@ class WoodmoneyQuery {
 
             if (options.count) {
                 options.count = parseInt(options.count);
-                let err = validator.validateInteger(options.count, 'count', {nullable: false, min: 1, max: 50});
+                let err = validator.validateInteger(options.count, 'count', {nullable: false, min: 1, max: MAX_COUNT});
                 if (err) return reject(err);
             }
 
@@ -182,7 +184,6 @@ class WoodmoneyQuery {
                         });
 
                         if (!options.player && !options.team) {
-                            console.log("caching results", date_key);
                             this.cache.set(date_key, player_results);
                         }
 
@@ -204,8 +205,6 @@ class WoodmoneyQuery {
     }
 
     select(player_results, options) {
-
-        console.log('select', player_results.length, JSON.stringify(options));
 
         const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
         const filter_positions = _.map(options.positions, x => x);

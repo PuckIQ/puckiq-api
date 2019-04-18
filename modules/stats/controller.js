@@ -112,8 +112,6 @@ class StatsController {
 
             query.fetch(options).then((results) => {
 
-                console.log('results', results.length);
-
                 let response = {
                     request: _.extend({ _id: req.query.request_id || utils.uid(20)}, options),
                     results
