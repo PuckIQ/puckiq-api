@@ -74,5 +74,11 @@ module.exports = {
         elite: 'Elite',
         middle: 'Middle',
         gritensity: 'Gritensity',
+    },
+    woodmoney_tier_sort : {
+        'All': 1,
+        'Elite': 2,
+        'Middle': 3,
+        'Gritensity': 4
     }
 };

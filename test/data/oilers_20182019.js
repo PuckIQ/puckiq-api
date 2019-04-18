@@ -1,3 +1,4 @@
+//not end of season data
 module.exports = [{
     "player_id": 8478402,
     "season": 20182019,
