@@ -120,7 +120,9 @@ module.exports = (mongoose, config) => {
                 }
 
                 //returns one record per tier
-                return woodmoney_formatter.format(x, player_info, all_toi);
+                let wm = woodmoney_formatter.format(x, player_info, all_toi);
+
+                return wm;
 
             }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 

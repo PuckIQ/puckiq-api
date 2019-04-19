@@ -130,7 +130,7 @@ class WoodmoneyQuery {
 
             if (options.count) {
                 options.count = parseInt(options.count);
-                let err = validator.validateInteger(options.count, 'count', {nullable: false, min: 1, max: MAX_COUNT});
+                let err = validator.validateInteger(options.count, 'count', {nullable: false } ); //, min: 1, max: MAX_COUNT});
                 if (err) return reject(err);
             }
 
