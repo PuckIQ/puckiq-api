@@ -172,7 +172,7 @@ class WoodmoneyQuery {
 
                         let player_results = {};
                         _.each(results, x => {
-                            let key = `${x.season}-${x.player_id}`;
+                            let key = `${x.season}-${x.player_id}-${x.team}`;
                             if (!player_results[key]) {
                                 player_results[key] = {
                                     positions: _.map(x.positions, pos => pos.toLowerCase())

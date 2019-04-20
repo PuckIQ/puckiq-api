@@ -43,12 +43,13 @@ module.exports = (mongoose, config) => {
                     _id: {
                         player_id: '$playerid',
                         season: '$season',
+                        team: '$team'
                         //gametype: '$gametype',
                     },
                     woodmoney: {
                         $push: {
                             player_id: '$_id.player_id',
-                            team: '$team',
+                            team: '$_id.team',
                             onoff: '$onoff',
                             wowytype : '$wowytype',
                             woodmoneytier : '$woodmoneytier',

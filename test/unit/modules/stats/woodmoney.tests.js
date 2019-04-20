@@ -355,6 +355,67 @@ describe('woodmoney query tests with multiple seasons', function() {
 
     });
 
+    it('will return 1 result per season and team', function(done) {
 
+        let options = {
+            player: 8474040,
+            season: 'all'
+        };
+
+        oilers_data = oilers_data.concat({
+                player_id: 8474040,
+                team: 'VAN',
+                "season": 20182019,
+                "name": "Sam Gagner",
+                "evtoi": 100,
+                "woodmoneytier": 'All',
+                "wowytype": "WoodMoney"
+            },
+            {
+                player_id: 8474040,
+                team: 'VAN',
+                "season": 20182019,
+                "name": "Sam Gagner",
+                "evtoi": 100,
+                "woodmoneytier": constants.woodmoney_tier.elite,
+                "wowytype": "WoodMoney"
+            },
+            {
+                player_id: 8474040,
+                team: 'VAN',
+                "season": 20182019,
+                "name": "Sam Gagner",
+                "evtoi": 100,
+                "woodmoneytier": constants.woodmoney_tier.middle,
+                "wowytype": "WoodMoney"
+            },
+            {
+                player_id: 8474040,
+                team: 'VAN',
+                "season": 20182019,
+                "name": "Sam Gagner",
+                "evtoi": 100,
+                "woodmoneytier": constants.woodmoney_tier.gritensity,
+                "wowytype": "WoodMoney"
+            });
+
+        let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+        query.exec(options).then((results) => {
+            (results.length).should.equal(8);
+            _.each(results, x => {
+                (x.player_id).should.equal(8474040);
+            });
+            let oilers = _.filter(results, x => x.team === "EDM");
+            let canucks = _.filter(results, x => x.team === "VAN");
+            (oilers.length).should.equal(4);
+            (canucks.length).should.equal(4);
+            return done();
+        }, (err) => {
+            should.fail('this should not be called');
+            return done();
+        });
+
+    });
 
 });
+
