@@ -3,292 +3,134 @@
 const _ = require("lodash");
 const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
+const woodmoney_formatter = require('./woodmoney_formatter');
+const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
 module.exports = (mongoose, config) => {
 
-    return (options) => {
+    return (options, player_dict) => {
 
-        let GameWoodmoney = mongoose.model('GameWoodmoney');
+        let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
         let helper = new MongoHelpers();
 
-        let queries = helper.mongoRangeQueryBuilder('woodmoney', options);
-        let q1 = queries.q1;
-        let q2 = queries.q2;
-        let dateset = queries.dateset;
+        //NOTE: we need both and calculate the rels
+        if (options.onoff) delete options.onoff;
+        if (options.positions === 'all') delete options.positions;
 
-        let primequery = (dateset) ?
-            {
-                $match: {
-                    gamedate: {
-                        $gte: new Date(q1.datestart.toISOString()),
-                        $lte: new Date(q1.dateend.toISOString())
-                    }
-                }
-            } :
-            { $match: q1 };
+        let query = helper.mongoQueryBuilder(options);
 
-        return GameWoodmoney.aggregate([
-            primequery,
-            {
-                $lookup: {
-                    from: constants.dbCollections.gamewoodmoney,
-                    localField: '_id',
-                    foreignField: 'gamekey',
-                    as: 'woodmoney'
-                }
-            },
-            { $unwind: '$woodmoney' },
-            { $match: q2 },
-            {
-                $lookup: {
-                    from: constants.dbCollections.nhlplayers,
-                    localField: 'woodmoney.playerkey',
-                    foreignField: '_id',
-                    as: 'woodmoney.playerinfo'
-                }
-            },
-            { $unwind: '$woodmoney.playerinfo' },
+        if (query.player) {
+            query.playerid = query.player;
+            delete query.player;
+        }
+
+        if (_.isArray(options.season) && options.season.length > 1) {
+            query.season = {$in: _.map(options.season, x => parseInt(x))};
+        } else if (options.season && options.season !== 'all') {
+            options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
+        }
+
+        return SeasonWoodmoney.aggregate([
+            { $match: query },
             {
                 $group: {
                     _id: {
-                        pid: '$woodmoney.playerinfo.playerid',
-                        pfullname: '$woodmoney.playerinfo.fullName',
-                        pfirstname: '$woodmoney.playerinfo.firstName',
-                        plastname: '$woodmoney.playerinfo.lastName',
-                        ppossible: '$woodmoney.playerinfo.possible',
-                        team: '$woodmoney.team',
-                        recordtype: '$woodmoney.recordtype',
-                        situation: '$woodmoney.situation',
-                        gametype: '$woodmoney.gametype',
-                        onoff: '$woodmoney.onoff',
-                        wowytype: '$woodmoney.wowytype',
-                        woodmoneytier: '$woodmoney.woodmoneytier'
-                    },
-                    sacf: { $sum: '$woodmoney.sacf' },
-                    saca: { $sum: '$woodmoney.saca' },
-                    ca: { $sum: '$woodmoney.ca' },
-                    cf: { $sum: '$woodmoney.cf' },
-                    gf: { $sum: '$woodmoney.gf' },
-                    ga: { $sum: '$woodmoney.ga' },
-                    evtoi: { $sum: '$woodmoney.evtoi' },
-                    nz: { $sum: '$woodmoney.nz' },
-                    dff: { $sum: '$woodmoney.dff' },
-                    dfa: { $sum: '$woodmoney.dfa' },
-                    fa: { $sum: '$woodmoney.fa' },
-                    dz: { $sum: '$woodmoney.dz' },
-                    ff: { $sum: '$woodmoney.ff' },
-                    oz: { $sum: '$woodmoney.oz' },
-                    sa: { $sum: '$woodmoney.sa' },
-                    sf: { $sum: '$woodmoney.sf' },
-                }
-            },
-            {
-                $group: {
-                    _id: {
-                        pid: '$_id.pid',
-                        gametype: '$_id.gametype',
+                        player_id: '$playerid',
+                        season: '$season',
+                        team: '$team'
+                        //gametype: '$gametype',
                     },
                     woodmoney: {
                         $push: {
-                            pinfo: {
-                                pid: '$_id.pid',
-                                pfullname: '$_id.pfullname',
-                                pfirstname: '$_id.pfirstname',
-                                plastname: '$_id.plastname',
-                                ppossible: '$_id.ppossible',
-                                team: '$_id.team'
-                            },
-                            onoff: '$_id.onoff',
-                            wowytype: '$_id.wowytype',
-                            woodmoneytier: '$_id.woodmoneytier',
-                            cf: '$cf',
-                            ca: '$ca',
-                            cfpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$cf', '$ca'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$cf', { $add: ['$cf', '$ca'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            cf60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$cf', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            ca60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$ca', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            gf: '$gf',
-                            ga: '$ga',
-                            gfpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$gf', '$ga'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$gf', { $add: ['$gf', '$ga'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            gf60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$gf', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            ga60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$ga', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            ff: '$ff',
-                            fa: '$fa',
-                            ffpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$ff', '$fa'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$ff', { $add: ['$ff', '$fa'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            ff60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$ff', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            fa60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$fa', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            sf: '$sf',
-                            sa: '$sa',
-                            sfpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$sf', '$sa'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$sf', { $add: ['$sf', '$sa'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            sf60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$sf', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            sa60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$sa', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            oz: '$oz',
-                            ozpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$oz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            oz60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$oz', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            dz: '$dz',
-                            dzpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$dz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            dz60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$dz', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            nz: '$nz',
-                            nzpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$oz', '$nz', '$dz'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$nz', { $add: ['$oz', '$nz', '$dz'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            nz60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$nz', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            dff: '$dff',
-                            dfa: '$dfa',
-                            dffpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$dff', '$dfa'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$dff', { $add: ['$dff', '$dfa'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            dff60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$dff', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            dfa60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$dfa', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
+                            player_id: '$_id.player_id',
+                            team: '$_id.team',
+                            onoff: '$onoff',
+                            wowytype : '$wowytype',
+                            woodmoneytier : '$woodmoneytier',
                             sacf: '$sacf',
                             saca: '$saca',
-                            sacfpct: {
-                                $cond: {
-                                    if: { $gt: [{ $add: ['$sacf', '$saca'] }, 0] },
-                                    then: { $multiply: [{ $divide: ['$sacf', { $add: ['$sacf', '$saca'] }] }, 100] },
-                                    else: 0
-                                }
-                            },
-                            sacf60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$sacf', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
-                            saca60: {
-                                $cond: {
-                                    if: { $gt: ['$evtoi', 0] },
-                                    then: { $divide: [{ $multiply: ['$saca', 3600] }, '$evtoi'] },
-                                    else: 0
-                                }
-                            },
+                            sfpct: '$sfpct',
+                            ca: '$ca',
+                            cf: '$cf',
+                            gf: '$gf',
+                            saca60: '$saca60',
+                            ga: '$ga',
+                            sacfpct: '$sacfpct',
+                            gf60: '$gf60',
                             evtoi: '$evtoi',
+                            ga60: '$ga60',
+                            cfpct: '$cfpct',
+                            sa60: '$sa60',
+                            nz: '$nz',
+                            dff: '$dff',
+                            dfa: '$dfa',
+                            ca60: '$ca60',
+                            fa: '$fa',
+                            dz: '$dz',
+                            sf60: '$sf60',
+                            ff: '$ff',
+                            fa60: '$fa60',
+                            sacf60: '$sacf60',
+                            ffpct: '$ffpct',
+                            cf60: '$cf60',
+                            ff60: '$ff60',
+                            dff60: '$dff60',
+                            dffpct: '$dffpct',
+                            oz: '$oz',
+                            dfa60: '$dfa60',
+                            sa: '$sa',
+                            sf: '$sf',
+                            gfpct: '$gfpct',
                         }
                     }
                 }
             }
-        ]);
+        ]).then((data) => {
+
+            console.log("data", data.length);
+
+            let results = _.chain(data).map(x => {
+
+                //NOTE: wowytype is always Woodmoney in this query
+
+                let all = _.find(x.woodmoney, z => {
+                    return z.onoff === constants.on_off.on_ice &&
+                        z.wowytype === constants.wowy_type.woodmoney &&
+                        z.woodmoneytier === constants.woodmoney_tier.all;
+                });
+
+                if (!all) {
+                    console.log("data issue.... (missing all)");
+                    return null;
+                }
+
+                let all_toi = all.evtoi;
+
+                let player_info = {
+                    name : 'unknown',
+                    positions : ['?']
+                };
+
+                // y.evtoi = y.evtoi/60;// convert to minutes
+                // till we get a real nhlplayers collection
+                if(_.has(player_dict, x._id.player_id)) {
+                    player_info.name = player_dict[x._id.player_id].name;
+                    player_info.positions = player_dict[x._id.player_id].positions;
+                } else {
+                    console.log("cannot find player", x._id.player_id);
+                }
+
+                //returns one record per tier
+                let wm = woodmoney_formatter.format(x, player_info, all_toi);
+
+                return wm;
+
+            }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
+
+            return Promise.resolve(results);
+
+        }, (err) => {
+            return Promise.reject(err);
+        });
     };
 };
