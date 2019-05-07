@@ -157,7 +157,7 @@ class WoodmoneyQuery {
 
             //dont need to cache if its just a player or team result (way less data)
             if (!options.player && !options.team && this.cache.has(date_key)) {
-                console.log("pulling data from cache...", options.player, options.team, date_key);
+                // console.log("pulling data from cache...", options.player, options.team, date_key);
                 let player_results = this.cache.get(date_key);
                 return resolve(this.select(player_results, options));
             } else {

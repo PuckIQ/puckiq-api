@@ -13,7 +13,7 @@ module.exports = (mongoose, config) => {
         let q1 = new Object();
         let s1 = new Array();
 
-        console.log("TODO implement me...");
+        //console.log("TODO implement me...");
         Object.keys(options).forEach((name) => {
             if(name != 'qtype' && name != 'qmethod' && name.substr(0, 2) !== 'q3') {
                 if(name.substr(2) === 'season') {
