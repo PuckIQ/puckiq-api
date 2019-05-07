@@ -87,8 +87,6 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            console.log("data", data.length);
-
             let results = _.chain(data).map(x => {
 
                 //NOTE: wowytype is always Woodmoney in this query

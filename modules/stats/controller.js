@@ -180,7 +180,6 @@ class StatsController {
 
         this.locator.get('player_cache').all().then((player_dict) => {
             query(this.mongoose, this.config)(options, player_dict).then((results) => {
-                console.log(results.length, "total results");
                 res.jsonp(results);
             }, (err) => {
                 let ex = new AppException(constants.exceptions.database_error, "Error searching player Woodmoney", { err: err });
