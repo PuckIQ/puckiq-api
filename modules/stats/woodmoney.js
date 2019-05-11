@@ -52,13 +52,23 @@ class WoodmoneyQuery {
 
             if (_.has(options, "from_date") && _.has(options, "to_date")) {
 
-                let err = validator.validateDate(options.from_date, "from_date");
+                let err = validator.validateDate(parseInt(options.from_date), "from_date");
                 if (err) return reject(err);
 
-                err = validator.validateDate(options.to_date, "to_date");
+                err = validator.validateDate(parseInt(options.to_date), "to_date");
                 if (err) return reject(err);
+
+                options.from_date = new Date(parseInt(options.from_date));
+                options.to_date = new Date(parseInt(options.to_date));
+
+                if (options.from_date > options.to_date) {
+                    return reject(new AppException(constants.exceptions.invalid_request,
+                        "From_Date cannot be greater than To_Date",
+                        {err: err, step: 'fetch_data'}));
+                }
 
             } else if (_.has(options, "season")) {
+
                 if (_.isArray(options.season)) {
                     options.season = _.map(options.season, x => parseInt(x));
                     let err = null;

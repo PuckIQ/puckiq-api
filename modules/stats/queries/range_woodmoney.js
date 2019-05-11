@@ -9,10 +9,14 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        let GameWoodmoney = mongoose.model('Gameoodmoney');
+        let GameWoodmoney = mongoose.model('GameWoodmoney');
         let Schedule = mongoose.model('Schedule');
 
-        let query = {};
+        let query = {
+            gametype: constants.schedule_game_type.regular_season
+        };
+
+        // assume the query is pre-validated
 
         if (options.player) {
             query.playerid = options.player;
@@ -24,13 +28,26 @@ module.exports = (mongoose, config) => {
 
         //must have from date and to date
         function dateToString(dt){
-            return `${options.from_date.getFullYear()}-${options.from_date.getMonth()+1}-${options.from_date.getDate()}`;
+            return `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
         }
 
         return Promise.all([
             Schedule.findOne({ "data.date" : {$gte: dateToString(options.from_date)}}).sort({"data.gamekey":1}).exec(),
-            Schedule.findOne({ "data.date" : {$lte: dateToString(options.to_date)}}).sort({"data.gamekey":-11}).exec(),
+            Schedule.findOne({ "data.date" : {$lte: dateToString(options.to_date)}}).sort({"data.gamekey":-1}).exec(),
         ]).then(([from_game, to_game]) => {
+
+            console.log("from_game", from_game);
+            console.log("to_game", to_game);
+
+            if(from_game || to_game) {
+                query.gamekey = {};
+                if (from_game) {
+                    query.gamekey.$gte = from_game.data.gamekey;
+                }
+                if (to_game) {
+                    query.gamekey.$lte = to_game.data.gamekey;
+                }
+            }
 
             return GameWoodmoney.aggregate([
                 { $match: query },

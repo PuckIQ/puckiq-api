@@ -40,7 +40,7 @@ exports.handle = function(req, res, err) {
         }
     } else {
         res.status(statusCode).jsonp({
-            error: error.error
+            error: error.error || error
         });
     }
 };

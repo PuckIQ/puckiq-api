@@ -64,10 +64,17 @@ module.exports = function(mongoose, config) {
             type: Number,
             required: true
         },
-        "gametype": {
+        gametype: {
             type: Number,
             required: true,
             enum: _.values(constants.schedule_game_type)
+        },
+        gamekey: {
+            type: Number,
+            required: true
+        },
+        game: {
+            type: Number,
         },
         playerid: {
             type: Number,
@@ -117,9 +124,11 @@ module.exports = function(mongoose, config) {
         "gfpct": { type: Number }
     });
 
-    schema.index({ season: 1 });
+    schema.index({gamekey:1});
+    schema.index({gamekey:1, playerid:1});
+    schema.index({gamekey:1, team:1});
 
-    return mongoose.model('SeasonWoodmoney', schema, constants.dbCollections.seasonwoodmoney, {
+    return mongoose.model('GameWoodmoney', schema, constants.dbCollections.gamewoodmoney, {
         connection: mongoose.dbs['puckiq']
     });
 };
