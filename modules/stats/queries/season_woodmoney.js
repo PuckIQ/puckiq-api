@@ -19,6 +19,8 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
+        query.gametype = constants.schedule_game_type.regular_season;
+
         if (query.player) {
             query.playerid = query.player;
             delete query.player;

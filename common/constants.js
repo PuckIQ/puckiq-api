@@ -62,6 +62,11 @@ module.exports = {
         c : 'C',
         d : 'D'
     },
+    schedule_game_type : {
+        "pre_season" : 1,
+        "regular_season" : 2,
+        "playoffs" : 3
+    },
     sort : {
         ascending : 'asc',
         descending : 'desc'
