@@ -56,49 +56,63 @@ module.exports = (mongoose, config) => {
                         _id: {
                             player_id: '$playerid',
                             season: '$season',
-                            team: '$team'
+                            team: '$team',
+                            gametype: '$gametype',
+                            onoff: '$onoff',
+                            wowytype: '$wowytype',
+                            woodmoneytier: '$woodmoneytier'
                         },
-                        woodmoney: {
-                            $push: {
-                                player_id: '$_id.player_id',
-                                team: '$_id.team',
-                                onoff: '$onoff',
-                                wowytype : '$wowytype',
-                                woodmoneytier : '$woodmoneytier',
+
+                        sacf: { $sum: '$sacf' },
+                        saca: { $sum: '$saca' },
+                        ca: { $sum: '$ca' },
+                        cf: { $sum: '$cf' },
+                        gf: { $sum: '$gf' },
+                        ga: { $sum: '$ga' },
+                        evtoi: { $sum: '$evtoi' },
+                        nz: { $sum: '$nz' },
+                        dff: { $sum: '$dff' },
+                        dfa: { $sum: '$dfa' },
+                        fa: { $sum: '$fa' },
+                        dz: { $sum: '$dz' },
+                        ff: { $sum: '$ff' },
+                        oz: { $sum: '$oz' },
+                        sa: { $sum: '$sa' },
+                        sf: { $sum: '$sf' }
+
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            player_id: '$_id.player_id',
+                            season: '$_id.season',
+                            team: '$_id.team'
+                        },
+                        woodmoney : {
+                            $push : {
+
+                                gametype: '$_id.gametype',
+                                onoff: '$_id.onoff',
+                                wowytype: '$_id.wowytype',
+                                woodmoneytier: '$_id.woodmoneytier',
+
                                 sacf: '$sacf',
                                 saca: '$saca',
-                                sfpct: '$sfpct',
                                 ca: '$ca',
                                 cf: '$cf',
                                 gf: '$gf',
-                                saca60: '$saca60',
                                 ga: '$ga',
-                                sacfpct: '$sacfpct',
-                                gf60: '$gf60',
                                 evtoi: '$evtoi',
-                                ga60: '$ga60',
-                                cfpct: '$cfpct',
-                                sa60: '$sa60',
                                 nz: '$nz',
                                 dff: '$dff',
                                 dfa: '$dfa',
-                                ca60: '$ca60',
                                 fa: '$fa',
                                 dz: '$dz',
-                                sf60: '$sf60',
                                 ff: '$ff',
-                                fa60: '$fa60',
-                                sacf60: '$sacf60',
-                                ffpct: '$ffpct',
-                                cf60: '$cf60',
-                                ff60: '$ff60',
-                                dff60: '$dff60',
-                                dffpct: '$dffpct',
                                 oz: '$oz',
-                                dfa60: '$dfa60',
                                 sa: '$sa',
-                                sf: '$sf',
-                                gfpct: '$gfpct',
+                                sf: '$sf'
                             }
                         }
                     }
