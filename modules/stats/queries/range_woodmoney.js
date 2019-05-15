@@ -13,7 +13,8 @@ module.exports = (mongoose, config) => {
         let Schedule = mongoose.model('Schedule');
 
         let query = {
-            gametype: constants.schedule_game_type.regular_season
+            gametype: constants.schedule_game_type.regular_season,
+            wowytype: constants.wowy_type.woodmoney
         };
 
         // assume the query is pre-validated
@@ -36,8 +37,8 @@ module.exports = (mongoose, config) => {
             Schedule.findOne({ "data.date" : {$lte: dateToString(options.to_date)}}).sort({"data.gamekey":-1}).exec(),
         ]).then(([from_game, to_game]) => {
 
-            console.log("from_game", from_game);
-            console.log("to_game", to_game);
+            // console.log("from_game", from_game);
+            // console.log("to_game", to_game);
 
             if(from_game || to_game) {
                 query.gamekey = {};
@@ -119,7 +120,7 @@ module.exports = (mongoose, config) => {
                 }
             ]).then((data) => {
 
-                console.log("data", data.length);
+                // console.log("data", data.length);
 
                 let results = _.chain(data).map(x => {
 
@@ -131,9 +132,11 @@ module.exports = (mongoose, config) => {
                             z.woodmoneytier === constants.woodmoney_tier.all;
                     });
 
+                    //tmp solution until G gets the all data for games populated
                     if (!all) {
-                        console.log("data issue.... (missing all)");
-                        return null;
+                        let all_records = woodmoney_formatter.buildAllRecords(x.woodmoney);
+                        all = all_records[0];
+                        x.woodmoney = x.woodmoney.concat(all_records);
                     }
 
                     let all_toi = all.evtoi;
@@ -153,7 +156,7 @@ module.exports = (mongoose, config) => {
                     }
 
                     //returns one record per tier
-                    let wm = woodmoney_formatter.format(x, player_info, all_toi);
+                    let wm = woodmoney_formatter.format(x, player_info, all_toi, true);
 
                     return wm;
 

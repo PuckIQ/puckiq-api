@@ -50,7 +50,7 @@ class WoodmoneyQuery {
 
             //todo validate player?
 
-            if (_.has(options, "from_date") && _.has(options, "to_date")) {
+            if (_.has(options, "from_date") && _.has(options, "to_date") && options.from_date && options.to_date) {
 
                 let err = validator.validateDate(parseInt(options.from_date), "from_date");
                 if (err) return reject(err);
