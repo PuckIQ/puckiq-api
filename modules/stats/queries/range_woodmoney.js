@@ -44,6 +44,14 @@ module.exports = (mongoose, config) => {
             // console.log("from_game", from_game);
             // console.log("to_game", to_game);
 
+            //check that we have the data for the selected range, otherwise simply return empty results
+            if(options.from_date && to_game) {
+                let dt = Date.parse(to_game.data.date);
+                if (options.from_date > dt) {
+                    return Promise.resolve([]);
+                }
+            }
+
             if(from_game || to_game) {
                 query.gamekey = {};
                 if (from_game) {

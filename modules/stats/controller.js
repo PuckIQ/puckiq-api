@@ -117,6 +117,9 @@ class StatsController {
                     results
                 };
 
+                if(response.request.from_date) response.request.from_date = response.request.from_date.getTime();
+                if(response.request.to_date) response.request.to_date = response.request.to_date.getTime();
+
                 if (options.player) {
                     this.locator.get('player_cache').all().then((player_dict) => {
                         response.player = player_dict[options.player.toString()];
