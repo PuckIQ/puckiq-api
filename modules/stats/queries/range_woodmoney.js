@@ -27,9 +27,13 @@ module.exports = (mongoose, config) => {
             query.team = options.team;
         }
 
+        function pad(val) {
+            return val.toString().padStart(2, '0');
+        }
+
         //must have from date and to date
-        function dateToString(dt){
-            return `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+        function dateToString(dt) {
+            return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
         }
 
         return Promise.all([
