@@ -34,8 +34,11 @@ module.exports = function(app, locator) {
     if(config.env === 'load' || config.env === 'production') {
         app.enable('view cache');
     } else {
-        app.use(morgan('dev'));
+       // app.use(morgan('dev'));
     }
+
+    //todo if local
+    app.use(morgan('dev'));
 
     // set views path, template engine and default layout
     app.set('views', path.join(__dirname, '../views'));
