@@ -32,13 +32,13 @@
     "mongo-round": "1.0.0",
     "mongodb": "2.2.30",
     "mongoose": "5.3.8",
+    "morgan": "1.9.1",
     "request": "2.81.0",
     "serve-favicon": "2.5.0",
     "winston": "2.3.0"
   },
   "devDependencies": {
     "mocha": "2.5.3",
-    "morgan": "1.9.1",
     "should": "11.1.2"
   }
 }
