@@ -35,7 +35,7 @@ exports.format = (x, player_info, all_toi, game_summary) => {
             'dff60rc': y.dff60 - off.dff60,
             'dfa60rc': y.dfa60 - off.dfa60,
             'dffpctrc': y.dffpct - off.dffpct,
-            'dffpctra': 0 //TODO
+            'dffpctra': 0, //TODO
         };
 
         rel_comp_stats.pdo = Math.round((rel_comp_stats.onshpct * 10) + (rel_comp_stats.onsvpct * 10));
@@ -43,6 +43,9 @@ exports.format = (x, player_info, all_toi, game_summary) => {
         let formatted_data = {
             evtoi: y.evtoi / 60
         };
+
+        //hack until g gets the data for season collections
+        if(!y.games_played) y.games_played = "n/a";
 
         return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
 
@@ -115,6 +118,7 @@ exports.calculateFieldsFor = (x) => {
     x.ff60 = safeDivide(x.ff, hours);
     x.fa60 = safeDivide(x.fa, hours);
     x.ffpct = safeDivide(x.ff, x.ff + x.fa) * PCT_MULTIPLIER;
-    //     "sacf": "SACF",
-    //     "saca": "SACA",
+    x.sacf60 = safeDivide(x.sacf, hours);
+    x.saca60 = safeDivide(x.saca, hours);
+    x.sacfpct = safeDivide(x.sacf, x.sacf + x.saca) * PCT_MULTIPLIER;
 };
