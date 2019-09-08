@@ -5,6 +5,15 @@ const constants = require('../../../common/constants');
 const woodmoney_formatter = require('./woodmoney_formatter');
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
+function pad(val) {
+    return val.toString().padStart(2, '0');
+}
+
+//must have from date and to date
+function dateToString(dt) {
+    return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+}
+
 module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
@@ -25,15 +34,6 @@ module.exports = (mongoose, config) => {
 
         if (options.team) {
             query.team = options.team;
-        }
-
-        function pad(val) {
-            return val.toString().padStart(2, '0');
-        }
-
-        //must have from date and to date
-        function dateToString(dt) {
-            return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
         }
 
         return Promise.all([
@@ -68,7 +68,7 @@ module.exports = (mongoose, config) => {
                     $group: {
                         _id: {
                             player_id: '$playerid',
-                            season: '$season',
+                            // season: '$season',
                             team: '$team',
                             gametype: '$gametype',
                             onoff: '$onoff',
@@ -76,6 +76,7 @@ module.exports = (mongoose, config) => {
                             woodmoneytier: '$woodmoneytier'
                         },
 
+                        games_played: { $sum: 1 },
                         sacf: { $sum: '$sacf' },
                         saca: { $sum: '$saca' },
                         ca: { $sum: '$ca' },
@@ -99,7 +100,7 @@ module.exports = (mongoose, config) => {
                     $group: {
                         _id: {
                             player_id: '$_id.player_id',
-                            season: '$_id.season',
+                            // season: '$_id.season',
                             team: '$_id.team'
                         },
                         woodmoney : {
@@ -110,6 +111,7 @@ module.exports = (mongoose, config) => {
                                 wowytype: '$_id.wowytype',
                                 woodmoneytier: '$_id.woodmoneytier',
 
+                                games_played: '$games_played',
                                 sacf: '$sacf',
                                 saca: '$saca',
                                 ca: '$ca',

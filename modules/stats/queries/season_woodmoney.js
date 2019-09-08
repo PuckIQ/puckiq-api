@@ -46,6 +46,7 @@ module.exports = (mongoose, config) => {
                         $push: {
                             player_id: '$_id.player_id',
                             team: '$_id.team',
+                            games_played: '$games_played',
                             onoff: '$onoff',
                             wowytype : '$wowytype',
                             woodmoneytier : '$woodmoneytier',
@@ -119,6 +120,7 @@ module.exports = (mongoose, config) => {
                 } else {
                     console.log("cannot find player", x._id.player_id);
                 }
+
 
                 //returns one record per tier
                 let wm = woodmoney_formatter.format(x, player_info, all_toi);
