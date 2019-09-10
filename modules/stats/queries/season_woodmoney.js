@@ -125,7 +125,7 @@ module.exports = (mongoose, config) => {
 
                 return wm;
 
-            }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
+            }).flatten().orderBy(['season', 'tier_sort_index'], ['desc', 'asc']).value();
 
             return Promise.resolve(results);
 

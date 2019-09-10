@@ -39,8 +39,10 @@ exports.format = (x, player_info, all_toi) => {
             evtoi: y.evtoi / 60
         };
 
+        y.tier_sort_index = woodmoney_tier_sort[y.woodmoneytier];
+
         return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
 
-    }).compact().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
+    }).compact().value();
 
 };
