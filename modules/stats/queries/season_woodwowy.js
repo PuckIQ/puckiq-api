@@ -10,7 +10,7 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        let SeasonWoodmoney = mongoose.model('SeasonWoodmoney');
+        let SeasonWoodwowy = mongoose.model('SeasonWoodwowy');
         let helper = new MongoHelpers();
 
         //NOTE: we need both and calculate the rels
@@ -32,7 +32,7 @@ module.exports = (mongoose, config) => {
             options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
         }
 
-        return SeasonWoodmoney.aggregate([
+        return SeasonWoodwowy.aggregate([
             { $match: query },
             {
                 $group: {
@@ -121,10 +121,13 @@ module.exports = (mongoose, config) => {
                     console.log("cannot find player", x._id.player_id);
                 }
 
-                //returns one record per tier
-                return woodmoney_formatter.format(x, player_info, all_toi);
 
-            }).flatten().orderBy(['season', 'tier_sort_index'], ['desc', 'asc']).value();
+                //returns one record per tier
+                let wm = woodmoney_formatter.format(x, player_info, all_toi);
+
+                return wm;
+
+            }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 
             return Promise.resolve(results);
 
