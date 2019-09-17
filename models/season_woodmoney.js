@@ -118,6 +118,7 @@ module.exports = function(mongoose, config) {
     });
 
     schema.index({ season: 1 });
+    schema.index({ season: 1, gametype: 1, playerid: 1 });
 
     return mongoose.model('SeasonWoodmoney', schema, constants.dbCollections.seasonwoodmoney, {
         connection: mongoose.dbs['puckiq']

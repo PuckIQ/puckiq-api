@@ -121,11 +121,8 @@ module.exports = (mongoose, config) => {
                     console.log("cannot find player", x._id.player_id);
                 }
 
-
                 //returns one record per tier
-                let wm = woodmoney_formatter.format(x, player_info, all_toi);
-
-                return wm;
+                return woodmoney_formatter.format(x, player_info, all_toi);
 
             }).flatten().orderBy(['season', 'tier_sort_index'], ['desc', 'asc']).value();
 

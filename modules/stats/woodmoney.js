@@ -69,6 +69,10 @@ class WoodmoneyQuery {
 
             } else if (_.has(options, "season")) {
 
+                //just in case
+                delete options.from_date;
+                delete options.to_date;
+
                 if (_.isArray(options.season)) {
                     options.season = _.map(options.season, x => parseInt(x));
                     let err = null;
