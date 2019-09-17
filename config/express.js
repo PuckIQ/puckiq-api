@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const compression = require('compression');
@@ -8,6 +9,7 @@ const favicon = require('serve-favicon');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
+const rfs = require('rotating-file-stream');
 const constants = require('../common/constants');
 const AppException = require('../common/app_exception');
 const ExceptionMiddleware = require('./middlewares/exception');
@@ -37,8 +39,22 @@ module.exports = function(app, locator) {
        // app.use(morgan('dev'));
     }
 
-    //todo if local
-    app.use(morgan('dev'));
+    if(config.env === 'local'){
+        app.use(morgan('dev'));
+    } else {
+
+        let logDirectory = path.join(__dirname, '../logs');
+
+        fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+        const accessLogStream = rfs('request.log', {
+            interval: '1d',
+            path: logDirectory,
+            maxSize : '10M'
+        });
+
+        app.use(morgan('dev',{stream: accessLogStream}));
+    }
 
     // set views path, template engine and default layout
     app.set('views', path.join(__dirname, '../views'));
