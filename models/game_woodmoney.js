@@ -127,6 +127,8 @@ module.exports = function(mongoose, config) {
     schema.index({gamekey:1});
     schema.index({gamekey:1, playerid:1});
     schema.index({gamekey:1, team:1});
+    schema.index({gamekey:1, playerid:1, gametype: 1, wowytype: 1});
+    schema.index({gamekey:1, team:1, gametype: 1, wowytype: 1, playerid:1});
 
     return mongoose.model('GameWoodmoney', schema, constants.dbCollections.gamewoodmoney, {
         connection: mongoose.dbs['puckiq']

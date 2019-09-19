@@ -292,6 +292,27 @@ describe('woodmoney query tests', function() {
 
         });
 
+        it('will use season if not both from_date and to_date', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 5,
+                tier: constants.woodmoney_tier.elite,
+                season: 20172018,
+                from_date: '',
+                to_date: new Date().getTime().toString()
+            };
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries});
+            query.exec(options).then((results) => {
+                return done();
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
     });
 
 });
