@@ -22,8 +22,13 @@ module.exports = (mongoose, config) => {
         query.gametype = constants.schedule_game_type.regular_season;
 
         if (query.player) {
-            query.playerid = query.player;
+            query.player1id = query.player;
             delete query.player;
+        }
+
+        if (query.teammates && query.teammates.length) {
+            query.player2id = {$in : query.teammates };
+            delete query.teammates;
         }
 
         if (_.isArray(options.season) && options.season.length > 1) {
@@ -37,14 +42,15 @@ module.exports = (mongoose, config) => {
             {
                 $group: {
                     _id: {
-                        player_id: '$playerid',
+                        player_1_id: '$player1id',
+                        player_2_id: '$player2id',
                         season: '$season',
                         team: '$team'
-                        //gametype: '$gametype',
                     },
-                    woodmoney: {
+                    woodwowy: {
                         $push: {
-                            player_id: '$_id.player_id',
+                            player_1_id: '$_id.player_1_id',
+                            player_2_id: '$_id.player_2_id',
                             team: '$_id.team',
                             games_played: '$games_played',
                             onoff: '$onoff',
@@ -90,11 +96,11 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            let results = _.chain(data).map(x => {
+            let results = _.chain(data).map(result => {
 
-                //NOTE: wowytype is always Woodmoney in this query
+                //NOTE: wowytype is always WoodWOWY in this query
 
-                let all = _.find(x.woodmoney, z => {
+                let all = _.find(result.woodwowy, z => {
                     return z.onoff === constants.on_off.on_ice &&
                         z.wowytype === constants.wowy_type.woodmoney &&
                         z.woodmoneytier === constants.woodmoney_tier.all;
@@ -114,18 +120,25 @@ module.exports = (mongoose, config) => {
 
                 // y.evtoi = y.evtoi/60;// convert to minutes
                 // till we get a real nhlplayers collection
-                if(_.has(player_dict, x._id.player_id)) {
-                    player_info.name = player_dict[x._id.player_id].name;
-                    player_info.positions = player_dict[x._id.player_id].positions;
+                if(_.has(player_dict, result._id.player_1_id)) {
+                    player_info.name = player_dict[result._id.player_1_id].name;
+                    player_info.positions = player_dict[result._id.player_1_id].positions;
                 } else {
-                    console.log("cannot find player", x._id.player_id);
+                    console.log("cannot find player", result._id.player_1_id);
                 }
 
+                if(_.has(player_dict, result._id.player_2_id)) {
+                    player_info.name = player_dict[result._id.player_2_id].name;
+                    player_info.positions = player_dict[result._id.player_2_id].positions;
+                } else {
+                    console.log("cannot find player", result._id.player_2_id);
+                }
+
+                //hmmm can I use the wm formatter???
+                result.woodmoney = result.woodwowy;
 
                 //returns one record per tier
-                let wm = woodmoney_formatter.format(x, player_info, all_toi);
-
-                return wm;
+                return woodmoney_formatter.format(result, player_info, all_toi);
 
             }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
 

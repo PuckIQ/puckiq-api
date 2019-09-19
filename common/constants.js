@@ -72,7 +72,8 @@ module.exports = {
         descending : 'desc'
     },
     wowy_type : {
-        woodmoney :'WoodMoney'
+        woodmoney :'WoodMoney',
+        woodwowy :'WoodWOWY'
     },
     woodmoney_tier : {
         all: 'All',

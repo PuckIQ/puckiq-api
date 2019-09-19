@@ -2,13 +2,13 @@ const _ = require('lodash');
 const constants = require('../../../common/constants');
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
-exports.format = (x, player_info, all_toi, game_summary) => {
+exports.format = (result, player_info, all_toi, game_summary) => {
 
-    return _.chain(x.woodmoney).map((y) => {
+    return _.chain(result.woodmoney).map((y) => {
 
         if (y.onoff === constants.on_off.off_ice) return null;
 
-        let off = _.find(x.woodmoney, z => {
+        let off = _.find(result.woodmoney, z => {
             return z.onoff === constants.on_off.off_ice && y.wowytype === z.wowytype && y.woodmoneytier === z.woodmoneytier;
         });
 
@@ -49,7 +49,7 @@ exports.format = (x, player_info, all_toi, game_summary) => {
 
         y.tier_sort_index = woodmoney_tier_sort[y.woodmoneytier];
 
-        return _.extend({}, x._id, player_info, rel_comp_stats, y, formatted_data);
+        return _.extend({}, result._id, player_info, rel_comp_stats, y, formatted_data);
 
     }).compact().value();
 

@@ -6,7 +6,7 @@ const AppException = require('../../common/app_exception');
 
 const MAX_COUNT = 100;
 
-class WoodmoneyQuery {
+class WoodwowyQuery {
 
     constructor(locator, options = {}){
         this.locator = locator;
@@ -89,6 +89,10 @@ class WoodmoneyQuery {
                 }
 
             } else if (_.has(options, "season")) {
+
+                //just in case
+                delete options.from_date;
+                delete options.to_date;
 
                 if (_.isArray(options.season)) {
                     options.season = _.map(options.season, x => parseInt(x));
@@ -176,61 +180,49 @@ class WoodmoneyQuery {
 
         if (options.from_date && options.to_date) {
             date_key = `${options.from_date}-${options.to_date}`;
-            query = this.queries.range_woodmoney;
+            query = this.queries.range_woodwowy;
         } else {
             date_key = options.season || 'all';
-            query = this.queries.season_woodmoney;
+            query = this.queries.season_woodwowy;
         }
 
         query = query(this.locator.get('mongoose'), this.locator.get('config'));
 
         return new Promise((resolve, reject) => {
 
-            //dont need to cache if its just a player or team result (way less data)
-            if (!options.player && !options.team && this.cache.has(date_key)) {
-                // console.log("pulling data from cache...", options.player, options.team, date_key);
-                let player_results = this.cache.get(date_key);
-                return resolve(this.select(player_results, options));
-            } else {
+            this.locator.get('player_cache').all().then((player_dict) => {
 
-                this.locator.get('player_cache').all().then((player_dict) => {
-
-                    //filter down to the queryable fields...
-                    let query_options = {};
-                    _.each(['season', 'from_date', 'to_date', 'player', 'team'], (key) => {
-                        if (options[key]) query_options[key] = options[key];
-                    });
-
-                    query(query_options, player_dict).then((results) => {
-
-                        let player_results = {};
-                        _.each(results, x => {
-                            let key = `${x.season}-${x.player_id}-${x.team}`;
-                            if (!player_results[key]) {
-                                player_results[key] = {
-                                    positions: _.map(x.positions, pos => pos.toLowerCase())
-                                };
-                            }
-                            player_results[key][x.woodmoneytier] = x
-                        });
-
-                        if (!options.player && !options.team) {
-                            this.cache.set(date_key, player_results);
-                        }
-
-                        return resolve(this.select(player_results, options));
-
-                    }, (err) => {
-                        return reject(new AppException(constants.exceptions.database_error, "Error searching Woodmoney",
-                            {err: err, step: 'fetch_data'}));
-                    });
-
-                }, (err) => {
-                    return reject(new AppException(constants.exceptions.database_error, "Error searching Woodmoney",
-                        {err: err, step: 'load_player_cache'}));
+                //filter down to the queryable fields...
+                let query_options = {};
+                _.each(['season', 'from_date', 'to_date', 'player', 'team','teammates'], (key) => {
+                    if (options[key]) query_options[key] = options[key];
                 });
 
-            }
+                query(query_options, player_dict).then((results) => {
+
+                    let player_results = {};
+                    _.each(results, x => {
+                        let key = `${x.season}-${x.player_1_id}-${x.player_2_id}-${x.team}`;
+                        if (!player_results[key]) {
+                            player_results[key] = {
+                                positions: _.map(x.positions, pos => pos.toLowerCase())
+                            };
+                        }
+                        player_results[key][x.woodmoneytier] = x
+                    });
+
+                    return resolve(this.select(player_results, options));
+
+                }, (err) => {
+                    return reject(new AppException(constants.exceptions.database_error, "Error searching Woodwowy",
+                        {err: err, step: 'fetch_data'}));
+                });
+
+            }, (err) => {
+                return reject(new AppException(constants.exceptions.database_error, "Error searching Woodwowy",
+                    {err: err, step: 'load_player_cache'}));
+            });
+
         });
 
     }
@@ -286,4 +278,4 @@ class WoodmoneyQuery {
 
 }
 
-module.exports = WoodmoneyQuery;
+module.exports = WoodwowyQuery;
