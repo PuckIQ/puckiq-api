@@ -4,6 +4,7 @@ const _ = require("lodash");
 const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 const woodmoney_formatter = require('./woodmoney_formatter');
+const wowy_type = constants.wowy_type;
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
 module.exports = (mongoose, config) => {
@@ -96,53 +97,9 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            let results = _.chain(data).map(result => {
+            let result = woodmoney_formatter.formatBulk(wowy_type.woodwowy, data, player_dict, false);
 
-                //NOTE: wowytype is always WoodWOWY in this query
-
-                let all = _.find(result.woodwowy, z => {
-                    return z.onoff === constants.on_off.on_ice &&
-                        z.wowytype === constants.wowy_type.woodmoney &&
-                        z.woodmoneytier === constants.woodmoney_tier.all;
-                });
-
-                if (!all) {
-                    console.log("data issue.... (missing all)");
-                    return null;
-                }
-
-                let all_toi = all.evtoi;
-
-                let player_info = {
-                    name : 'unknown',
-                    positions : ['?']
-                };
-
-                // y.evtoi = y.evtoi/60;// convert to minutes
-                // till we get a real nhlplayers collection
-                if(_.has(player_dict, result._id.player_1_id)) {
-                    player_info.name = player_dict[result._id.player_1_id].name;
-                    player_info.positions = player_dict[result._id.player_1_id].positions;
-                } else {
-                    console.log("cannot find player", result._id.player_1_id);
-                }
-
-                if(_.has(player_dict, result._id.player_2_id)) {
-                    player_info.name = player_dict[result._id.player_2_id].name;
-                    player_info.positions = player_dict[result._id.player_2_id].positions;
-                } else {
-                    console.log("cannot find player", result._id.player_2_id);
-                }
-
-                //hmmm can I use the wm formatter???
-                result.woodmoney = result.woodwowy;
-
-                //returns one record per tier
-                return woodmoney_formatter.format(result, player_info, all_toi);
-
-            }).flatten().sortBy(x => woodmoney_tier_sort[x.woodmoneytier]).value();
-
-            return Promise.resolve(results);
+            return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index','recordtype'], ['desc', 'asc', 'asc']));
 
         }, (err) => {
             return Promise.reject(err);

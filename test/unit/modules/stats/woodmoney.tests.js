@@ -7,8 +7,8 @@ let ServiceLocator = require('../../../../common/service_locator');
 let InMemoryCache = require('../../../../common/in_memory_cache');
 let WoodmoneyQuery = require('../../../../modules/stats/woodmoney');
 
-let oilers_20172018_data = require('../../../data/oilers_20172018');
-let oilers_20182019_data = require('../../../data/oilers_20182019');
+let oilers_20172018_data = require('../../../data/woodmoney/oilers_20172018');
+let oilers_20182019_data = require('../../../data/woodmoney/oilers_20182019');
 
 describe('woodmoney query tests', function() {
 

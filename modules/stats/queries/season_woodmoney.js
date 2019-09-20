@@ -4,7 +4,6 @@ const _ = require("lodash");
 const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
 const woodmoney_formatter = require('./woodmoney_formatter');
-const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
 module.exports = (mongoose, config) => {
 
@@ -90,43 +89,9 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            let results = _.chain(data).map(x => {
+            let result = woodmoney_formatter.formatBulk(data, player_dict, false);
 
-                //NOTE: wowytype is always Woodmoney in this query
-
-                let all = _.find(x.woodmoney, z => {
-                    return z.onoff === constants.on_off.on_ice &&
-                        z.wowytype === constants.wowy_type.woodmoney &&
-                        z.woodmoneytier === constants.woodmoney_tier.all;
-                });
-
-                if (!all) {
-                    console.log("data issue.... (missing all)");
-                    return null;
-                }
-
-                let all_toi = all.evtoi;
-
-                let player_info = {
-                    name : 'unknown',
-                    positions : ['?']
-                };
-
-                // y.evtoi = y.evtoi/60;// convert to minutes
-                // till we get a real nhlplayers collection
-                if(_.has(player_dict, x._id.player_id)) {
-                    player_info.name = player_dict[x._id.player_id].name;
-                    player_info.positions = player_dict[x._id.player_id].positions;
-                } else {
-                    console.log("cannot find player", x._id.player_id);
-                }
-
-                //returns one record per tier
-                return woodmoney_formatter.format(x, player_info, all_toi);
-
-            }).flatten().orderBy(['season', 'tier_sort_index'], ['desc', 'asc']).value();
-
-            return Promise.resolve(results);
+            return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index'], ['desc', 'asc']));
 
         }, (err) => {
             return Promise.reject(err);

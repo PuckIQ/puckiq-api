@@ -5,7 +5,7 @@ let should = require('should');
 let constants = require('../../../../../common/constants');
 let WoodmoneyFormatter = require('../../../../../modules/stats/queries/woodmoney_formatter');
 
-let mcdavid_20182019 = require('../../../../data/mcdavid_20182019');
+const mcdavid_20182019 = require('../../../../data/woodmoney/mcdavid_20182019');
 
 describe('woodmoney formatter tests', function() {
 

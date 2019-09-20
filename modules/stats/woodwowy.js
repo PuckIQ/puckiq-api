@@ -61,7 +61,7 @@ class WoodwowyQuery {
             let err = validator.validateInteger(options.player, "player", {nullable: false, min: 1});
             if (err) return reject(err);
 
-            options.teammates = _.map(optionts.teammates, x => parseInt(x));
+            options.teammates = _.map(options.teammates, x => parseInt(x));
             err = validator.validateArray(options.teammates, "teamates", {
                 nullable: false,
                 iterator : (x) => {
@@ -176,13 +176,10 @@ class WoodwowyQuery {
     fetch(options) {
 
         let query = null;
-        let date_key = null;
 
         if (options.from_date && options.to_date) {
-            date_key = `${options.from_date}-${options.to_date}`;
             query = this.queries.range_woodwowy;
         } else {
-            date_key = options.season || 'all';
             query = this.queries.season_woodwowy;
         }
 
