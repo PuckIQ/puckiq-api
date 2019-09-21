@@ -75,6 +75,11 @@ module.exports = {
         woodmoney :'WoodMoney',
         woodwowy :'WoodWOWY'
     },
+    wowy_record_type : {
+        one_not_two :'1 not 2',
+        one_and_two :'1 and 2',
+        two_not_one :'2 not 1'
+    },
     woodmoney_tier : {
         all: 'All',
         elite: 'Elite',

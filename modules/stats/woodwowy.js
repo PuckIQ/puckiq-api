@@ -4,8 +4,6 @@ const validator = require('../../common/validator');
 const InMemoryCache = require('../../common/in_memory_cache');
 const AppException = require('../../common/app_exception');
 
-const MAX_COUNT = 100;
-
 class WoodwowyQuery {
 
     constructor(locator, options = {}){
@@ -36,13 +34,7 @@ class WoodwowyQuery {
                 player: null,
                 teammates: [],
                 team : null,
-                tier: null,
-                min_toi: null,
-                max_toi: null,
-                offset : 0,
-                sort : 'evtoi',
-                sort_direction : 'desc',
-                count: MAX_COUNT
+                tier: null
             };
 
             options = _.extend({ }, defaults, options);
@@ -126,47 +118,12 @@ class WoodwowyQuery {
                 }
             }
 
-            if (options.min_toi) {
-                options.min_toi = parseInt(options.min_toi);
-                let err = validator.validateInteger(options.min_toi, "min_toi", {nullable: true, min: 0});
-                if (err) return reject(err);
-            }
-
-            if (options.max_toi) {
-                options.max_toi = parseInt(options.max_toi);
-                let err = validator.validateInteger(options.max_toi, "max_toi", {nullable: true, min: 0});
-                if (err) return reject(err);
-            }
-
-            if(options.min_toi && options.max_toi && options.min_toi > options.max_toi){
-                return new AppException(
-                    constants.exceptions.invalid_argument,
-                    `Min toi cannot be greater than max toi`,
-                    {param: 'min_toi', value: value}
-                );
-            }
-
             if (options.tier && !~_.values(constants.woodmoney_tier).indexOf(options.tier)) {
                 return reject(new AppException(
                     constants.exceptions.invalid_argument,
                     `Invalid value for parameter: ${options.tier}`,
                     {param: 'tier', value: options.tier}
                 ));
-            }
-
-            //TODO validate sort
-            // if(options.sort && !~constants.sortable_columns).indexOf(options.sort)){
-            //     return new AppException(
-            //         constants.exceptions.invalid_argument,
-            //         `Invalid value for parameter: ${options.tier}`,
-            //         { param: 'tier', value: value }
-            //     );
-            // }
-
-            if (options.count) {
-                options.count = parseInt(options.count);
-                let err = validator.validateInteger(options.count, 'count', {nullable: false } ); //, min: 1, max: MAX_COUNT});
-                if (err) return reject(err);
             }
 
             return resolve(options);

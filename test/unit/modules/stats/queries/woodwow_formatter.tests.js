@@ -37,17 +37,22 @@ describe('formatBulk tests', function() {
             console.log(`${x.onoff},${x.wowytype},${x.woodmoneytier},${x.recordtype}`);
         });
 
-        (formatted.length).should.equal(18);
+        (formatted.length).should.equal(9);
 
-        // let keyed = _.keyBy(formatted, 'woodmoneytier');
-        //
-        // should.exist(keyed.All);
-        //
-        // let all = keyed.All;
-        //
-        // (10.776).should.equal(Math.round(all.onshpct*1000)/1000);
-        // (90.456).should.equal(Math.round(all.onsvpct*1000)/1000);
-        // (1012).should.equal(all.pdo);
+        _.each(formatted, x => x.player_1_id.should.equal(8478402));
+        _.each(formatted, x => x.player_2_id.should.equal(8477934));
+        _.each(formatted, x => x.wowytype.should.equal(constants.wowy_type.woodwowy));
+
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_and_two).length.should.equal(3));
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_not_two).length.should.equal(3));
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.two_not_one).length.should.equal(3));
+
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.elite).length.should.equal(3));
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.middle).length.should.equal(3));
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.gritensity).length.should.equal(3));
+
+        //assume calculator still does its job
+
     });
 
 });
