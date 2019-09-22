@@ -13,7 +13,15 @@
                 <tbody>
                     <tr>
                         <td style="width: 150px;">season</td>
-                        <td>Required: <span>The season to query for (ie 20182019 or all)</span></td>
+                        <td>Optional: <span>The season to query for (ie 20182019 or all)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 150px;">from_date</td>
+                        <td>Optional: <span>The from_date to query for. The format of the date is milliseconds since epoch (ie November 1, 2017 would be 1509516000000). If either from_date or to_date is passed in the other is required.</span></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 150px;">to_date</td>
+                        <td>Optional: <span>The to_date to query for. The format of the date is milliseconds since epoch (ie November 1, 2017 would be 1509516000000). If either from_date or to_date is passed in the other is required.</span></td>
                     </tr>
                     <tr>
                         <td>player</td>
