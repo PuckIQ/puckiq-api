@@ -25,9 +25,17 @@ class StatsController {
 
         let Player = this.locator.get('mongoose').model('Player');
 
-        Player.find({playerid : player_id}).sort({ conference: 1, division: 1 })
-            .then((results) => {
-                return res.jsonp(results);
+        Player.findOne({playerid : player_id}).lean().then((p) => {
+            if(!p) {
+                let ex = new AppException(constants.exceptions.notFound, "Unknown player", { player_id });
+                return this.error_handler.handle(req, res, ex);
+            }
+
+            let formatted = _.extend( {player_id : p.playerid, name : p.fullName}, p);
+            delete formatted.playerid;
+            delete formatted.fullName;
+
+            return res.jsonp(formatted);
         }, (err) => {
             let ex = new AppException(constants.exceptions.database_error, "Error retrieving player", { err: err });
             return this.error_handler.handle(req, res, ex);
