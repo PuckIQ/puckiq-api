@@ -26,9 +26,9 @@ module.exports = exports = function (app, locator) {
     app.get('/about', (req, res) => res.render("about"));
     app.get('/contact', (req, res) => res.render("contact"));
     app.get('/terms_of_service', (req, res) => res.render("tos"));
-    app.get('/wowy', format_get_for_testing, (req, res) => stats.getWowy(req, res));
-    app.post('/wowy', (req, res) => stats.getWowy(req, res));
-    app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
+    app.get('/woodwowy', format_get_for_testing, (req, res) => stats.getWowy(req, res));
+    app.post('/woodwowy', (req, res) => stats.getWowy(req, res));
+    app.get('/woodwowy/seasons', (req, res) => stats.wowySeasons(req, res));
 
     app.get('/woodmoney', format_get_for_testing,(req, res) => stats.getWoodmoney(req, res));
     app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));

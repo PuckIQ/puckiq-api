@@ -39,10 +39,19 @@ class WoodwowyQuery {
 
             options = _.extend({ }, defaults, options);
             if(options.team) options.team = options.team.toUpperCase();
+            if(_.isString(options.teammates)) {
+                options.teammates = [
+                    parseInt(options.teammates)
+                ];
+            }
 
             /* required params */
             if (!options.player) {
                 return reject(new AppException(constants.exceptions.missing_argument, "player is required"));
+            }
+
+            if(!_.isArray(options.teammates)) {
+                return reject(new AppException(constants.exceptions.missing_argument, "at least one teammate is required"));
             }
 
             if (!(options.teammates && options.teammates.length)) {
@@ -187,32 +196,33 @@ class WoodwowyQuery {
         const filter_positions = _.map(options.positions, x => x);
 
         let result = _.chain(player_results)
-            .filter(x => {
-
-                if(x.positions.length === 1 && x.positions[0] === 'g') return false;
-
-                if(options.positions !== "all") {
-                    if(_.intersection(x.positions, filter_positions).length === 0) {
-                        return false;
-                    }
-                }
-
-                if(options.min_toi) {
-                    let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] < options.min_toi) return false;
-                }
-
-                if(options.max_toi) {
-                    let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] > options.max_toi) return false;
-                }
-
-                return true;
-            })
-            .sortBy(x => {
-                let tier = options.tier || 'All';
-                return x[tier][options.sort] * dir;
-            })
+            // .filter(x => {
+            //
+            //     if(x.positions.length === 1 && x.positions[0] === 'g') return false;
+            //
+            //     if(options.positions !== "all") {
+            //         if(_.intersection(x.positions, filter_positions).length === 0) {
+            //             return false;
+            //         }
+            //     }
+            //
+            //     if(options.min_toi) {
+            //         let tier = options.tier || 'All';
+            //         if(x[tier]['evtoi'] < options.min_toi) return false;
+            //     }
+            //
+            //     if(options.max_toi) {
+            //         let tier = options.tier || 'All';
+            //         if(x[tier]['evtoi'] > options.max_toi) return false;
+            //     }
+            //
+            //     return true;
+            // })
+            //should be pre-sorted
+            // .sortBy(x => {
+            //     let tier = options.tier || 'All';
+            //     return x[tier][options.sort] * dir;
+            // })
             .slice(options.offset, options.offset + options.count)
             .map(x => {
 

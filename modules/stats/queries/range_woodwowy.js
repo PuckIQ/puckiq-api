@@ -2,7 +2,7 @@
 
 const _ = require("lodash");
 const constants = require('../../../common/constants');
-const woodmoney_formatter = require('./woodmoney_formatter');
+const formatter = require('./woodmoney_formatter');
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
 function pad(val) {
@@ -134,7 +134,7 @@ module.exports = (mongoose, config) => {
                 }
             ]).then((data) => {
 
-                let result = woodmoney_formatter.formatBulk(constants.wowy_type.woodwowy, data, player_dict, true);
+                let result = formatter.formatBulk(constants.wowy_type.woodwowy, data, player_dict, true);
 
                 return Promise.resolve(_.sortBy(result, x => woodmoney_tier_sort[x.woodmoneytier]));
 

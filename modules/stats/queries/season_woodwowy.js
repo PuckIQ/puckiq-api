@@ -3,7 +3,7 @@
 const _ = require("lodash");
 const constants = require('../../../common/constants');
 const MongoHelpers = require('../../../common/mongo_helpers');
-const woodmoney_formatter = require('./woodmoney_formatter');
+const formatter = require('./woodwowy_formatter');
 const wowy_type = constants.wowy_type;
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
@@ -11,6 +11,7 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
+        console.log(JSON.stringify(options));
         let SeasonWoodwowy = mongoose.model('SeasonWoodwowy');
         let helper = new MongoHelpers();
 
@@ -27,9 +28,9 @@ module.exports = (mongoose, config) => {
             delete query.player;
         }
 
-        if (query.teammates && query.teammates.length) {
-            query.player2id = {$in : query.teammates };
-            delete query.teammates;
+        if (options.teammates && options.teammates.length) {
+            query.player2id = {$in : options.teammates };
+            delete query.teammates; //just in case
         }
 
         if (_.isArray(options.season) && options.season.length > 1) {
@@ -38,6 +39,7 @@ module.exports = (mongoose, config) => {
             options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
         }
 
+        console.log("SeasonWoodwowy", query);
         return SeasonWoodwowy.aggregate([
             { $match: query },
             {
@@ -97,7 +99,8 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            let result = woodmoney_formatter.formatBulk(wowy_type.woodwowy, data, player_dict, false);
+            console.length(data.length, "results");
+            let result = formatter.formatBulk(data, player_dict, false);
 
             return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index','recordtype'], ['desc', 'asc', 'asc']));
 
