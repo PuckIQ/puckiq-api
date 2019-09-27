@@ -99,9 +99,10 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            console.length(data.length, "results");
+            console.log(data.length, "results");
             let result = formatter.formatBulk(data, player_dict, false);
 
+            console.log(data.length, "formatted results");
             return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index','recordtype'], ['desc', 'asc', 'asc']));
 
         }, (err) => {

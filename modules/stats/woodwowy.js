@@ -196,34 +196,34 @@ class WoodwowyQuery {
         const filter_positions = _.map(options.positions, x => x);
 
         let result = _.chain(player_results)
-            // .filter(x => {
-            //
-            //     if(x.positions.length === 1 && x.positions[0] === 'g') return false;
-            //
-            //     if(options.positions !== "all") {
-            //         if(_.intersection(x.positions, filter_positions).length === 0) {
-            //             return false;
-            //         }
-            //     }
-            //
-            //     if(options.min_toi) {
-            //         let tier = options.tier || 'All';
-            //         if(x[tier]['evtoi'] < options.min_toi) return false;
-            //     }
-            //
-            //     if(options.max_toi) {
-            //         let tier = options.tier || 'All';
-            //         if(x[tier]['evtoi'] > options.max_toi) return false;
-            //     }
-            //
-            //     return true;
-            // })
-            //should be pre-sorted
+            .filter(x => {
+
+                if(x.positions.length === 1 && x.positions[0] === 'g') return false;
+
+                if(options.positions !== "all") {
+                    if(_.intersection(x.positions, filter_positions).length === 0) {
+                        return false;
+                    }
+                }
+
+                if(options.min_toi) {
+                    let tier = options.tier || 'All';
+                    if(x[tier]['evtoi'] < options.min_toi) return false;
+                }
+
+                if(options.max_toi) {
+                    let tier = options.tier || 'All';
+                    if(x[tier]['evtoi'] > options.max_toi) return false;
+                }
+
+                return true;
+            })
             // .sortBy(x => {
+            //     //            should be pre-sorted
             //     let tier = options.tier || 'All';
             //     return x[tier][options.sort] * dir;
             // })
-            .slice(options.offset, options.offset + options.count)
+            // .slice(options.offset, options.offset + options.count)
             .map(x => {
 
                 let tiers = _.map(_.values(constants.woodmoney_tier), tier => {

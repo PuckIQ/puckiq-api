@@ -7,7 +7,7 @@ let formatter = require('../../../../../modules/stats/queries/woodwowy_formatter
 
 const mcdavid_drai_wowy = require('../../../../data/woodwowy/97_29_season_20172018');
 
-describe('formatBulk tests', function() {
+describe('woodwowy formatBulk tests', function() {
 
     it('will get results for mcdavid and drai', function() {
 
