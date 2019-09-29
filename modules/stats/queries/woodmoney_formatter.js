@@ -28,18 +28,11 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
 
         // y.evtoi = y.evtoi/60;// convert to minutes
         // till we get a real nhlplayers collection
-        if(_.has(player_dict, result._id.player_1_id)) {
-            player_info.name = player_dict[result._id.player_1_id].name;
-            player_info.positions = player_dict[result._id.player_1_id].positions;
+        if(_.has(player_dict, result._id.player_id)) {
+            player_info.name = player_dict[result._id.player_id].name;
+            player_info.positions = player_dict[result._id.player_id].positions;
         } else {
-            console.log("cannot find player", result._id.player_1_id);
-        }
-
-        if(_.has(player_dict, result._id.player_2_id)) {
-            player_info.name = player_dict[result._id.player_2_id].name;
-            player_info.positions = player_dict[result._id.player_2_id].positions;
-        } else {
-            console.log("cannot find player", result._id.player_2_id);
+            console.log("cannot find player", result._id.player_id);
         }
 
         //returns one record per tier
