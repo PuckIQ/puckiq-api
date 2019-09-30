@@ -11,7 +11,7 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        console.log(JSON.stringify(options));
+        if(config.env === "local") console.log(JSON.stringify(options));
         let SeasonWoodwowy = mongoose.model('SeasonWoodwowy');
         let helper = new MongoHelpers();
 
@@ -39,7 +39,13 @@ module.exports = (mongoose, config) => {
             options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
         }
 
-        console.log("SeasonWoodwowy", query);
+        if(options.season === 20192020 && new Date() < new Date(2019, 9, 1, 18, 0, 0, 0)){
+            query.gametype = constants.schedule_game_type.pre_season;
+        } else {
+            query.gametype = constants.schedule_game_type.regular_season;
+        }
+
+        if(config.env === "local") console.log("SeasonWoodwowy", query);
         return SeasonWoodwowy.aggregate([
             { $match: query },
             {
