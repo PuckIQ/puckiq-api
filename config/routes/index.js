@@ -34,6 +34,12 @@ module.exports = exports = function (app, locator) {
     app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
 
+    let PuckpediaController = require('../../modules/puckpedia/controller');
+    let puckpedia = new PuckpediaController(locator);
+    app.get('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
+    app.post('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
+
+
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
 };
