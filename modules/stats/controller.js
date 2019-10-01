@@ -1,3 +1,5 @@
+"use strict";
+
 // For functions directly calling NHL game data
 const _ = require('lodash');
 const moment = require('moment');

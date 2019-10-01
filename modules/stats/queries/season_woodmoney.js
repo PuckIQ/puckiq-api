@@ -19,8 +19,6 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
-        query.gametype = constants.schedule_game_type.regular_season;
-
         if (query.player) {
             query.playerid = query.player;
             delete query.player;
@@ -30,6 +28,12 @@ module.exports = (mongoose, config) => {
             query.season = {$in: _.map(options.season, x => parseInt(x))};
         } else if (options.season && options.season !== 'all') {
             options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
+        }
+
+        if(options.season === 20192020 && new Date() < new Date(2019, 9, 1, 18, 0, 0, 0)){
+            query.gametype = constants.schedule_game_type.pre_season;
+        } else {
+            query.gametype = constants.schedule_game_type.regular_season;
         }
 
         return SeasonWoodmoney.aggregate([
