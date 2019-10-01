@@ -54,7 +54,9 @@ module.exports = (mongoose, config) => {
                         player_1_id: '$player1id',
                         player_2_id: '$player2id',
                         season: '$season',
-                        team: '$team'
+                        team: '$team',
+                        //onoff: '$onoff',
+                        //recordtype: '$recordtype',
                     },
                     woodwowy: {
                         $push: {
@@ -62,9 +64,10 @@ module.exports = (mongoose, config) => {
                             player_2_id: '$_id.player_2_id',
                             team: '$_id.team',
                             games_played: '$games_played',
-                            onoff: '$onoff',
                             wowytype : '$wowytype',
                             woodmoneytier : '$woodmoneytier',
+                            onoff : '$onoff',
+                            recordtype : '$recordtype',
                             sacf: '$sacf',
                             saca: '$saca',
                             sfpct: '$sfpct',
@@ -105,11 +108,11 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            console.log(data.length, "results");
+            // console.log(data.length, "results");
             let result = formatter.formatBulk(data, player_dict, false);
 
-            console.log(data.length, "formatted results");
-            return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index','recordtype'], ['desc', 'asc', 'asc']));
+            // console.log(data.length, "formatted results");
+            return Promise.resolve(result);
 
         }, (err) => {
             return Promise.reject(err);

@@ -38,26 +38,33 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
 
 exports.format = (result, player_info, is_range_query) => {
 
+    const inverse_gametype_of = (gt) => {
+        return gt === constants.on_off.off_ice ?
+            constants.on_off.on_ice :
+            constants.on_off.off_ice;
+    };
+
     return _.chain(result.woodwowy).map((item) => {
 
-        if (item.onoff === constants.on_off.off_ice) return null;
-
-        let off = _.find(result.woodwowy, x => {
-            // console.log(`${x.onoff},${x.wowytype},${x.woodmoneytier},${x.recordtype}`);
-            return x.onoff === constants.on_off.off_ice &&
+        // console.log(`${item.onoff},${item.woodmoneytier},${item.recordtype}`);
+        let inverse = _.find(result.woodwowy, x => {
+            let match = (item.onoff === inverse_gametype_of(x.onoff) &&
                 item.wowytype === x.wowytype &&
                 item.recordtype === x.recordtype &&
-                item.woodmoneytier === x.woodmoneytier;
+                item.woodmoneytier === x.woodmoneytier);
+            // console.log(`\t${x.onoff},${x.woodmoneytier},${x.recordtype},${match}`);
+            return match;
         });
 
-        if (!off) {
-            console.log("data issue.... (missing off)");
+        if (!inverse) {
+            console.log("\tdata issue.... (missing inverse)");
+            console.log(`\t${item.onoff},${item.woodmoneytier},${item.recordtype}`);
             return null;
         }
 
         if (is_range_query) {
             calculator.calculateFieldsFor(item);
-            calculator.calculateFieldsFor(off);
+            calculator.calculateFieldsFor(inverse);
         }
 
         let rel_comp_stats = {
@@ -66,13 +73,13 @@ exports.format = (result, player_info, is_range_query) => {
             'ozspct': (item.oz / ((item.oz + item.dz) || 1)) * 100,
             'fo60': (item.oz + item.nz + item.dz) / (item.evtoi || 1) * 3600,
             // 'ctoipct': (item.evtoi / (all_toi || 1)) * 100,
-            'cf60rc': item.cf60 - off.cf60,
-            'ca60rc': item.ca60 - off.ca60,
-            'cfpctrc': item.cfpct - off.cfpct,
+            'cf60rc': item.cf60 - inverse.cf60,
+            'ca60rc': item.ca60 - inverse.ca60,
+            'cfpctrc': item.cfpct - inverse.cfpct,
             'cfpctra': 0, //TODO
-            'dff60rc': item.dff60 - off.dff60,
-            'dfa60rc': item.dfa60 - off.dfa60,
-            'dffpctrc': item.dffpct - off.dffpct,
+            'dff60rc': item.dff60 - inverse.dff60,
+            'dfa60rc': item.dfa60 - inverse.dfa60,
+            'dffpctrc': item.dffpct - inverse.dffpct,
             'dffpctra': 0, //TODO
         };
 

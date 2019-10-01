@@ -37,19 +37,19 @@ describe('woodwowy formatBulk tests', function() {
             console.log(`${x.onoff},${x.wowytype},${x.woodmoneytier},${x.recordtype}`);
         });
 
-        (formatted.length).should.equal(9);
+        (formatted.length).should.equal(18);
 
         _.each(formatted, x => x.player_1_id.should.equal(8478402));
         _.each(formatted, x => x.player_2_id.should.equal(8477934));
         _.each(formatted, x => x.wowytype.should.equal(constants.wowy_type.woodwowy));
 
-        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_and_two).length.should.equal(3));
-        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_not_two).length.should.equal(3));
-        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.two_not_one).length.should.equal(3));
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_and_two).length.should.equal(6));
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.one_not_two).length.should.equal(6));
+        (_.filter(formatted, x => x.recordtype === constants.wowy_record_type.two_not_one).length.should.equal(6));
 
-        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.elite).length.should.equal(3));
-        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.middle).length.should.equal(3));
-        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.gritensity).length.should.equal(3));
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.elite).length.should.equal(6));
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.middle).length.should.equal(6));
+        (_.filter(formatted, x => x.woodmoneytier === constants.woodmoney_tier.gritensity).length.should.equal(6));
 
         //assume calculator still does its job
 

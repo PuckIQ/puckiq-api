@@ -165,7 +165,7 @@ class WoodwowyQuery {
 
                     let player_results = {};
                     _.each(results, x => {
-                        let key = `${x.season}-${x.player_1_id}-${x.player_2_id}-${x.team}`;
+                        let key = `${x.season}-${x.player_1_id}-${x.player_2_id}-${x.team}-${x.onoff}-${x.recordtype}`;
                         if (!player_results[key]) {
                             player_results[key] = {
                                 positions: _.map(x.positions, pos => pos.toLowerCase())
@@ -192,7 +192,6 @@ class WoodwowyQuery {
 
     select(player_results, options) {
 
-        const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
         const filter_positions = _.map(options.positions, x => x);
 
         let result = _.chain(player_results)
@@ -227,7 +226,16 @@ class WoodwowyQuery {
             .map(x => {
 
                 let tiers = _.map(_.values(constants.woodmoney_tier), tier => {
-                    if(!options.tier || tier === options.tier) return x[tier];
+                    if (!options.tier || tier === options.tier) {
+                        let res = x[tier];
+                        if (res) {
+                            res.onoff = res.onoff.replace(' Ice', '');
+                            return res;
+                        } else {
+                            //wowy doenst have an all result
+                            return null;
+                        }
+                    }
                     return null;
                 });
 
@@ -236,7 +244,10 @@ class WoodwowyQuery {
             .flatten()
             .value();
 
-        return result;
+        //todo if date range...
+        let sorted = _.orderBy(result, ['season', 'tier_sort_index','onoff','recordtype'], ['desc', 'asc', 'desc', 'desc']);
+
+        return sorted;
     }
 
 
