@@ -6,7 +6,7 @@ class PlayerCache {
 
     constructor(locator) {
 
-        this._cache = new Cache(1800); // 30 min
+        this._cache = new Cache({ timeout: 1800 }); // 30 min
 
         this.locator = locator;
         this.last_fetch = new Date(0);
