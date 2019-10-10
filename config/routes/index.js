@@ -60,6 +60,7 @@ module.exports = exports = function (app, locator) {
     app.get('/wowy/seasons', (req, res) => stats.wowySeasons(req, res));
     app.get('/wowy/players/:player_id', (req, res) => stats.getWowyForPlayer(req, res));
 
+    app.get('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
     app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
 
@@ -68,6 +69,11 @@ module.exports = exports = function (app, locator) {
     app.get('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
     app.post('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
 
+    app.get('/refresh', (req, res) => {
+        let player_cache = locator.get('player_cache');
+        player_cache.refresh();
+        res.send("cache refreshed");
+    });
 
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);

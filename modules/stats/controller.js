@@ -108,7 +108,7 @@ class StatsController {
             cache : this.woodmoney_cache
         });
 
-        let input = _.extend({}, req.body);
+        let input = _.extend({}, req.query, req.body);
 
         query.validate(input).then((options) => {
 
