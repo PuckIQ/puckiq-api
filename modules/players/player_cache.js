@@ -6,7 +6,7 @@ class PlayerCache {
 
     constructor(locator) {
 
-        this._cache = new Cache({ timeout: 1800 }); // 30 min
+        this._cache = new Cache({ timeout: 0 }); // no time out, let the player cache control it...
 
         this.locator = locator;
         this.last_fetch = new Date(0);
@@ -70,7 +70,7 @@ class PlayerCache {
                 });
             } else {
                 if(this.isStale()) {
-                    // this.initialize();, the in memory cache expires after 30 min
+                    this.initialize();
                 }
                 resolve(players);
             }
@@ -91,7 +91,7 @@ class PlayerCache {
     }
 
     isStale() {
-        return Date.now() - this.last_fetch.getTime() > 300000;
+        return Date.now() - this.last_fetch.getTime() > 1500000;
     }
 
 }
