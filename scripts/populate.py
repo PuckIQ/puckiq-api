@@ -42,7 +42,7 @@ for collection_name in collections_to_sync:
     pqcollection.remove({season: CURRENT_SEASON})
 
   if colName == 'playerhistory':
-      pqcollection.remove({"season": CURRENT_SEASON})
+    pqcollection.remove({"season": CURRENT_SEASON})
     
   for row in wm_collection.find({"season": CURRENT_SEASON}):
     if collection_name.startsWith("season"):
