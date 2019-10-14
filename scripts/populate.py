@@ -23,7 +23,7 @@ itcount = 0
 #use the wm collection since the puckiq one hasnt been synced yet
 playerhistory = wmdb.get_collection('playerhistory')
 player_dict = dict()
-for player in playerhistory.find({"season": CURRENT_SEASON, gametype:2 }):
+for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
   season_player_key = str(player["playerid"]) + "-" + player["team"]
   player_dict[season_player_key] = player["GP"]
 
