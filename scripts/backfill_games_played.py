@@ -10,15 +10,13 @@ from bson.objectid import ObjectId
 import config
 _config = config.getFor(os.getenv('PY_ENV') or 'production')
 
+CURRENT_SEASON= 20182019
+
 wm_client = MongoClient(_config['dbs']['wm'][0])
 pq_client = MongoClient(_config['dbs']['puckiq'][0])
 
-CURRENT_SEASON= 20192020
-
-collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster', 'roster']
-#collections_to_sync = ['nhlroster', 'roster']
-#collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy']
-
+#TODO wowy collections dont have playerid and team
+collections_to_sync = ['seasonboxcars','seasonwoodmoney']
 wmdb = wm_client.nhl
 pqdb = pq_client.puckiq
 itcount = 0
@@ -35,36 +33,22 @@ for collection_name in collections_to_sync:
   
   print("\n--------------------------" + collection_name + "--------------------------")
   wm_collection = wmdb.get_collection(collection_name)
-
-  if collection_name == 'nhlroster':
-    pqcollection = pqdb.get_collection('seasonroster')
-    pqcollection.remove({"season": CURRENT_SEASON})
-  elif collection_name == 'roster':
-    pqcollection = pqdb.get_collection('gameroster')
-  else:
-    pqcollection = pqdb.get_collection(collection_name)
-    
-  if collection_name.find('season') != -1:
-    pqcollection.remove({'season': CURRENT_SEASON})
-  if collection_name == 'playerhistory':
-    pqcollection.remove({"season": CURRENT_SEASON})
+  pqcollection = pqdb.get_collection(collection_name)
     
   for row in wm_collection.find({"season": CURRENT_SEASON}):
-    #basically seasonboxcars doesnt have these fields but check for all just in case
+
     if collection_name.startswith("season") and "playerid" in row and "team" in row:
       season_player_key = str(row["playerid"]) + "-" + row["team"]
       if season_player_key in player_dict:
         row["gamesplayed"] = player_dict[season_player_key]
       else:
         row["gamesplayed"] = 0
-
-    if pqcollection.count(row) < 1:
-      pqpostid = pqcollection.insert_one(row).inserted_id
-      print("+", end='', flush=True)
     else:
-      if "gamesplayed" in row:
-        print("_id " + row["_id"] + " gamesplayed " + row["gamesplayed"] + "\n")
-        pqcollection.update_one({"_id" : row["_id"]}, {"gamesplayed" : row["gamesplayed"]})
+        print(collection_name + " doesnt have playerid and team\n")
+
+    if "gamesplayed" in row:
+      print("_id " + str(row["_id"]) + " gamesplayed " + str(row["gamesplayed"]) + "\n")
+      pqcollection.update_one({"_id" : row["_id"]}, {"$set": {"gamesplayed" : row["gamesplayed"]}})
       print(".", end='', flush=True)
 
 #refresh caches (rather than wait 15 min for new players to show up
