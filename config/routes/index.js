@@ -39,6 +39,13 @@ module.exports = exports = function (app, locator) {
     app.get('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
     app.post('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
 
+    app.get('/refresh', (req, res) => {
+        let player_cache = locator.get('player_cache');
+        player_cache.refresh();
+        res.send("cache refreshed");
+    });
+
+    app.get('/version', (req, res) => res.send("1.0.1"));
 
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);

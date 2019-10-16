@@ -1,30 +1,37 @@
 const _ = require('lodash');
-const constants = require('../../common/constants');
 const Cache = require('../../common/in_memory_cache');
 const AllPlayers = require('./queries/all');
 
 class PlayerCache {
 
     constructor(locator) {
+
+        this._cache = new Cache({ timeout: 0 }); // no time out, let the player cache control it...
+
         this.locator = locator;
-        this._cache = new Cache(1800); // 30 min
+        this.last_fetch = new Date(0);
+        this.initializing = null;
+
     }
 
     /**
      */
     initialize() {
 
-        //todo handle race condition on this...
+        if(this.initializing) return this.initializing;
 
-        return new Promise((resolve, reject) => {
+        this.initializing = new Promise((resolve, reject) => {
             AllPlayers(this.locator.get('mongoose'), this.locator.get('config'))({})
                 .then((players) => {
+                    this.last_fetch = new Date();
                     this._cache.set('all', _.keyBy(players, 'playerid'));
                     resolve(players)
                 }, (e) => {
                     reject(e)
                 });
         });
+
+        return this.initializing;
 
     }
 
@@ -44,12 +51,12 @@ class PlayerCache {
                 });
             }
 
-            resolve(_.has(players, player_id) ? players[player_id] : null);
+            return resolve(_.has(players, player_id) ? players[player_id] : null);
         });
 
     }
 
-    all(){
+    all() {
 
         return new Promise((resolve, reject) => {
 
@@ -62,9 +69,29 @@ class PlayerCache {
                     reject(e);
                 });
             } else {
+                if(this.isStale()) {
+                    this.initialize();
+                }
                 resolve(players);
             }
         });
+    }
+
+    refresh() {
+
+        return new Promise((resolve, reject) => {
+
+            this.initialize().then((players) => {
+                resolve(players);
+            }, (e) => {
+                reject(e);
+            });
+
+        });
+    }
+
+    isStale() {
+        return Date.now() - this.last_fetch.getTime() > 1500000;
     }
 
 }

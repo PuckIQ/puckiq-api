@@ -102,6 +102,7 @@ class StatsController {
                         positions: wm.positions || [],
                         season: wm.season,
                         team: wm.team,
+                        games_played : wm.gamesplayed || 0,
                         evtoi: wm.evtoi,
                         gfpct : wm.gfpct,
                         dffpct: wm.dffpct,

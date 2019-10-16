@@ -87,9 +87,6 @@ exports.format = (result, player_info, all_toi, is_range_query) => {
             evtoi: y.evtoi / 60
         };
 
-        //hack until g gets the data for season collections
-        if(!y.games_played) y.games_played = "n/a";
-
         y.tier_sort_index = woodmoney_tier_sort[y.woodmoneytier];
 
         return _.extend({}, result._id, player_info, rel_comp_stats, y, formatted_data);

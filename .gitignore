@@ -40,7 +40,13 @@ test.js
 games/reports.js
 games/playbyplay.js
 
+#python files
+__pycache__
+__pycache__/
+__pycache__/*
+
 # Config Files
 config.js
 scratch
 .gitsecret/keys/random_seed
+config.py
