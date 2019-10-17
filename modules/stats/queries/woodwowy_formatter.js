@@ -7,7 +7,14 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
 
     let results = _.chain(data).map(result => {
 
-        let player_info = {
+        let player_1_info = {
+            _id: result._id.player_1_id,
+            name: 'unknown',
+            positions: ['?']
+        };
+
+        let player_2_info = {
+            _id: result._id.player_2_id,
             name : 'unknown',
             positions : ['?']
         };
@@ -15,28 +22,28 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
         // y.evtoi = y.evtoi/60;// convert to minutes
         // till we get a real nhlplayers collection
         if(_.has(player_dict, result._id.player_1_id)) {
-            player_info.name = player_dict[result._id.player_1_id].name;
-            player_info.positions = player_dict[result._id.player_1_id].positions;
+            player_1_info.name = player_dict[result._id.player_1_id].name;
+            player_1_info.positions = player_dict[result._id.player_1_id].positions;
         } else {
-            console.log("cannot find player", result._id.player_1_id);
+            console.log("cannot find player 1", result._id.player_1_id);
         }
 
         if(_.has(player_dict, result._id.player_2_id)) {
-            player_info.name = player_dict[result._id.player_2_id].name;
-            player_info.positions = player_dict[result._id.player_2_id].positions;
+            player_2_info.name = player_dict[result._id.player_2_id].name;
+            player_2_info.positions = player_dict[result._id.player_2_id].positions;
         } else {
-            console.log("cannot find player", result._id.player_2_id);
+            console.log("cannot find player 2", result._id.player_2_id);
         }
 
         //returns one record per tier
-        return this.format(result, player_info, is_range_query);
+        return this.format(result, player_1_info, player_2_info, is_range_query);
 
     }).flatten().value();
 
     return results;
 };
 
-exports.format = (result, player_info, is_range_query) => {
+exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
     const inverse_gametype_of = (gt) => {
         return gt === constants.on_off.off_ice ?
@@ -45,6 +52,12 @@ exports.format = (result, player_info, is_range_query) => {
     };
 
     return _.chain(result.woodwowy).map((item) => {
+
+        if(item.onoff === constants.on_off.off_ice &&
+            !!~[constants.wowy_record_type.one_not_two, constants.wowy_record_type.two_not_one].indexOf(item.recordtype)) {
+            //these records are redundant
+            return null;
+        }
 
         // console.log(`${item.onoff},${item.woodmoneytier},${item.recordtype}`);
         let inverse = _.find(result.woodwowy, x => {
@@ -86,16 +99,38 @@ exports.format = (result, player_info, is_range_query) => {
         rel_comp_stats.pdo = Math.round((rel_comp_stats.onshpct * 10) + (rel_comp_stats.onsvpct * 10));
 
         let formatted_data = {
-            evtoi: item.evtoi / 60
+            evtoi: item.evtoi / 60,
+            description : this._getDescriptionFor(item, player_1_info, player_2_info)
         };
-
-        //hack until g gets the data for season collections
-        if(!item.games_played) item.games_played = "n/a";
 
         item.tier_sort_index = woodmoney_tier_sort[item.woodmoneytier];
 
-        return _.extend({}, result._id, player_info, rel_comp_stats, item, formatted_data);
+        delete result._id.player_1_id;
+        delete result._id.player_2_id;
+
+        return _.extend({
+            player1 : player_1_info,
+            player2 : player_2_info
+        }, result._id, rel_comp_stats, item, formatted_data);
 
     }).compact().value();
+
+};
+
+exports._getDescriptionFor = (result, player1, player2) => {
+
+    if(result.recordtype === constants.wowy_record_type.one_and_two){
+        if(result.onoff === constants.on_off.on_ice) {
+            return `${player1.name} with ${player2.name}`;
+        } else {
+            return `${player1.name} and ${player2.name} both off`;
+        }
+    } else if (result.recordtype === constants.wowy_record_type.one_not_two) {
+        return `${player1.name} without ${player2.name}`;
+    } else if(result.recordtype === constants.wowy_record_type.two_not_one) {
+        return `${player2.name} without ${player1.name}`;
+    } else {
+        return 'unknown';
+    }
 
 };

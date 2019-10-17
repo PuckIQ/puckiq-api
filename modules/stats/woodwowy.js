@@ -165,7 +165,7 @@ class WoodwowyQuery {
 
                     let player_results = {};
                     _.each(results, x => {
-                        let key = `${x.season}-${x.player_1_id}-${x.player_2_id}-${x.team}-${x.onoff}-${x.recordtype}`;
+                        let key = `${x.season}-${x.player1._id}-${x.player2._id}-${x.team}-${x.onoff}-${x.recordtype}`;
                         if (!player_results[key]) {
                             player_results[key] = {
                                 positions: _.map(x.positions, pos => pos.toLowerCase())
@@ -197,22 +197,22 @@ class WoodwowyQuery {
         let result = _.chain(player_results)
             .filter(x => {
 
-                if(x.positions.length === 1 && x.positions[0] === 'g') return false;
+                if (x.positions.length === 1 && x.positions[0] === 'g') return false;
 
-                if(options.positions !== "all") {
-                    if(_.intersection(x.positions, filter_positions).length === 0) {
+                if (options.positions !== "all") {
+                    if (_.intersection(x.positions, filter_positions).length === 0) {
                         return false;
                     }
                 }
 
-                if(options.min_toi) {
+                if (options.min_toi) {
                     let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] < options.min_toi) return false;
+                    if (x[tier]['evtoi'] < options.min_toi) return false;
                 }
 
-                if(options.max_toi) {
+                if (options.max_toi) {
                     let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] > options.max_toi) return false;
+                    if (x[tier]['evtoi'] > options.max_toi) return false;
                 }
 
                 return true;
@@ -245,11 +245,10 @@ class WoodwowyQuery {
             .value();
 
         //todo if date range...
-        let sorted = _.orderBy(result, ['season', 'tier_sort_index','onoff','recordtype'], ['desc', 'asc', 'desc', 'desc']);
+        let sorted = _.orderBy(result, ['season', 'tier_sort_index', 'onoff', 'recordtype'], ['desc', 'asc', 'desc', 'desc']);
 
         return sorted;
     }
-
 
 }
 
