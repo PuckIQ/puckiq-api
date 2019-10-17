@@ -45,7 +45,7 @@ module.exports = exports = function (app, locator) {
         res.send("cache refreshed");
     });
 
-    app.get('/version', (req, res) => res.send("1.0.1"));
+    app.get('/version', (req, res) => res.send("1.0.2"));
 
     //TODO sean
     //app.get('/nhl/m5/todaygames', cache.withTtl('5 minutes'), nhlHandler.getTodaysGames);
