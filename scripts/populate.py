@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--season', '-s', dest='season', action='store', default=20192020,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
-                    help='If you want to sync just the season collections', default=True)
+                    help='If you want to sync just the season collections', default=False)
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
 
