@@ -10,6 +10,7 @@ parser.add_argument('--season', '-s', dest='season', action='store', default=201
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
+parser.add_argument('-verbose', '-v', dest='verbose', action='store_true', help='Verbose mode', default=False)
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
 
@@ -62,11 +63,17 @@ for collection_name in collections_to_sync:
     pqcollection = pqdb.get_collection(collection_name)
     
   if collection_name.find('season') != -1:
+    if args.verbose: print('deleting records from collection ' + collection_name)
     pqcollection.remove({'season': CURRENT_SEASON})
   if collection_name == 'playerhistory':
     pqcollection.remove({"season": CURRENT_SEASON})
-    
+
+  collection_count=0
   for row in wm_collection.find({"season": CURRENT_SEASON}):
+
+    if args.verbose and collection_count > 0 and collection_count % 100 == 0:
+      print('processing row ' + str(collection_count))
+
     #basically seasonboxcars doesnt have these fields but check for all just in case
     if collection_name.startswith("season") and "playerid" in row and "team" in row:
       season_player_key = str(row["playerid"]) + "-" + row["team"]
@@ -77,12 +84,14 @@ for collection_name in collections_to_sync:
 
     if pqcollection.count(row) < 1:
       pqpostid = pqcollection.insert_one(row).inserted_id
-      print("+", end='', flush=True)
+      if args.verbose: print("+", end='', flush=True)
     else:
       if "gamesplayed" in row:
-        print("_id " + row["_id"] + " gamesplayed " + row["gamesplayed"] + "\n")
+        if args.verbose: print("_id " + row["_id"] + " gamesplayed " + row["gamesplayed"] + "\n")
         pqcollection.update_one({"_id" : row["_id"]}, {"gamesplayed" : row["gamesplayed"]})
-      print(".", end='', flush=True)
+      if args.verbose: print(".", end='', flush=True)
+
+    collection_count=collection_count+1
 
 #refresh caches (rather than wait 15 min for new players to show up
 import requests
