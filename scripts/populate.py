@@ -6,7 +6,7 @@ import sys
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--season', '-s', dest='season', action='store', default=20192020,
+parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20192020,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
@@ -35,6 +35,7 @@ else:
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
 print("season: " + str(CURRENT_SEASON))
+print("verbose: " + str(args.verbose))
 
 
 wmdb = wm_client.nhl
@@ -71,8 +72,9 @@ for collection_name in collections_to_sync:
   collection_count=0
   for row in wm_collection.find({"season": CURRENT_SEASON}):
 
-    if args.verbose and collection_count > 0 and collection_count % 100 == 0:
+    if args.verbose and collection_count > 0 and collection_count % 1000 == 0:
       print('processing row ' + str(collection_count))
+    collection_count=collection_count+1
 
     #basically seasonboxcars doesnt have these fields but check for all just in case
     if collection_name.startswith("season") and "playerid" in row and "team" in row:
@@ -90,8 +92,6 @@ for collection_name in collections_to_sync:
         if args.verbose: print("_id " + row["_id"] + " gamesplayed " + row["gamesplayed"] + "\n")
         pqcollection.update_one({"_id" : row["_id"]}, {"gamesplayed" : row["gamesplayed"]})
       if args.verbose: print(".", end='', flush=True)
-
-    collection_count=collection_count+1
 
 #refresh caches (rather than wait 15 min for new players to show up
 import requests
