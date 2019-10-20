@@ -3,6 +3,15 @@
 import os
 import pymongo
 import sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--season', '-s', dest='season', action='store', default=20192020,
+                    help='The season to populate from G\'s db', required=False)
+parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
+                    help='If you want to sync just the season collections', default=True)
+parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
+args = parser.parse_args()
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -13,11 +22,19 @@ _config = config.getFor(os.getenv('PY_ENV') or 'production')
 wm_client = MongoClient(_config['dbs']['wm'][0])
 pq_client = MongoClient(_config['dbs']['puckiq'][0])
 
-CURRENT_SEASON= 20192020
+CURRENT_SEASON=args.season
 
-collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster', 'roster']
-#collections_to_sync = ['nhlroster', 'roster']
-#collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy']
+if 'collection' in args and args.collection is not None:
+  collections_to_sync = [args.collection]
+elif args.season_only:
+  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy']
+else:
+  #collections_to_sync = ['nhlroster', 'roster']
+  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster', 'roster']
+
+print("collections_to_sync: " + ', '.join(collections_to_sync))
+print("season: " + str(CURRENT_SEASON))
+
 
 wmdb = wm_client.nhl
 pqdb = pq_client.puckiq
