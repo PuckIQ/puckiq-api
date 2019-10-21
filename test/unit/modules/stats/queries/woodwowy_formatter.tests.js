@@ -31,13 +31,13 @@ describe('woodwowy formatBulk tests', function() {
 
         let formatted = formatter.formatBulk(mcdavid_drai_wowy, player_dict, false);
 
+        (formatted.length).should.equal(12);
+
         formatted = _.orderBy(formatted, ['season', 'tier_sort_index', 'recordtype'], ['desc', 'asc', 'asc']);
 
-        _.each(formatted, x => {
-            console.log(`${x.onoff},${x.wowytype},${x.woodmoneytier},${x.recordtype}`);
-        });
-
-        (formatted.length).should.equal(12);
+        // _.each(formatted, x => {
+        //     console.log(`${x.onoff},${x.wowytype},${x.woodmoneytier},${x.recordtype}`);
+        // });
 
         _.each(formatted, x => x.player1._id.should.equal(8478402));
         _.each(formatted, x => x.player2._id.should.equal(8477934));

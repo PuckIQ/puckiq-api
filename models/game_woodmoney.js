@@ -124,6 +124,7 @@ module.exports = function(mongoose, config) {
         "gfpct": { type: Number }
     });
 
+    schema.index({season:1});
     schema.index({gamekey:1});
     schema.index({gamekey:1, playerid:1});
     schema.index({gamekey:1, team:1});

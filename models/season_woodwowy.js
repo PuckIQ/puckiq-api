@@ -128,6 +128,7 @@ module.exports = function(mongoose, config) {
         "gfpct": { type: Number }
     });
 
+    schema.index({ season: 1 });
     schema.index({ season: 1, player1id: 1, player2id: 1 });
 
     return mongoose.model('SeasonWoodwowy', schema, constants.dbCollections.seasonwoodwowy, {

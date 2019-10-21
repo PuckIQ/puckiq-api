@@ -18,7 +18,7 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        let GameWoodmoney = mongoose.model('GameWoodmoney');
+        let GameWoodwowy = mongoose.model('GameWoodwowy');
         let Schedule = mongoose.model('Schedule');
 
         let query = {
@@ -29,7 +29,11 @@ module.exports = (mongoose, config) => {
         // assume the query is pre-validated
 
         if (options.player) {
-            query.playerid = options.player;
+            query.player1id = options.player;
+        }
+
+        if (options.teammates && options.teammates.length) {
+            query.player2id = {"$in": options.teammates};
         }
 
         if (options.team) {
@@ -62,7 +66,7 @@ module.exports = (mongoose, config) => {
                 }
             }
 
-            return GameWoodmoney.aggregate([
+            return GameWoodwowy.aggregate([
                 { $match: query },
                 {
                     $group: {
@@ -73,7 +77,8 @@ module.exports = (mongoose, config) => {
                             gametype: '$gametype',
                             onoff: '$onoff',
                             wowytype: '$wowytype',
-                            woodmoneytier: '$woodmoneytier'
+                            woodmoneytier: '$woodmoneytier',
+                            recordtype : '$recordtype'
                         },
 
                         games_played: { $sum: 1 },
@@ -110,6 +115,7 @@ module.exports = (mongoose, config) => {
                                 onoff: '$_id.onoff',
                                 wowytype: '$_id.wowytype',
                                 woodmoneytier: '$_id.woodmoneytier',
+                                recordtype: '$_id.recordtype',
 
                                 games_played: '$games_played',
                                 sacf: '$sacf',

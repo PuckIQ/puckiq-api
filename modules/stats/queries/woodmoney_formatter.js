@@ -47,7 +47,9 @@ exports.format = (result, player_info, all_toi, is_range_query) => {
 
     return _.chain(result.woodmoney).map((y) => {
 
-        if (y.onoff === constants.on_off.off_ice) return null;
+        if (y.onoff !== constants.on_off.on_ice && y.recordtype !== constants.wowy_record_type.one_and_two) {
+            return null;
+        }
 
         let off = _.find(result.woodmoney, z => {
             return z.onoff === constants.on_off.off_ice &&
