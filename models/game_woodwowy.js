@@ -141,7 +141,6 @@ module.exports = function(mongoose, config) {
     });
 
     schema.index({season: 1});
-    schema.index({gamekey: 1, gametype: 1, wowytype: 1, player1id: 1, player2id: 1});
     schema.index({gametype: 1, wowytype: 1, player1id: 1, player2id: 1, gamekey: 1 });
 
     return mongoose.model('GameWoodwowy', schema, constants.dbCollections.gamewoodwowy, {
