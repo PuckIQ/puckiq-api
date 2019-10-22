@@ -14,8 +14,7 @@ module.exports = function(cluster, config, port) {
     _.each(_.keys(config.dbs), (db) => {
         mongoose.dbs[db] = mongoose.createConnection(config.dbs[db], {
             autoIndex: false,
-            useNewUrlParser: true,
-
+            useNewUrlParser: true
         });
     });
 

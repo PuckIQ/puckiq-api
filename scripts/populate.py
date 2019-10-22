@@ -4,15 +4,20 @@ import os
 import pymongo
 import sys
 import argparse
+from datetime import date
 
+# get args from command line
 parser = argparse.ArgumentParser()
 parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20192020,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
 parser.add_argument('-verbose', '-v', dest='verbose', action='store_true', help='Verbose mode', default=False)
+parser.add_argument('-wipe', '-w', dest='verbose', action='store_true',
+                    help='Use this to clear existing data for a season and rebuild from G\'s db', default=False)
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
+
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -23,7 +28,13 @@ _config = config.getFor(os.getenv('PY_ENV') or 'production')
 wm_client = MongoClient(_config['dbs']['wm'][0])
 pq_client = MongoClient(_config['dbs']['puckiq'][0])
 
+#constants and client config
+last_run_date=date.today()
 CURRENT_SEASON=args.season
+
+collection_mapper = {}
+collection_mapper["nhlroster"] = "seasonroster"
+collection_mapper["roster"] = "gameroster"
 
 if 'collection' in args and args.collection is not None:
   collections_to_sync = [args.collection]
@@ -32,6 +43,7 @@ elif args.season_only:
 else:
   #collections_to_sync = ['nhlroster', 'roster']
   collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster', 'roster']
+
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
 print("season: " + str(CURRENT_SEASON))
@@ -50,27 +62,34 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
   season_player_key = str(player["playerid"]) + "-" + player["team"]
   player_dict[season_player_key] = player["GP"]
 
+#wipe existing data if necessary
+if args.wipe:
+  for collection_name in collections_to_sync:
+    if collection_name.find('season') != -1:
+      if args.verbose: print('deleting records from collection ' + collection_name)
+      pqcollection = pqdb.get_collection(collection_name)
+      pqcollection.remove({'season': CURRENT_SEASON})
+    elif collection_name == 'nhlroster':
+      if args.verbose: print('deleting records from collection ' + collection_name)
+      pqcollection = pqdb.get_collection('seasonroster')
+      pqcollection.remove({"season": CURRENT_SEASON})
+
 for collection_name in collections_to_sync:
   
   print("\n--------------------------" + collection_name + "--------------------------")
   wm_collection = wmdb.get_collection(collection_name)
 
-  if collection_name == 'nhlroster':
-    pqcollection = pqdb.get_collection('seasonroster')
-    pqcollection.remove({"season": CURRENT_SEASON})
-  elif collection_name == 'roster':
-    pqcollection = pqdb.get_collection('gameroster')
+  if collection_name in collection_mapper:
+    pqcollection = pqdb.get_collection(collection_mapper[collection_name])
   else:
     pqcollection = pqdb.get_collection(collection_name)
-    
-  if collection_name.find('season') != -1:
-    if args.verbose: print('deleting records from collection ' + collection_name)
-    pqcollection.remove({'season': CURRENT_SEASON})
-  if collection_name == 'playerhistory':
-    pqcollection.remove({"season": CURRENT_SEASON})
+
+  #only get the data that has been updated since last_run_timestamp (unless wiping)
+  wm_query = {"season": CURRENT_SEASON}
+  if not args.wipe: wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
 
   collection_count=0
-  for row in wm_collection.find({"season": CURRENT_SEASON}):
+  for row in wm_collection.find(wm_query):
 
     if args.verbose and collection_count > 0 and collection_count % 1000 == 0:
       print('processing row ' + str(collection_count))
@@ -88,9 +107,15 @@ for collection_name in collections_to_sync:
       pqpostid = pqcollection.insert_one(row).inserted_id
       if args.verbose: print("+", end='', flush=True)
     else:
-      if "gamesplayed" in row:
-        if args.verbose: print("_id " + row["_id"] + " gamesplayed " + row["gamesplayed"] + "\n")
-        pqcollection.update_one({"_id" : row["_id"]}, {"gamesplayed" : row["gamesplayed"]})
+
+      #not entirely sure this is needed
+      pq_update = {}
+      for key in row:
+        pq_update[key] = row[key]
+
+      if args.verbose: print("updating _id " + row["_id"])
+      pqcollection.update_one({"_id" : row["_id"]}, {"$set" : pq_update})
+
       if args.verbose: print(".", end='', flush=True)
 
 #refresh caches (rather than wait 15 min for new players to show up
