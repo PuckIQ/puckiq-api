@@ -4,7 +4,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 
-const config = require('../config/config').getFor('gmoney');
+const config = require('../config/config').getFor('gmoney_puckiq');
 
 let mongoose = require('mongoose');
 mongoose.dbs = {};
