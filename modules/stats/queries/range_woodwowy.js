@@ -2,7 +2,7 @@
 
 const _ = require("lodash");
 const constants = require('../../../common/constants');
-const formatter = require('./woodmoney_formatter');
+const formatter = require('./woodwowy_formatter');
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
 function pad(val) {
@@ -23,7 +23,7 @@ module.exports = (mongoose, config) => {
 
         let query = {
             gametype: constants.schedule_game_type.regular_season,
-            wowytype: constants.wowy_type.woodmoney
+            wowytype: constants.wowy_type.woodwowy
         };
 
         // assume the query is pre-validated
@@ -66,12 +66,14 @@ module.exports = (mongoose, config) => {
                 }
             }
 
+            let query_start = Date.now();
             return GameWoodwowy.aggregate([
                 { $match: query },
                 {
                     $group: {
                         _id: {
-                            player_id: '$playerid',
+                            player_1_id: '$player1id',
+                            player_2_id: '$player2id',
                             // season: '$season',
                             team: '$team',
                             gametype: '$gametype',
@@ -104,12 +106,17 @@ module.exports = (mongoose, config) => {
                 {
                     $group: {
                         _id: {
-                            player_id: '$_id.player_id',
+                            player_1_id: '$_id.player_1_id',
+                            player_2_id: '$_id.player_2_id',
                             // season: '$_id.season',
                             team: '$_id.team'
                         },
-                        woodmoney : {
+                        woodwowy : {
                             $push : {
+
+                                player_1_id: '$_id.player_1_id',
+                                player_2_id: '$_id.player_2_id',
+                                team: '$_id.team',
 
                                 gametype: '$_id.gametype',
                                 onoff: '$_id.onoff',
@@ -140,7 +147,8 @@ module.exports = (mongoose, config) => {
                 }
             ]).then((data) => {
 
-                let result = formatter.formatBulk(constants.wowy_type.woodwowy, data, player_dict, true);
+                if(config.env === "local") console.log(`${data.length} results in ${Date.now()-query_start} ms`);
+                let result = formatter.formatBulk(data, player_dict, true);
 
                 return Promise.resolve(_.sortBy(result, x => woodmoney_tier_sort[x.woodmoneytier]));
 

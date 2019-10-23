@@ -68,6 +68,7 @@ module.exports = (mongoose, config) => {
                             woodmoneytier : '$woodmoneytier',
                             onoff : '$onoff',
                             recordtype : '$recordtype',
+
                             sacf: '$sacf',
                             saca: '$saca',
                             sfpct: '$sfpct',

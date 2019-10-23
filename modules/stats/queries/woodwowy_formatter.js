@@ -53,8 +53,8 @@ exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
     return _.chain(result.woodwowy).map((item) => {
 
-        if(item.onoff === constants.on_off.off_ice &&
-            !!~[constants.wowy_record_type.one_not_two, constants.wowy_record_type.two_not_one].indexOf(item.recordtype)) {
+        if(!(item.onoff === constants.on_off.on_ice || (
+            item.onoff === constants.on_off.off_ice && item.recordtype === constants.wowy_record_type.one_and_two))) {
             //these records are redundant
             return null;
         }
