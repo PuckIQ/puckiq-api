@@ -1,3 +1,5 @@
+"use strict";
+
 const _ = require('lodash');
 const constants = require('../../../common/constants');
 const calculator = require('./calculator');
@@ -135,4 +137,8 @@ exports.buildAllRecords = (woodmoney) => {
     // });
 
     return all_records;
+};
+
+exports.groupRecords = (woodmoney, group_by) => {
+    return woodmoney;
 };

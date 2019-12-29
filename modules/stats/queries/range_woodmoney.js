@@ -62,20 +62,24 @@ module.exports = (mongoose, config) => {
                 }
             }
 
+            let group_id = {
+                player_id: '$playerid'
+            };
+
+            if(!!~options.group_by.indexOf('season')) group_id.season = "$season"; //not sure we can have this...
+            if(!!~options.group_by.indexOf('team')) group_id.team = "$team";
+
+            const initial_group_id = _.extend({
+                gametype: '$gametype',
+                onoff: '$onoff',
+                wowytype: '$wowytype',
+                woodmoneytier: '$woodmoneytier'}, group_id);
+
             return GameWoodmoney.aggregate([
                 { $match: query },
                 {
                     $group: {
-                        _id: {
-                            player_id: '$playerid',
-                            // season: '$season',
-                            team: '$team',
-                            gametype: '$gametype',
-                            onoff: '$onoff',
-                            wowytype: '$wowytype',
-                            woodmoneytier: '$woodmoneytier'
-                        },
-
+                        _id: initial_group_id,
                         games_played: { $sum: 1 },
                         sacf: { $sum: '$sacf' },
                         saca: { $sum: '$saca' },
@@ -98,11 +102,7 @@ module.exports = (mongoose, config) => {
                 },
                 {
                     $group: {
-                        _id: {
-                            player_id: '$_id.player_id',
-                            // season: '$_id.season',
-                            team: '$_id.team'
-                        },
+                        _id: group_id,
                         woodmoney : {
                             $push : {
 

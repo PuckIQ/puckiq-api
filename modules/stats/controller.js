@@ -2,16 +2,9 @@
 
 // For functions directly calling NHL game data
 const _ = require('lodash');
-const moment = require('moment');
-const timezone = require('moment-timezone');
-
-const today = moment.tz('America/New_York').subtract(4, 'hours');
-const adjToday = today.format('YYYY-MM-DD');
-
 const constants = require('../../common/constants');
 const utils = require('../../common/utils');
 const AppException = require('../../common/app_exception');
-const MongoHelpers = require('../../common/mongo_helpers');
 const InMemoryCache = require('../../common/in_memory_cache');
 const Queries = require('./queries');
 const WoodmoneyQuery = require('./woodmoney');

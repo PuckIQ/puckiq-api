@@ -34,6 +34,12 @@ module.exports = {
     features: {
         maintenance: 'maintenance'
     },
+    group_by : {
+        player_season_team : 'player_season_team',
+        player_season : 'player_season',
+        player_team : 'player_team',
+        player : 'player'
+    },
     log_levels: {
         fatal: 0,
         error: 1,
