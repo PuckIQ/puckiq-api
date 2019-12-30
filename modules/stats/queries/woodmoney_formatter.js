@@ -139,6 +139,55 @@ exports.buildAllRecords = (woodmoney) => {
     return all_records;
 };
 
-exports.groupRecords = (woodmoney, group_by) => {
-    return woodmoney;
+exports.flattenWoodmoneyIntoTiers = (data) => {
+
+    let grouped = _.map(data, (record)=> {
+        let woodmoney = this._flattenWoodmoneyIntoTiers(record);
+        return {
+            _id : record._id,
+            woodmoney: woodmoney
+        };
+    });
+
+    return grouped;
+};
+
+
+const SUMMATION_FIELDS = ['evtoi', 'cf','ca','dff','dfa','gf','ga','sf','sa','ff','fa','sacf','saca','oz', 'nz', 'dz'];
+
+exports._flattenWoodmoneyIntoTiers = (record) => {
+
+    let woodmonies = record.woodmoney;
+
+    // initialize player total
+    let player_total = { };
+    _.each(_.values(constants.woodmoney_tier), (tier) => {
+        player_total[tier] = {};
+        let base_record = _.extend({woodmoneytier: tier }, record._id);
+        player_total[tier][constants.on_off.on_ice] = _.extend({}, base_record, {onoff: constants.on_off.on_ice});
+        player_total[tier][constants.on_off.off_ice] = _.extend({}, base_record, {onoff: constants.on_off.off_ice});
+        _.each(SUMMATION_FIELDS, f => {
+            player_total[tier][constants.on_off.on_ice][f] = 0;
+            player_total[tier][constants.on_off.off_ice][f] = 0;
+        });
+    });
+
+    _.each(woodmonies, (woodmoney) => {
+       let rec = player_total[woodmoney.woodmoneytier][woodmoney.onoff];
+       _.each(SUMMATION_FIELDS, f => {
+          rec[f] = rec[f] + (woodmoney[f] || 0);
+       });
+    });
+
+    let result = [];
+
+    _.each(_.values(constants.woodmoney_tier), (tier) => {
+        calculator.calculateFieldsFor(player_total[tier][constants.on_off.on_ice]);
+        calculator.calculateFieldsFor(player_total[tier][constants.on_off.off_ice]);
+
+        result.push(player_total[tier][constants.on_off.on_ice]);
+        result.push(player_total[tier][constants.on_off.off_ice]);
+    });
+
+    return result;
 };

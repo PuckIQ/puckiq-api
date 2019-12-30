@@ -9,7 +9,6 @@ let WoodmoneyQuery = require('../../../../modules/stats/woodmoney');
 
 let oilers_20172018_data = require('../../../data/woodmoney/oilers_20172018');
 let oilers_20182019_data = require('../../../data/woodmoney/oilers_20182019');
-let taylor_hall_data = require('../../../data/woodmoney/taylor_hall');
 
 describe('woodmoney query tests', function() {
 
@@ -436,36 +435,6 @@ describe('woodmoney query tests with multiple seasons', function() {
         });
 
     });
-
-    it('will return Taylor Hall group_by player', function(done){
-
-        let options = {
-            player: 8475791,
-            season: 'all',
-            group_by: 'player'
-        };
-
-        let queries = {
-            season_woodmoney : function() {
-                return function(options) {
-                    return Promise.resolve(taylor_hall_data);
-                }
-            }
-        };
-
-        let query = new WoodmoneyQuery(locator, {queries});
-        query.exec(options).then((results) => {
-            (results.length).should.equal(4);
-            _.each(results, x => {
-                (x.player_id).should.equal(8475791);
-            });
-            return done();
-        }, (err) => {
-            should.fail('this should not be called');
-            return done();
-        });
-
-    })
 
 });
 

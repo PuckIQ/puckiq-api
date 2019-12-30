@@ -228,7 +228,7 @@ class WoodmoneyQuery {
                             if(_.has(player_results[key], x.woodmoneytier)) {
                                 console.log("duplicate record for", key);
                             } else {
-                                player_results[key][x.woodmoneytier] = x
+                                player_results[key][x.woodmoneytier] = x;
                             }
                         });
 
