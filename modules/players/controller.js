@@ -6,6 +6,7 @@ class StatsController {
 
     constructor(locator) {
         this.locator = locator;
+        this.error_handler = locator.get('error_handler');
     }
 
     /**
