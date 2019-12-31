@@ -134,6 +134,10 @@ module.exports = (mongoose, config) => {
                 }
             ]).then((data) => {
 
+                if(options.group_by !== constants.group_by.player_season_team) {
+                    data = woodmoney_formatter.flattenWoodmoneyIntoTiers(data);
+                }
+
                 let result = woodmoney_formatter.formatBulk(data, player_dict, true);
 
                 return Promise.resolve(_.sortBy(result, x => woodmoney_tier_sort[x.woodmoneytier]));
