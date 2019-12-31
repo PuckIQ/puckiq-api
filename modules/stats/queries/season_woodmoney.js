@@ -102,15 +102,9 @@ module.exports = (mongoose, config) => {
                 data = woodmoney_formatter.flattenWoodmoneyIntoTiers(data);
             }
 
-            let result = woodmoney_formatter.formatBulk(data, player_dict, false);
+            let result = woodmoney_formatter.formatBulk(data, player_dict);
 
             let sorted = _.orderBy(result,['season', 'tier_sort_index'], ['desc', 'asc']);
-            // let sorted;
-            // if (!!~options.group_by.indexOf("season")) {
-            //     sorted = _.orderBy(result, ['season', 'tier_sort_index'], ['desc', 'asc']);
-            // } else {
-            //     sorted = _.orderBy(result, x => x.tier_sort_index);
-            // }
 
             return Promise.resolve(sorted);
 

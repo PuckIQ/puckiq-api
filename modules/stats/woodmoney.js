@@ -285,9 +285,9 @@ class WoodmoneyQuery {
             });
 
         if (options.player) {
-            expression.sortBy(['season'], ['desc']);
+            expression = expression.sortBy(['season'], ['desc']);
         } else {
-            expression.sortBy(x => {
+            expression = expression.sortBy(x => {
                 let tier = options.tier || 'All';
                 return x[tier][options.sort] * dir;
             });

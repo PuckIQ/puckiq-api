@@ -138,7 +138,7 @@ module.exports = (mongoose, config) => {
                     data = woodmoney_formatter.flattenWoodmoneyIntoTiers(data);
                 }
 
-                let result = woodmoney_formatter.formatBulk(data, player_dict, true);
+                let result = woodmoney_formatter.formatBulk(data, player_dict);
 
                 return Promise.resolve(_.sortBy(result, x => woodmoney_tier_sort[x.woodmoneytier]));
 
