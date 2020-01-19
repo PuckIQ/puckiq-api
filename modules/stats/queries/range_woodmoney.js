@@ -62,24 +62,29 @@ module.exports = (mongoose, config) => {
                 }
             }
 
-            let group_id = {
-                player_id: '$playerid'
-            };
-
-            if(!!~options.group_by.indexOf('season')) group_id.season = "$season"; //not sure we can have this...
-            if(!!~options.group_by.indexOf('team')) group_id.team = "$team";
-
-            const initial_group_id = _.extend({
+            const group_by1 = {
+                player_id: '$playerid',
                 gametype: '$gametype',
                 onoff: '$onoff',
                 wowytype: '$wowytype',
-                woodmoneytier: '$woodmoneytier'}, group_id);
+                woodmoneytier: '$woodmoneytier'
+            };
+
+            if(!!~options.group_by.indexOf('season')) group_by1.season = "$season"; //not sure we can have this...
+            if(!!~options.group_by.indexOf('team')) group_by1.team = "$team";
+
+            const group_by2 = {
+                player_id: '$_id.player_id'
+            };
+
+            if(!!~options.group_by.indexOf('season')) group_by2.season = "$_id.season"; //not sure we can have this...
+            if(!!~options.group_by.indexOf('team')) group_by2.team = "$_id.team";
 
             return GameWoodmoney.aggregate([
                 { $match: query },
                 {
                     $group: {
-                        _id: initial_group_id,
+                        _id: group_by1,
                         games_played: { $sum: 1 },
                         sacf: { $sum: '$sacf' },
                         saca: { $sum: '$saca' },
@@ -97,12 +102,11 @@ module.exports = (mongoose, config) => {
                         oz: { $sum: '$oz' },
                         sa: { $sum: '$sa' },
                         sf: { $sum: '$sf' }
-
                     }
                 },
                 {
                     $group: {
-                        _id: group_id,
+                        _id: group_by2,
                         woodmoney : {
                             $push : {
 
