@@ -54,9 +54,7 @@ module.exports = (mongoose, config) => {
                         player_1_id: '$player1id',
                         player_2_id: '$player2id',
                         season: '$season',
-                        team: '$team',
-                        //onoff: '$onoff',
-                        //recordtype: '$recordtype',
+                        team: '$team'
                     },
                     woodwowy: {
                         $push: {

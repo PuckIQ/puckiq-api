@@ -31,3 +31,11 @@ exports.calculateFieldsFor = (x) => {
     x.saca60 = safeDivide(x.saca, hours);
     x.sacfpct = safeDivide(x.sacf, x.sacf + x.saca) * PCT_MULTIPLIER;
 };
+
+const SUMMATION_FIELDS = ['evtoi', 'cf','ca','dff','dfa','gf','ga','sf','sa','ff','fa','sacf','saca','oz', 'nz', 'dz'];
+
+exports.combineWowyRecord = (orig, record) => {
+    _.each(SUMMATION_FIELDS, field => {
+       orig[field] += record[field];
+    });
+};

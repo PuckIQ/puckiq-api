@@ -43,13 +43,33 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
     return results;
 };
 
+const _tiers = [constants.woodmoney_tier.elite,constants.woodmoney_tier.middle,constants.woodmoney_tier.gritensity];
+
 exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
-    const inverse_gametype_of = (gt) => {
-        return gt === constants.on_off.off_ice ?
-            constants.on_off.on_ice :
-            constants.on_off.off_ice;
-    };
+    let tier_aggregates = {};
+    _.each(_tiers, x =>  tier_aggregates[x] = null);
+
+    _.each(result.woodwowy, (item) => {
+
+        if(!(item.onoff === constants.on_off.on_ice || (
+            item.onoff === constants.on_off.off_ice && item.recordtype === constants.wowy_record_type.one_and_two))) {
+            //these records are redundant
+            return;
+        }
+
+        if(item.onoff === constants.on_off.off_ice) return;
+
+        if(!tier_aggregates[item.woodmoneytier]) {
+            // if(item.woodmoneytier === 'Elite') console.log("init", item.woodmoneytier, item.wowytype, item.recordtype, item.evtoi, item.cf);
+            tier_aggregates[item.woodmoneytier] = _.extend({}, item);
+        } else {
+            // if(item.woodmoneytier === 'Elite') console.log("append", item.woodmoneytier, item.wowytype, item.recordtype, item.evtoi, item.cf);
+            calculator.combineWowyRecord(tier_aggregates[item.woodmoneytier], item);
+        }
+    });
+
+    _.each(_tiers, x =>  calculator.calculateFieldsFor(tier_aggregates[x]));
 
     return _.chain(result.woodwowy).map((item) => {
 
@@ -59,15 +79,7 @@ exports.format = (result, player_1_info, player_2_info, is_range_query) => {
             return null;
         }
 
-        // console.log(`${item.onoff},${item.woodmoneytier},${item.recordtype}`);
-        let inverse = _.find(result.woodwowy, x => {
-            let match = (item.onoff === inverse_gametype_of(x.onoff) &&
-                item.wowytype === x.wowytype &&
-                item.recordtype === x.recordtype &&
-                item.woodmoneytier === x.woodmoneytier);
-            // console.log(`\t${x.onoff},${x.woodmoneytier},${x.recordtype},${match}`);
-            return match;
-        });
+        let inverse = tier_aggregates[item.woodmoneytier];
 
         if (!inverse) {
             console.log("\tdata issue.... (missing inverse)");
@@ -77,7 +89,6 @@ exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
         if (is_range_query) {
             calculator.calculateFieldsFor(item);
-            calculator.calculateFieldsFor(inverse);
         }
 
         let rel_comp_stats = {
