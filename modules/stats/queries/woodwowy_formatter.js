@@ -73,6 +73,8 @@ exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
     _.each(_tiers, x =>  calculator.calculateFieldsFor(tier_aggregates[x]));
 
+    // console.log("elite cf60", tier_aggregates[constants.woodmoney_tier.elite].cf60);
+
     return _.chain(result.woodwowy).map((item) => {
 
         if(!(item.onoff === constants.on_off.on_ice || (

@@ -63,7 +63,26 @@ describe('woodwowy query tests', function() {
 
             let query = new WoodwowyQuery(locator, {queries: mock_queries});
             query.exec(options).then((results) => {
+
                 (results.length).should.equal(12);
+
+                //3rd result = 1 and 2
+                let total = {
+                    evtoi : 12048 + 11320 + 5439,
+                    cf : 163 + 149 + 86
+                };
+
+                total.cf60 = total.cf/(total.evtoi/3600);
+                console.log("calculated elite cf60", total.cf60);
+
+                let elite = _.find(results, x => {
+                    return x.onoff === "On" && x.woodmoneytier === constants.woodmoney_tier.elite &&
+                        x.recordtype === constants.wowy_record_type.one_and_two;
+                });
+
+                should.exist(elite);
+                (elite.cf60rc).should.equal(elite.cf60 - total.cf60);
+
                 return done();
             }, (err) => {
                 should.fail('this should not be called');
