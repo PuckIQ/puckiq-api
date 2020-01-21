@@ -18,6 +18,8 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
+        delete query.group_by;
+
         if (query.player) {
             query.playerid = query.player;
             delete query.player;
@@ -35,20 +37,23 @@ module.exports = (mongoose, config) => {
             query.gametype = constants.schedule_game_type.regular_season;
         }
 
+        let group_id = {
+            player_id: '$playerid'
+        };
+
+        if(!!~options.group_by.indexOf('season')) group_id.season = "$season";
+        if(!!~options.group_by.indexOf('team')) group_id.team = "$team";
+
         return SeasonWoodmoney.aggregate([
             { $match: query },
             {
                 $group: {
-                    _id: {
-                        player_id: '$playerid',
-                        season: '$season',
-                        team: '$team'
-                        //gametype: '$gametype',
-                    },
+                    _id: group_id,
                     woodmoney: {
                         $push: {
                             player_id: '$_id.player_id',
-                            team: '$_id.team',
+                            season: '$season',
+                            team: '$team',
                             games_played: '$gamesplayed',
                             onoff: '$onoff',
                             wowytype : '$wowytype',
@@ -93,9 +98,15 @@ module.exports = (mongoose, config) => {
             }
         ]).then((data) => {
 
-            let result = woodmoney_formatter.formatBulk(data, player_dict, false);
+            if(options.group_by !== constants.group_by.player_season_team) {
+                data = woodmoney_formatter.flattenWoodmoneyIntoTiers(data);
+            }
 
-            return Promise.resolve(_.orderBy(result,['season', 'tier_sort_index'], ['desc', 'asc']));
+            let result = woodmoney_formatter.formatBulk(data, player_dict);
+
+            let sorted = _.orderBy(result,['season', 'tier_sort_index'], ['desc', 'asc']);
+
+            return Promise.resolve(sorted);
 
         }, (err) => {
             return Promise.reject(err);

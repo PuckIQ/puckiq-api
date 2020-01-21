@@ -1,3 +1,5 @@
+"use strict";
+
 const _ = require('lodash');
 const constants = require('../../../common/constants');
 const calculator = require('./calculator');

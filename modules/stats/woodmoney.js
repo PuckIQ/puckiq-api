@@ -1,3 +1,5 @@
+"use strict";
+
 const _ = require('lodash');
 const constants = require('../../common/constants');
 const validator = require('../../common/validator');
@@ -39,6 +41,7 @@ class WoodmoneyQuery {
                 min_toi: null,
                 max_toi: null,
                 offset : 0,
+                group_by : constants.group_by.player_season_team,
                 sort : 'evtoi',
                 sort_direction : 'desc',
                 count: MAX_COUNT
@@ -48,7 +51,11 @@ class WoodmoneyQuery {
 
             if(options.team) options.team = options.team.toUpperCase();
 
-            //todo validate player?
+            if (options.player) {
+                options.player = parseInt(options.player);
+                let err = validator.validateInteger(options.player, "player", {nullable: true, min: 0});
+                if (err) return reject(err);
+            }
 
             if (_.has(options, "from_date") && _.has(options, "to_date") && options.from_date && options.to_date) {
 
@@ -133,6 +140,14 @@ class WoodmoneyQuery {
                 ));
             }
 
+            if (options.group_by && !~_.values(constants.group_by).indexOf(options.group_by)) {
+                return reject(new AppException(
+                    constants.exceptions.invalid_argument,
+                    `Invalid value for parameter: ${options.group_by}`,
+                    {param: 'group_by', value: options.group_by}
+                ));
+            }
+
             //TODO validate sort
             // if(options.sort && !~constants.sortable_columns).indexOf(options.sort)){
             //     return new AppException(
@@ -155,13 +170,13 @@ class WoodmoneyQuery {
     fetch(options) {
 
         let query = null;
-        let date_key = null;
+        let cache_key = null;
 
         if (options.from_date && options.to_date) {
-            date_key = `${options.from_date}-${options.to_date}`;
+            cache_key = `${options.from_date}-${options.to_date}-${options.group_by}`;
             query = this.queries.range_woodmoney;
         } else {
-            date_key = options.season || 'all';
+            cache_key = `${options.season || 'all'}-${options.group_by}`;
             query = this.queries.season_woodmoney;
         }
 
@@ -170,9 +185,9 @@ class WoodmoneyQuery {
         return new Promise((resolve, reject) => {
 
             //dont need to cache if its just a player or team result (way less data)
-            if (!options.player && !options.team && this.cache.has(date_key)) {
+            if (!options.player && !options.team && this.cache.has(cache_key)) {
                 // console.log("pulling data from cache...", options.player, options.team, date_key);
-                let player_results = this.cache.get(date_key);
+                let player_results = this.cache.get(cache_key);
                 return resolve(this.select(player_results, options));
             } else {
 
@@ -180,28 +195,50 @@ class WoodmoneyQuery {
 
                     //filter down to the queryable fields...
                     let query_options = {};
-                    _.each(['season', 'from_date', 'to_date', 'player', 'team'], (key) => {
+                    _.each(['season', 'from_date', 'to_date', 'player', 'team', 'group_by'], (key) => {
                         if (options[key]) query_options[key] = options[key];
                     });
+
+                    const key_function = (rec) => {
+                        switch (options.group_by) {
+                            case constants.group_by.player_season_team:
+                                return `${rec.season}-${rec.player_id}-${rec.team}`;
+                            case constants.group_by.player_season:
+                                return `${rec.season}-${rec.player_id}`;
+                            case constants.group_by.player_team:
+                                return `${rec.player_id}-${rec.team}`;
+                            case constants.group_by.player:
+                                return `${rec.player_id}`;
+                            default:
+                                return 'something_wrong';
+                        }
+                    };
 
                     query(query_options, player_dict).then((results) => {
 
                         let player_results = {};
                         _.each(results, x => {
-                            let key = `${x.season}-${x.player_id}-${x.team}`;
+                            let key = key_function(x);
                             if (!player_results[key]) {
                                 player_results[key] = {
                                     positions: _.map(x.positions, pos => pos.toLowerCase())
                                 };
                             }
-                            player_results[key][x.woodmoneytier] = x
+
+                            if(_.has(player_results[key], x.woodmoneytier)) {
+                                console.log("duplicate record for", key);
+                            } else {
+                                player_results[key][x.woodmoneytier] = x;
+                            }
                         });
 
                         if (!options.player && !options.team) {
-                            this.cache.set(date_key, player_results);
+                            this.cache.set(cache_key, player_results);
                         }
 
-                        return resolve(this.select(player_results, options));
+                        let selected_player_results = this.select(player_results, options);
+
+                        return resolve(selected_player_results);
 
                     }, (err) => {
                         return reject(new AppException(constants.exceptions.database_error, "Error searching Woodmoney",
@@ -223,38 +260,44 @@ class WoodmoneyQuery {
         const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
         const filter_positions = _.map(options.positions, x => x);
 
-        let result = _.chain(player_results)
+        let expression = _.chain(player_results)
             .filter(x => {
 
-                if(x.positions.length === 1 && x.positions[0] === 'g') return false;
+                if (x.positions.length === 1 && x.positions[0] === 'g') return false;
 
-                if(options.positions !== "all") {
-                    if(_.intersection(x.positions, filter_positions).length === 0) {
+                if (options.positions !== "all") {
+                    if (_.intersection(x.positions, filter_positions).length === 0) {
                         return false;
                     }
                 }
 
-                if(options.min_toi) {
+                if (options.min_toi) {
                     let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] < options.min_toi) return false;
+                    if (x[tier]['evtoi'] < options.min_toi) return false;
                 }
 
-                if(options.max_toi) {
+                if (options.max_toi) {
                     let tier = options.tier || 'All';
-                    if(x[tier]['evtoi'] > options.max_toi) return false;
+                    if (x[tier]['evtoi'] > options.max_toi) return false;
                 }
 
                 return true;
-            })
-            .sortBy(x => {
+            });
+
+        if (options.player) {
+            expression = expression.sortBy(['season'], ['desc']);
+        } else {
+            expression = expression.sortBy(x => {
                 let tier = options.tier || 'All';
                 return x[tier][options.sort] * dir;
-            })
-            .slice(options.offset, options.offset + options.count)
+            });
+        }
+
+        let result = expression.slice(options.offset, options.offset + options.count)
             .map(x => {
 
                 let tiers = _.map(_.values(constants.woodmoney_tier), tier => {
-                    if(!options.tier || tier === options.tier) return x[tier];
+                    if (!options.tier || tier === options.tier) return x[tier];
                     return null;
                 });
 
@@ -265,7 +308,6 @@ class WoodmoneyQuery {
 
         return result;
     }
-
 
 }
 

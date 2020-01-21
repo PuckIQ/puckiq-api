@@ -62,20 +62,29 @@ module.exports = (mongoose, config) => {
                 }
             }
 
+            const group_by1 = {
+                player_id: '$playerid',
+                gametype: '$gametype',
+                onoff: '$onoff',
+                wowytype: '$wowytype',
+                woodmoneytier: '$woodmoneytier'
+            };
+
+            if(!!~options.group_by.indexOf('season')) group_by1.season = "$season"; //not sure we can have this...
+            if(!!~options.group_by.indexOf('team')) group_by1.team = "$team";
+
+            const group_by2 = {
+                player_id: '$_id.player_id'
+            };
+
+            if(!!~options.group_by.indexOf('season')) group_by2.season = "$_id.season"; //not sure we can have this...
+            if(!!~options.group_by.indexOf('team')) group_by2.team = "$_id.team";
+
             return GameWoodmoney.aggregate([
                 { $match: query },
                 {
                     $group: {
-                        _id: {
-                            player_id: '$playerid',
-                            // season: '$season',
-                            team: '$team',
-                            gametype: '$gametype',
-                            onoff: '$onoff',
-                            wowytype: '$wowytype',
-                            woodmoneytier: '$woodmoneytier'
-                        },
-
+                        _id: group_by1,
                         games_played: { $sum: 1 },
                         sacf: { $sum: '$sacf' },
                         saca: { $sum: '$saca' },
@@ -93,16 +102,11 @@ module.exports = (mongoose, config) => {
                         oz: { $sum: '$oz' },
                         sa: { $sum: '$sa' },
                         sf: { $sum: '$sf' }
-
                     }
                 },
                 {
                     $group: {
-                        _id: {
-                            player_id: '$_id.player_id',
-                            // season: '$_id.season',
-                            team: '$_id.team'
-                        },
+                        _id: group_by2,
                         woodmoney : {
                             $push : {
 
@@ -134,7 +138,11 @@ module.exports = (mongoose, config) => {
                 }
             ]).then((data) => {
 
-                let result = woodmoney_formatter.formatBulk(data, player_dict, true);
+                if(options.group_by !== constants.group_by.player_season_team) {
+                    data = woodmoney_formatter.flattenWoodmoneyIntoTiers(data);
+                }
+
+                let result = woodmoney_formatter.formatBulk(data, player_dict);
 
                 return Promise.resolve(_.sortBy(result, x => woodmoney_tier_sort[x.woodmoneytier]));
 
