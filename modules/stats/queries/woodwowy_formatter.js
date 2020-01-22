@@ -45,45 +45,30 @@ exports.formatBulk = (data, player_dict, is_range_query) => {
     return results;
 };
 
-const _tiers = [constants.woodmoney_tier.elite,constants.woodmoney_tier.middle,constants.woodmoney_tier.gritensity];
+const aggregate_different_records = (records, item) => {
+    let agg = null;
+    _.each(records, x => {
+        if (!(x.recordtype === item.recordtype && x.onoff === item.onoff)) {
+            if (!agg) agg = _.extend({}, x);
+            else calculator.combineWowyRecord(agg, x);
+        }
+    });
+    return calculator.calculateFieldsFor(agg);
+};
 
 exports.format = (result, player_1_info, player_2_info, is_range_query) => {
 
-    let tier_aggregates = {};
-    _.each(_tiers, x =>  tier_aggregates[x] = null);
-
-    _.each(result.woodwowy, (item) => {
-
-        if(!(item.onoff === constants.on_off.on_ice || (
-            item.onoff === constants.on_off.off_ice && item.recordtype === constants.wowy_record_type.one_and_two))) {
-            //these records are redundant
-            return;
-        }
-
-        if(item.onoff === constants.on_off.off_ice) return;
-
-        if(!tier_aggregates[item.woodmoneytier]) {
-            // if(item.woodmoneytier === 'Elite') console.log("init", item.woodmoneytier, item.wowytype, item.recordtype, item.evtoi, item.cf);
-            tier_aggregates[item.woodmoneytier] = _.extend({}, item);
-        } else {
-            // if(item.woodmoneytier === 'Elite') console.log("append", item.woodmoneytier, item.wowytype, item.recordtype, item.evtoi, item.cf);
-            calculator.combineWowyRecord(tier_aggregates[item.woodmoneytier], item);
-        }
+    let relevant = _.filter(result.woodwowy, item => {
+        return (item.onoff === constants.on_off.on_ice || (
+            item.onoff === constants.on_off.off_ice && item.recordtype === constants.wowy_record_type.one_and_two));
     });
 
-    _.each(_tiers, x =>  calculator.calculateFieldsFor(tier_aggregates[x]));
+    let keyed = _.groupBy(relevant, 'woodmoneytier');
 
-    // console.log("elite cf60", tier_aggregates[constants.woodmoney_tier.elite].cf60);
+    return _.chain(relevant).map((item) => {
 
-    return _.chain(result.woodwowy).map((item) => {
-
-        if(!(item.onoff === constants.on_off.on_ice || (
-            item.onoff === constants.on_off.off_ice && item.recordtype === constants.wowy_record_type.one_and_two))) {
-            //these records are redundant
-            return null;
-        }
-
-        let inverse = tier_aggregates[item.woodmoneytier];
+        let same_tier = keyed[item.woodmoneytier];
+        let inverse = aggregate_different_records(same_tier, item);
 
         if (!inverse) {
             console.log("\tdata issue.... (missing inverse)");
