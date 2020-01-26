@@ -82,9 +82,10 @@ for collection_name in collections_to_sync:
   else:
     pqcollection = pqdb.get_collection(collection_name)
 
-  #only get the data that has been updated since last_run_timestamp (unless wiping)
-  wm_query = {"season": CURRENT_SEASON}
-  if not args.wipe: wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
+  #only get the data that has been updated since last_run_timestamp
+  #(unless wiping or shifts collection which is small)
+  wm_query = {"season": CURRENT_SEASON }
+  if not args.wipe and collection_name = 'shifts': wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
 
   collection_count=0
   for row in wm_collection.find({"season": CURRENT_SEASON}):
