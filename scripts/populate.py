@@ -18,7 +18,6 @@ parser.add_argument('-wipe', '-w', dest='verbose', action='store_true',
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
 
-
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
@@ -39,11 +38,10 @@ collection_mapper["roster"] = "gameroster"
 if 'collection' in args and args.collection is not None:
   collections_to_sync = [args.collection]
 elif args.season_only:
-  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy']
+  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts']
 else:
   #collections_to_sync = ['nhlroster', 'roster']
-  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster', 'roster']
-
+  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts']
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
 print("season: " + str(CURRENT_SEASON))
@@ -75,7 +73,7 @@ if args.wipe:
       pqcollection.remove({"season": CURRENT_SEASON})
 
 for collection_name in collections_to_sync:
-  
+
   print("\n--------------------------" + collection_name + "--------------------------")
   wm_collection = wmdb.get_collection(collection_name)
 
@@ -89,14 +87,14 @@ for collection_name in collections_to_sync:
   if not args.wipe: wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
 
   collection_count=0
-  for row in wm_collection.find(wm_query):
+  for row in wm_collection.find({"season": CURRENT_SEASON}):
 
     if args.verbose and collection_count > 0 and collection_count % 1000 == 0:
       print('processing row ' + str(collection_count))
     collection_count=collection_count+1
 
     #basically seasonboxcars doesnt have these fields but check for all just in case
-    if collection_name.startswith("season") and "playerid" in row and "team" in row:
+    if (collection_name.startswith("season") or collection_name == "shifts") and "playerid" in row and "team" in row:
       season_player_key = str(row["playerid"]) + "-" + row["team"]
       if season_player_key in player_dict:
         row["gamesplayed"] = player_dict[season_player_key]
