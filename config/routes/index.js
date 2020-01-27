@@ -26,6 +26,7 @@ module.exports = exports = function (app, locator) {
     app.get('/about', (req, res) => res.render("about"));
     app.get('/contact', (req, res) => res.render("contact"));
     app.get('/terms_of_service', (req, res) => res.render("tos"));
+    
     app.get('/woodwowy', format_get_for_testing, (req, res) => stats.getWowy(req, res));
     app.post('/woodwowy', (req, res) => stats.getWowy(req, res));
     app.get('/woodwowy/seasons', (req, res) => stats.wowySeasons(req, res));
@@ -33,6 +34,9 @@ module.exports = exports = function (app, locator) {
     app.get('/woodmoney', format_get_for_testing,(req, res) => stats.getWoodmoney(req, res));
     app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
+
+    app.get('/shifts', format_get_for_testing,(req, res) => stats.getShifts(req, res));
+    app.post('/shifts', (req, res) => stats.getShifts(req, res));
 
     let PuckpediaController = require('../../modules/puckpedia/controller');
     let puckpedia = new PuckpediaController(locator);
