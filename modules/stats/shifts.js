@@ -244,8 +244,21 @@ class ShiftsQuery {
     select(player_results, options) {
 
         const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
+        const filter_positions = _.map(options.positions, x => x);
 
-        let expression = _.chain(player_results);
+        let expression = _.chain(player_results)
+            .filter(x => {
+
+                if (x.positions.length === 1 && x.positions[0] === 'g') return false;
+
+                if (options.positions !== "all") {
+                    if (_.intersection(x.positions, filter_positions).length === 0) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
 
         if (options.player) {
             expression = expression.sortBy(['season'], ['desc']);
