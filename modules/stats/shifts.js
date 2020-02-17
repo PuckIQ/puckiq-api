@@ -38,11 +38,11 @@ class ShiftsQuery {
                 player: null,
                 team : null,
                 tier: null,
-                min_toi: null,
-                max_toi: null,
+                //min_toi: null,
+                //max_toi: null,
                 offset : 0,
                 group_by : constants.group_by.player_season_team,
-                sort : 'evtoi',
+                sort : 'totalshifts',
                 sort_direction : 'desc',
                 count: MAX_COUNT
             };
@@ -62,21 +62,6 @@ class ShiftsQuery {
                 return reject(new AppException(constants.exceptions.invalid_request,
                     "Date range not an option for Shift Data",
                     {step: 'fetch_data'}));
-
-                // let err = validator.validateDate(parseInt(options.from_date), "from_date");
-                // if (err) return reject(err);
-                //
-                // err = validator.validateDate(parseInt(options.to_date), "to_date");
-                // if (err) return reject(err);
-                //
-                // options.from_date = new Date(parseInt(options.from_date));
-                // options.to_date = new Date(parseInt(options.to_date));
-                //
-                // if (options.from_date > options.to_date) {
-                //     return reject(new AppException(constants.exceptions.invalid_request,
-                //         "From_Date cannot be greater than To_Date",
-                //         {err: err, step: 'fetch_data'}));
-                // }
 
             } else if (!_.has(options, "season")){
 
@@ -184,7 +169,7 @@ class ShiftsQuery {
 
         if (options.from_date && options.to_date) {
             cache_key = `${options.from_date}-${options.to_date}-${options.group_by}`;
-            query = null;
+            return Promise.reject("Invalid argments, no from/to date for shift data");
         } else {
             cache_key = `${options.season || 'all'}-${options.group_by}`;
             query = this.queries.season_shifts;
@@ -205,20 +190,21 @@ class ShiftsQuery {
 
                     //filter down to the queryable fields...
                     let query_options = {};
-                    _.each(['season', 'from_date', 'to_date', 'player', 'team', 'group_by'], (key) => {
+                    _.each(['season', 'player', 'team', 'group_by'], (key) => {
                         if (options[key]) query_options[key] = options[key];
                     });
 
                     const key_function = (rec) => {
+                        let id = rec._id;
                         switch (options.group_by) {
                             case constants.group_by.player_season_team:
-                                return `${rec.season}-${rec.player_id}-${rec.team}`;
+                                return `${id.season}-${id.player_id}-${id.team}`;
                             case constants.group_by.player_season:
-                                return `${rec.season}-${rec.player_id}`;
+                                return `${id.season}-${id.player_id}`;
                             case constants.group_by.player_team:
-                                return `${rec.player_id}-${rec.team}`;
+                                return `${id.player_id}-${id.team}`;
                             case constants.group_by.player:
-                                return `${rec.player_id}`;
+                                return `${id.player_id}`;
                             default:
                                 return 'something_wrong';
                         }
@@ -229,17 +215,7 @@ class ShiftsQuery {
                         let player_results = {};
                         _.each(results, x => {
                             let key = key_function(x);
-                            if (!player_results[key]) {
-                                player_results[key] = {
-                                    positions: _.map(x.positions, pos => pos.toLowerCase())
-                                };
-                            }
-
-                            if(_.has(player_results[key], x.woodmoneytier)) {
-                                console.log("duplicate record for", key);
-                            } else {
-                                player_results[key][x.woodmoneytier] = x;
-                            }
+                            player_results[key] = x;
                         });
 
                         if (!options.player && !options.team) {
@@ -251,12 +227,12 @@ class ShiftsQuery {
                         return resolve(selected_player_results);
 
                     }, (err) => {
-                        return reject(new AppException(constants.exceptions.database_error, "Error searching Woodmoney",
+                        return reject(new AppException(constants.exceptions.database_error, "Error searching Shifts",
                             {err: err, step: 'fetch_data'}));
                     });
 
                 }, (err) => {
-                    return reject(new AppException(constants.exceptions.database_error, "Error searching Woodmoney",
+                    return reject(new AppException(constants.exceptions.database_error, "Error searching Shifts",
                         {err: err, step: 'load_player_cache'}));
                 });
 
@@ -268,51 +244,19 @@ class ShiftsQuery {
     select(player_results, options) {
 
         const dir = options.sort_direction === constants.sort.ascending ? 1 : -1;
-        const filter_positions = _.map(options.positions, x => x);
 
-        let expression = _.chain(player_results)
-            .filter(x => {
-
-                if (x.positions.length === 1 && x.positions[0] === 'g') return false;
-
-                if (options.positions !== "all") {
-                    if (_.intersection(x.positions, filter_positions).length === 0) {
-                        return false;
-                    }
-                }
-
-                if (options.min_toi) {
-                    let tier = options.tier || 'All';
-                    if (x[tier]['evtoi'] < options.min_toi) return false;
-                }
-
-                if (options.max_toi) {
-                    let tier = options.tier || 'All';
-                    if (x[tier]['evtoi'] > options.max_toi) return false;
-                }
-
-                return true;
-            });
+        let expression = _.chain(player_results);
 
         if (options.player) {
             expression = expression.sortBy(['season'], ['desc']);
         } else {
             expression = expression.sortBy(x => {
-                let tier = options.tier || 'All';
+                let tier = options.totalshifts || 'All';
                 return x[tier][options.sort] * dir;
             });
         }
 
         let result = expression.slice(options.offset, options.offset + options.count)
-            .map(x => {
-
-                let tiers = _.map(_.values(constants.woodmoney_tier), tier => {
-                    if (!options.tier || tier === options.tier) return x[tier];
-                    return null;
-                });
-
-                return _.compact(tiers);
-            })
             .flatten()
             .value();
 
