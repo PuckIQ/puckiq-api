@@ -52,7 +52,8 @@ module.exports = (mongoose, config) => {
                             season: '$season',
                             team: '$team',
                             games_played: '$gamesplayed',
-                            
+                            total_shifts: '$totalshifts',
+
                             ostart_shifts : '$ostart.shifts',
                             ostart_gf : '$ostart.gf',
                             ostart_ga : '$ostart.ga',
@@ -82,16 +83,14 @@ module.exports = (mongoose, config) => {
                             pureotf_ga : '$pureotf.ga',
                             pureotf_cf : '$pureotf.cf',
                             pureotf_ca : '$pureotf.ca',
-                            pureotf_avgshift : '$pureotf.avgshift',
+                            pureotf_avgshift : '$pureotf.avgshift'
                         }
                     }
                 }
             }
         ]).then((data) => {
 
-            if(options.group_by !== constants.group_by.player_season_team) {
-                data = shift_formatter.flatten(data, player_dict);
-            }
+            data = shift_formatter.formatBulk(data, player_dict);
 
             let sorted = data; //todo
             // let result = woodmoney_formatter.formatBulk(data, player_dict);

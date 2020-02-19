@@ -37,7 +37,7 @@ class ShiftsQuery {
                 season: null,
                 player: null,
                 team : null,
-                tier: null,
+                // tier: null,
                 //min_toi: null,
                 //max_toi: null,
                 offset : 0,
@@ -264,8 +264,7 @@ class ShiftsQuery {
             expression = expression.sortBy(['season'], ['desc']);
         } else {
             expression = expression.sortBy(x => {
-                let tier = options.totalshifts || 'All';
-                return x[tier][options.sort] * dir;
+                return x[options.sort || 'totalshifts'] * dir;
             });
         }
 
