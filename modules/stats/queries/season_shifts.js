@@ -92,9 +92,9 @@ module.exports = (mongoose, config) => {
 
             data = shift_formatter.formatBulk(data, player_dict);
 
-            let sorted = data; //todo
-            // let result = woodmoney_formatter.formatBulk(data, player_dict);
-            // let sorted = _.orderBy(result,['season', 'tier_sort_index'], ['desc', 'asc']);
+            let sorted = !group_id.season ?
+                _.orderBy(data,['_id.season'], ['desc']) :
+                data;
 
             return Promise.resolve(sorted);
 

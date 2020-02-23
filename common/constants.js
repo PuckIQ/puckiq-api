@@ -72,6 +72,13 @@ module.exports = {
         "regular_season" : 2,
         "playoffs" : 3
     },
+    shift_types : {
+        "ostart": "ostart",
+        "nstart":"nstart",
+        "dstart":"dstart",
+        "otf":"otf",
+        "pureotf":"pureotf"
+    },
     sort : {
         ascending : 'asc',
         descending : 'desc'

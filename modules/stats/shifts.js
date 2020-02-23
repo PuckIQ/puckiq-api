@@ -37,7 +37,7 @@ class ShiftsQuery {
                 season: null,
                 player: null,
                 team : null,
-                // tier: null,
+                shift_type: null,
                 //min_toi: null,
                 //max_toi: null,
                 offset : 0,
@@ -127,11 +127,11 @@ class ShiftsQuery {
                 );
             }
 
-            if (options.tier && !~_.values(constants.woodmoney_tier).indexOf(options.tier)) {
+            if (options.shift_type && !~_.values(constants.shift_types).indexOf(options.shift_type)) {
                 return reject(new AppException(
                     constants.exceptions.invalid_argument,
-                    `Invalid value for parameter: ${options.tier}`,
-                    {param: 'tier', value: options.tier}
+                    `Invalid value for parameter: ${options.shift_type}`,
+                    {param: 'shift_type', value: options.shift_type}
                 ));
             }
 
@@ -215,7 +215,17 @@ class ShiftsQuery {
                         let player_results = {};
                         _.each(results, x => {
                             let key = key_function(x);
-                            player_results[key] = x;
+                            if (!player_results[key]) {
+                                player_results[key] = {
+                                    positions: _.map(x.positions, pos => pos.toLowerCase())
+                                };
+                            }
+
+                            if(_.has(player_results[key], x.shift_type)) {
+                                console.log("duplicate record for", key);
+                            } else {
+                                player_results[key][x.shift_type] = x;
+                            }
                         });
 
                         if (!options.player && !options.team) {
@@ -264,11 +274,21 @@ class ShiftsQuery {
             expression = expression.sortBy(['season'], ['desc']);
         } else {
             expression = expression.sortBy(x => {
-                return x[options.sort || 'totalshifts'] * dir;
+                let shift_type = options.shift_type || constants.shift_types.ostart; // todo all
+                return x[shift_type][options.sort] * dir;
             });
         }
 
         let result = expression.slice(options.offset, options.offset + options.count)
+            .map(x => {
+
+                let shift_types = _.map(_.values(constants.shift_types), st => {
+                    if (!options.shift_type || st === options.shift_type) return x[st];
+                    return null;
+                });
+
+                return _.compact(shift_types);
+            })
             .flatten()
             .value();
 
