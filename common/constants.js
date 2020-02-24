@@ -72,7 +72,7 @@ module.exports = {
         "regular_season" : 2,
         "playoffs" : 3
     },
-    shift_types : {
+    shift_type : {
         "ostart": "ostart",
         "nstart":"nstart",
         "dstart":"dstart",

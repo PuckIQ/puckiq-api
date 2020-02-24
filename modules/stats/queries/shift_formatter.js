@@ -3,7 +3,8 @@
 const _ = require('lodash');
 const constants = require('../../../common/constants');
 
-const shift_types = _.keys(constants.shift_types);
+const shift_types = _.keys(constants.shift_type);
+const base_shift = {shifts: 0, gf: 0, ga: 0, cf: 0, ca: 0, toi: 0};
 
 exports.formatBulk = (data, player_dict) => {
 
@@ -24,9 +25,9 @@ exports.formatBulk = (data, player_dict) => {
 
         res.total_shifts = 0;
 
-        let shifts = {};
+        let shifts = {all: _.extend({}, base_shift)};
         _.each(shift_types, st => {
-            shifts[st] = {shifts: 0, gf: 0, ga: 0, cf: 0, ca: 0, toi: 0};
+            shifts[st] = _.extend({}, base_shift);
         });
 
         _.each(item.results, s => {
@@ -38,6 +39,12 @@ exports.formatBulk = (data, player_dict) => {
                 shifts[st][`cf`] += s[`${st}_cf`];
                 shifts[st][`ca`] += s[`${st}_ca`];
                 shifts[st][`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`]);
+                shifts.all[`shifts`] += s[`${st}_shifts`];
+                shifts.all[`gf`] += s[`${st}_gf`];
+                shifts.all[`ga`] += s[`${st}_ga`];
+                shifts.all[`cf`] += s[`${st}_cf`];
+                shifts.all[`ca`] += s[`${st}_ca`];
+                shifts.all[`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`]);
             });
         });
 
@@ -46,6 +53,8 @@ exports.formatBulk = (data, player_dict) => {
             results.push(_.extend({}, res, {shift_type: st}, shifts[st]));
         });
 
+        shifts.all[`avgshift`] = shifts.all[`toi`] ? shifts.all[`shifts`] / shifts.all[`toi`] : 0;
+        results.push(_.extend({}, res, {shift_type: 'all'}, shifts.all));
     });
 
     return results;

@@ -7,6 +7,7 @@ const InMemoryCache = require('../../common/in_memory_cache');
 const AppException = require('../../common/app_exception');
 
 const MAX_COUNT = 100;
+const all_shift_types = ['all'].concat(_.keys(constants.shift_type));
 
 class ShiftsQuery {
 
@@ -127,7 +128,7 @@ class ShiftsQuery {
                 );
             }
 
-            if (options.shift_type && !~_.values(constants.shift_types).indexOf(options.shift_type)) {
+            if (options.shift_type && !~_.values(constants.shift_type).indexOf(options.shift_type)) {
                 return reject(new AppException(
                     constants.exceptions.invalid_argument,
                     `Invalid value for parameter: ${options.shift_type}`,
@@ -274,7 +275,7 @@ class ShiftsQuery {
             expression = expression.sortBy(['season'], ['desc']);
         } else {
             expression = expression.sortBy(x => {
-                let shift_type = options.shift_type || constants.shift_types.ostart; // todo all
+                let shift_type = options.shift_type || 'all';
                 return x[shift_type][options.sort] * dir;
             });
         }
@@ -282,7 +283,7 @@ class ShiftsQuery {
         let result = expression.slice(options.offset, options.offset + options.count)
             .map(x => {
 
-                let shift_types = _.map(_.values(constants.shift_types), st => {
+                let shift_types = _.map(all_shift_types, st => {
                     if (!options.shift_type || st === options.shift_type) return x[st];
                     return null;
                 });
