@@ -76,8 +76,7 @@ module.exports = {
         "ostart": "ostart",
         "nstart":"nstart",
         "dstart":"dstart",
-        "otf":"otf",
-        "pureotf":"pureotf"
+        "otf":"otf"
     },
     sort : {
         ascending : 'asc',

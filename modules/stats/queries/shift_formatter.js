@@ -25,7 +25,7 @@ exports.formatBulk = (data, player_dict) => {
 
         res.total_shifts = 0;
 
-        let shifts = {all: _.extend({}, base_shift)};
+        let shifts = {all: _.extend({ shift_pct : 100 }, base_shift)};
         _.each(shift_types, st => {
             shifts[st] = _.extend({}, base_shift);
         });
@@ -48,12 +48,22 @@ exports.formatBulk = (data, player_dict) => {
             });
         });
 
+        if(shifts.all.shifts > 0) {
+            shifts.all[`gf_pct`] = shifts.all.gf/(shifts.all.gf + shifts.all.ga);
+            shifts.all[`cf_pct`] = shifts.all.cf/(shifts.all.cf + shifts.all.ca);
+        }
+
         _.each(shift_types, st => {
-            shifts[st][`avgshift`] = shifts[st][`toi`] ? shifts[st][`shifts`] / shifts[st][`toi`] : 0;
+
+            shifts[st][`avgshift`] = shifts[st][`shifts`] ? shifts[st][`toi`] / shifts[st][`shifts`] : 0;
+            shifts[st][`shift_pct`] = shifts.all[`shifts`] ? (shifts[st][`shifts`] / shifts.all[`shifts`] * 100) : 0;
+            shifts[st][`gf_pct`] = shifts[st][`gf`] / ((shifts[st][`gf`] + shifts[st][`ga`]) || 1);
+            shifts[st][`cf_pct`] = shifts[st][`cf`] / ((shifts[st][`cf`] + shifts[st][`ca`]) || 1);
+
             results.push(_.extend({}, res, {shift_type: st}, shifts[st]));
         });
 
-        shifts.all[`avgshift`] = shifts.all[`toi`] ? shifts.all[`shifts`] / shifts.all[`toi`] : 0;
+        shifts.all[`avgshift`] = shifts.all[`shifts`] ? shifts.all[`toi`] / shifts.all[`shifts`] : 0;
         results.push(_.extend({}, res, {shift_type: 'all'}, shifts.all));
     });
 
