@@ -19,6 +19,7 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
+        delete query.seasons;
         delete query.group_by;
         delete query.tier;
         delete query.group_by;
@@ -28,10 +29,10 @@ module.exports = (mongoose, config) => {
             delete query.player;
         }
 
-        if (_.isArray(options.season) && options.season.length > 1) {
-            query.season = {$in: _.map(options.season, x => parseInt(x))};
-        } else if (options.season && options.season !== 'all') {
-            options.season = _.isArray(options.season) ? parseInt(options.season[0]) : parseInt(options.season);
+        if (_.isArray(options.seasons) && options.seasons.length > 1) {
+            query.season = {$in: _.map(options.seasons, x => parseInt(x))};
+        } else if (options.seasons && options.seasons !== 'all') {
+            query.season = _.isArray(options.seasons) ? parseInt(options.seasons[0]) : parseInt(options.seasons);
         }
 
         let group_id = {

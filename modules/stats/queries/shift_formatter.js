@@ -40,7 +40,7 @@ exports.formatBulk = (data, player_dict) => {
                 shifts[st][`ca`] += s[`${st}_ca`];
                 shifts[st][`dff`] += s[`${st}_dff`];
                 shifts[st][`dfa`] += s[`${st}_dfa`];
-                shifts[st][`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`]);
+                shifts[st][`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
                 shifts.all[`shifts`] += s[`${st}_shifts`];
                 shifts.all[`gf`] += s[`${st}_gf`];
                 shifts.all[`ga`] += s[`${st}_ga`];
@@ -48,7 +48,7 @@ exports.formatBulk = (data, player_dict) => {
                 shifts.all[`ca`] += s[`${st}_ca`];
                 shifts.all[`dff`] += s[`${st}_dff`];
                 shifts.all[`dfa`] += s[`${st}_dfa`];
-                shifts.all[`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`]);
+                shifts.all[`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
             });
         });
 

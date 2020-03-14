@@ -35,7 +35,7 @@ class ShiftsQuery {
 
             let defaults = {
                 positions : 'all',
-                season: null,
+                seasons: null,
                 player: null,
                 team : null,
                 shift_type: null,
@@ -64,33 +64,41 @@ class ShiftsQuery {
                     "Date range not an option for Shift Data",
                     {step: 'fetch_data'}));
 
-            } else if (!_.has(options, "season")){
+            } else if (!_.has(options, "seasons")){
 
                 return reject(new AppException(constants.exceptions.missing_argument,
-                    "Missing season parameter",
+                    "Missing seasons parameter",
                     {step: 'fetch_data'}));
 
-            } else if (_.has(options, "season")) {
+            } else if (_.has(options, "seasons")) {
 
                 //just in case
                 delete options.from_date;
                 delete options.to_date;
 
-                if (_.isArray(options.season)) {
-                    options.season = _.map(options.season, x => parseInt(x));
+                if (_.isArray(options.seasons)) {
+                    options.seasons = _.map(options.seasons, x => parseInt(x));
+                } else if (options.seasons === "all" || options.seasons === null) {
+                    //its valid, carry on...
+                    delete options.seasons;
+                } else if (_.isString(options.seasons)) {
+                    // needed to support GETs for testing
+                    options.seasons = _.map(options.seasons.split(","), x => parseInt(x));
+                } else {
+                    options.seasons = parseInt(options.seasons);
+                    let err = validator.validateSeason(options.season, "season");
+                    if (err) return reject(err);
+                }
+
+                if (options.seasons) {
+                    options.seasons = _.compact(options.seasons);
                     let err = null;
-                    if (_.some(options.season, season => {
+                    if (_.some(options.seasons, season => {
                         err = validator.validateSeason(season, "season");
                         if (err) return true;
                     })) {
                         return reject(err);
                     }
-                } else if (options.season === "all" || options.season === null) {
-                    delete options.season; //its valid, carry on...
-                } else {
-                    options.season = parseInt(options.season);
-                    let err = validator.validateSeason(options.season, "season");
-                    if (err) return reject(err);
                 }
             }
 
@@ -171,9 +179,13 @@ class ShiftsQuery {
         if (options.from_date && options.to_date) {
             cache_key = `${options.from_date}-${options.to_date}-${options.group_by}`;
             return Promise.reject("Invalid argments, no from/to date for shift data");
-        } else {
-            cache_key = `${options.season || 'all'}-${options.group_by}`;
+        } else if(_.isArray(options.seasons)) {
+            cache_key = `${options.seasons.join(",") || 'all'}-${options.group_by}`;
             query = this.queries.season_shifts;
+        } else {
+            cache_key = `${options.seasons || 'all'}-${options.group_by}`;
+            query = this.queries.season_shifts;
+
         }
 
         query = query(this.locator.get('mongoose'), this.locator.get('config'));
@@ -191,7 +203,7 @@ class ShiftsQuery {
 
                     //filter down to the queryable fields...
                     let query_options = {};
-                    _.each(['season', 'player', 'team', 'group_by'], (key) => {
+                    _.each(['seasons', 'player', 'team', 'group_by'], (key) => {
                         if (options[key]) query_options[key] = options[key];
                     });
 
