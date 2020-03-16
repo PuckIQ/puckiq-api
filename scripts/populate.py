@@ -13,7 +13,7 @@ parser.add_argument('--season', '-s', dest='season', action='store', type=int, d
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
 parser.add_argument('-verbose', '-v', dest='verbose', action='store_true', help='Verbose mode', default=False)
-parser.add_argument('-wipe', '-w', dest='verbose', action='store_true',
+parser.add_argument('-wipe', '-w', dest='wipe', action='store_true',
                     help='Use this to clear existing data for a season and rebuild from G\'s db', default=False)
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
@@ -85,7 +85,7 @@ for collection_name in collections_to_sync:
   #only get the data that has been updated since last_run_timestamp
   #(unless wiping or shifts collection which is small)
   wm_query = {"season": CURRENT_SEASON }
-  if not args.wipe and collection_name = 'shifts': wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
+  if not args.wipe and collection_name != 'shifts': wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
 
   collection_count=0
   for row in wm_collection.find({"season": CURRENT_SEASON}):
