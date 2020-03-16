@@ -63,7 +63,7 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
 #wipe existing data if necessary
 if args.wipe:
   for collection_name in collections_to_sync:
-    if collection_name.find('season') != -1:
+    if collection_name.find('season') != -1 or collection_name == 'shifts':
       if args.verbose: print('deleting records from collection ' + collection_name)
       pqcollection = pqdb.get_collection(collection_name)
       pqcollection.remove({'season': CURRENT_SEASON})
