@@ -4,7 +4,7 @@ const _ = require('lodash');
 const constants = require('../../../common/constants');
 
 const shift_types = _.keys(constants.shift_type);
-const base_shift = {shifts: 0, gf: 0, ga: 0, cf: 0, ca: 0, dff:0, dfa: 0, toi: 0};
+const base_shift = {shifts: 0, gf: 0, ga: 0, cf: 0, ca: 0, dff:0, dfa: 0, toi: 0, gf60: 0, ga60: 0, cf60: 0, ca60: 0};
 
 exports.formatBulk = (data, player_dict) => {
 
@@ -33,6 +33,8 @@ exports.formatBulk = (data, player_dict) => {
         _.each(item.results, s => {
             res.total_shifts += s.total_shifts;
             _.each(shift_types, st => {
+                const toi = (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
+
                 shifts[st][`shifts`] += s[`${st}_shifts`];
                 shifts[st][`gf`] += s[`${st}_gf`];
                 shifts[st][`ga`] += s[`${st}_ga`];
@@ -40,7 +42,8 @@ exports.formatBulk = (data, player_dict) => {
                 shifts[st][`ca`] += s[`${st}_ca`];
                 shifts[st][`dff`] += s[`${st}_dff`];
                 shifts[st][`dfa`] += s[`${st}_dfa`];
-                shifts[st][`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
+                shifts[st][`toi`] += toi;
+
                 shifts.all[`shifts`] += s[`${st}_shifts`];
                 shifts.all[`gf`] += s[`${st}_gf`];
                 shifts.all[`ga`] += s[`${st}_ga`];
@@ -48,7 +51,7 @@ exports.formatBulk = (data, player_dict) => {
                 shifts.all[`ca`] += s[`${st}_ca`];
                 shifts.all[`dff`] += s[`${st}_dff`];
                 shifts.all[`dfa`] += s[`${st}_dfa`];
-                shifts.all[`toi`] += (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
+                shifts.all[`toi`] += toi;
             });
         });
 
@@ -56,6 +59,17 @@ exports.formatBulk = (data, player_dict) => {
             shifts.all[`gf_pct`] = (shifts.all.gf/(shifts.all.gf + shifts.all.ga))*100;
             shifts.all[`cf_pct`] = (shifts.all.cf/(shifts.all.cf + shifts.all.ca))*100;
             shifts.all[`dff_pct`] = (shifts.all.dff/((shifts.all.dff + shifts.all.dfa) || 1))*100;
+
+            const hours = shifts.all[`toi`] / 60;
+            if(hours > 0) {
+                shifts.all.gf60 = shifts.all.gf/hours;
+                shifts.all.ga60 = shifts.all.ga/hours;
+                shifts.all.cf60 = shifts.all.cf/hours;
+                shifts.all.ca60 = shifts.all.ca/hours;
+                shifts.all.dff60 += shifts.all.dff/hours;
+                shifts.all.dfa60 += shifts.all.dfa/hours;
+            }
+
         }
 
         _.each(shift_types, st => {
@@ -65,6 +79,16 @@ exports.formatBulk = (data, player_dict) => {
             shifts[st][`gf_pct`] = (shifts[st][`gf`] / ((shifts[st][`gf`] + shifts[st][`ga`]) || 1))*100;
             shifts[st][`cf_pct`] = (shifts[st][`cf`] / ((shifts[st][`cf`] + shifts[st][`ca`]) || 1))*100;
             shifts[st][`dff_pct`] = (shifts[st][`dff`] / ((shifts[st][`dff`] + shifts[st][`dfa`]) || 1))*100;
+
+            const hours = shifts[st].toi / 60;
+            if(hours > 0) {
+                shifts[st].gf60 = shifts[st].gf/hours;
+                shifts[st].ga60 = shifts[st].ga/hours;
+                shifts[st].cf60 = shifts[st].cf/hours;
+                shifts[st].ca60 = shifts[st].ca/hours;
+                shifts[st].dff60 = shifts[st].dff/hours;
+                shifts[st].dfa60 = shifts[st].dfa/hours;
+            }
 
             results.push(_.extend({}, res, {shift_type: st}, shifts[st]));
         });
