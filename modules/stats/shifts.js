@@ -280,6 +280,16 @@ class ShiftsQuery {
                     }
                 }
 
+                if (options.min_toi) {
+                    let shift_type = options.shift_type || 'all';
+                    if (x[shift_type]['toi'] < options.min_toi) return false;
+                }
+
+                if (options.max_toi) {
+                    let shift_type = options.shift_type || 'all';
+                    if (x[shift_type]['toi'] > options.max_toi) return false;
+                }
+
                 return true;
             });
 
