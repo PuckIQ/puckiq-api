@@ -4,7 +4,12 @@ const _ = require('lodash');
 const constants = require('../../../common/constants');
 
 const shift_types = _.keys(constants.shift_type);
-const base_shift = {shifts: 0, gf: 0, ga: 0, cf: 0, ca: 0, dff:0, dfa: 0, toi: 0, gf60: 0, ga60: 0, cf60: 0, ca60: 0};
+const base_shift = {
+    toi: 0, shifts: 0,
+    gf: 0, ga: 0, gf60: 0, ga60: 0,
+    cf: 0, ca: 0, cf60: 0, ca60: 0,
+    dff:0, dfa: 0, dff60: 0, dfa60: 0
+};
 
 exports.formatBulk = (data, player_dict) => {
 
