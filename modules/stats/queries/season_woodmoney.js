@@ -18,6 +18,10 @@ module.exports = (mongoose, config) => {
 
         let query = helper.mongoQueryBuilder(options);
 
+        if(query.team) {
+            query.team = {$in: [query.team, 'EDM']};
+        }
+
         delete query.group_by;
 
         if (query.player) {
