@@ -163,6 +163,10 @@ exports._flattenWoodmoneyIntoTiers = (record) => {
 
     // nothing required
     if(woodmonies.length === 8) return woodmonies;
+    if(woodmonies.length === 6 && !_.some(woodmonies, x => x.woodmoneytier === constants.woodmoney_tier.all)){
+        let all = this.buildAllRecords(woodmonies);
+        return woodmonies.concat(all);
+    }
 
     // initialize player total
     let player_total = { };
