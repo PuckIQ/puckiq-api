@@ -64,11 +64,7 @@ module.exports = function(mongoose, config) {
             type: Number,
             required: true
         },
-        "gametype": {
-            type: Number,
-            required: true,
-            enum: _.values(constants.schedule_game_type)
-        },
+
         playerid: {
             type: Number,
             required: true
@@ -76,6 +72,15 @@ module.exports = function(mongoose, config) {
         playerkey: {
             type: String,
             required: true
+        },
+        "team": { type: String },
+
+        "wowytype": { type: String, enum: _.values(constants.wowy_type) },
+        "woodmoneytier": { type: String, enum: _.values(constants.woodmoney_tier) },
+        "gametype": {
+            type: Number,
+            required: true,
+            enum: _.values(constants.schedule_game_type)
         },
         "sacf": { type: Number },
         "saca": { type: Number },
@@ -101,16 +106,13 @@ module.exports = function(mongoose, config) {
         "sf60": { type: Number },
         "ff": { type: Number },
         "fa60": { type: Number },
-        "wowytype": { type: String, enum: _.values(constants.wowy_type) },
         "sacf60": { type: Number },
         "ffpct": { type: Number },
         "cf60": { type: Number },
-        "woodmoneytier": { type: String, enum: _.values(constants.woodmoney_tier) },
         "ff60": { type: Number },
         "dff60": { type: Number },
         "dffpct": { type: Number },
         "oz": { type: Number },
-        "team": { type: String },
         "dfa60": { type: Number },
         "sa": { type: Number },
         "sf": { type: Number },

@@ -13,6 +13,7 @@ module.exports = {
         schedule: 'schedule',
         seasonboxcar: 'seasonboxcars',
         seasonroster: 'seasonroster',
+        seasonshift: 'shifts',
         seasonwoodmoney: 'seasonwoodmoney',
         seasonwowy: 'seasonwowy',
         seasonwoodwowy: 'seasonwoodwowy'
@@ -70,6 +71,12 @@ module.exports = {
         "pre_season" : 1,
         "regular_season" : 2,
         "playoffs" : 3
+    },
+    shift_type : {
+        "ostart": "ostart",
+        "nstart":"nstart",
+        "dstart":"dstart",
+        "otf":"otf"
     },
     sort : {
         ascending : 'asc',
