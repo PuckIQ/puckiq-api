@@ -75,7 +75,7 @@ if args.wipe:
       if args.verbose: print('deleting records from collection ' + collection_mapper[collection_name])
       pqcollection = pqdb.get_collection(collection_mapper[collection_name])
       pqcollection.remove({'season': CURRENT_SEASON})
-    elif if collection_name.find('season'):
+    elif collection_name.find('season') >= 0:
       if args.verbose: print('deleting records from collection ' + collection_name)
       pqcollection = pqdb.get_collection(collection_name)
       pqcollection.remove({'season': CURRENT_SEASON})
