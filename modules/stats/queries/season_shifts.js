@@ -11,7 +11,7 @@ module.exports = (mongoose, config) => {
 
     return (options, player_dict) => {
 
-        let SeasonShift = mongoose.model('SeasonShift');
+        const SeasonShift = mongoose.model('SeasonShift');
 
         //NOTE: we need both and calculate the rels
         if (options.onoff) delete options.onoff;
