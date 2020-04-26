@@ -13,7 +13,8 @@ module.exports = {
         schedule: 'schedule',
         seasonboxcar: 'seasonboxcars',
         seasonroster: 'seasonroster',
-        seasonshift: 'shifts',
+        seasonshift: 'seasonshifts',
+        seasonteamshift: 'seasonteamshifts',
         seasonwoodmoney: 'seasonwoodmoney',
         seasonwowy: 'seasonwowy',
         seasonwoodwowy: 'seasonwoodwowy'
