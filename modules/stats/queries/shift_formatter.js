@@ -79,7 +79,7 @@ exports.formatBulk = (data, player_dict) => {
 
         _.each(shift_types, st => {
 
-            shifts[st][`avgshift`] = shifts[st][`shifts`] ? shifts[st][`toi`] / shifts[st][`shifts`] : 0;
+            shifts[st][`avgshift`] = shifts[st][`shifts`] ? shifts[st][`toi`] / shifts[st][`shifts`] * 60 : 0;
             shifts[st][`shift_pct`] = shifts.all[`shifts`] ? (shifts[st][`shifts`] / shifts.all[`shifts`] * 100) : 0;
             shifts[st][`gf_pct`] = (shifts[st][`gf`] / ((shifts[st][`gf`] + shifts[st][`ga`]) || 1))*100;
             shifts[st][`cf_pct`] = (shifts[st][`cf`] / ((shifts[st][`cf`] + shifts[st][`ca`]) || 1))*100;
