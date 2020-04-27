@@ -142,7 +142,7 @@ exports.buildAllFrom = (items) => {
 
 exports.calculateFieldsFor = (item) => {
 
-    item.avgshift = item.shifts ? item.toi / item.shifts : 0;
+    item.avgshift = item.shifts ? item.toi / item.shifts * 60 : 0;
     item.gf_pct = (item.gf / ((item.gf + item.ga) || 1))*100;
     item.cf_pct = (item.cf / ((item.cf + item.ca) || 1))*100;
     item.dff_pct = (item.dff / ((item.dff + item.dfa) || 1))*100;
