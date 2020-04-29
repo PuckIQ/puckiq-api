@@ -40,15 +40,15 @@ CURRENT_SEASON=args.season
 collection_mapper = {}
 collection_mapper["nhlroster"] = "seasonroster"
 collection_mapper["roster"] = "gameroster"
-collection_mapper["teamshifts"] = "seasonteamshifts"
+#collection_mapper["teamshifts"] = "seasonteamshifts"
 collection_mapper["shifts"] = "seasonshifts"
 
 if 'collection' in args and args.collection is not None:
   collections_to_sync = [args.collection]
 elif args.season_only:
-  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts','teamshifts']
+  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts']
 else:
-  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts','teamshifts']
+  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts']
 
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
