@@ -13,7 +13,8 @@ module.exports = {
         schedule: 'schedule',
         seasonboxcar: 'seasonboxcars',
         seasonroster: 'seasonroster',
-        seasonshift: 'shifts',
+        seasonshift: 'seasonshifts',
+        seasonteamshift: 'seasonteamshifts',
         seasonwoodmoney: 'seasonwoodmoney',
         seasonwowy: 'seasonwowy',
         seasonwoodwowy: 'seasonwoodwowy'
@@ -39,7 +40,8 @@ module.exports = {
         player_season_team : 'player_season_team',
         player_season : 'player_season',
         player_team : 'player_team',
-        player : 'player'
+        player : 'player',
+        team_season: 'team_season'
     },
     log_levels: {
         fatal: 0,

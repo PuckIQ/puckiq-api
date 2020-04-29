@@ -179,13 +179,17 @@ class ShiftsQuery {
         if (options.from_date && options.to_date) {
             cache_key = `${options.from_date}-${options.to_date}-${options.group_by}`;
             return Promise.reject("Invalid argments, no from/to date for shift data");
-        } else if(_.isArray(options.seasons)) {
-            cache_key = `${options.seasons.join(",") || 'all'}-${options.group_by}`;
-            query = this.queries.season_shifts;
-        } else {
+        } else if(options.group_by === constants.group_by.team_season) {
             cache_key = `${options.seasons || 'all'}-${options.group_by}`;
-            query = this.queries.season_shifts;
-
+            query = this.queries.season_team_shifts;
+        } else {
+            if (_.isArray(options.seasons)) {
+                cache_key = `${options.seasons.join(",") || 'all'}-${options.group_by}`;
+                query = this.queries.season_shifts;
+            } else {
+                cache_key = `${options.seasons || 'all'}-${options.group_by}`;
+                query = this.queries.season_shifts;
+            }
         }
 
         query = query(this.locator.get('mongoose'), this.locator.get('config'));
@@ -218,6 +222,8 @@ class ShiftsQuery {
                                 return `${id.player_id}-${id.team}`;
                             case constants.group_by.player:
                                 return `${id.player_id}`;
+                            case constants.group_by.team_season:
+                                return `${id.season}-${id.team}`;
                             default:
                                 return 'something_wrong';
                         }
@@ -295,6 +301,8 @@ class ShiftsQuery {
 
         if (options.player) {
             expression = expression.sortBy(['season'], ['desc']);
+        } else if(options.group_by === constants.group_by.team_season) {
+            //already sorted
         } else {
             expression = expression.sortBy(x => {
                 let shift_type = options.shift_type || 'all';

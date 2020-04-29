@@ -61,47 +61,100 @@ exports.formatBulk = (data, player_dict) => {
         });
 
         if(shifts.all.shifts > 0) {
-            shifts.all[`gf_pct`] = (shifts.all.gf/(shifts.all.gf + shifts.all.ga))*100;
-            shifts.all[`cf_pct`] = (shifts.all.cf/(shifts.all.cf + shifts.all.ca))*100;
-            shifts.all[`dff_pct`] = (shifts.all.dff/((shifts.all.dff + shifts.all.dfa) || 1))*100;
-
-            const hours = shifts.all[`toi`] / 60;
-            if(hours > 0) {
-                shifts.all.gf60 = shifts.all.gf/hours;
-                shifts.all.ga60 = shifts.all.ga/hours;
-                shifts.all.cf60 = shifts.all.cf/hours;
-                shifts.all.ca60 = shifts.all.ca/hours;
-                shifts.all.dff60 += shifts.all.dff/hours;
-                shifts.all.dfa60 += shifts.all.dfa/hours;
-            }
-
+            this.calculateFieldsFor(shifts.all);
         }
 
         _.each(shift_types, st => {
-
-            shifts[st][`avgshift`] = shifts[st][`shifts`] ? shifts[st][`toi`] / shifts[st][`shifts`] * 60 : 0;
+            this.calculateFieldsFor(shifts[st]);
             shifts[st][`shift_pct`] = shifts.all[`shifts`] ? (shifts[st][`shifts`] / shifts.all[`shifts`] * 100) : 0;
-            shifts[st][`gf_pct`] = (shifts[st][`gf`] / ((shifts[st][`gf`] + shifts[st][`ga`]) || 1))*100;
-            shifts[st][`cf_pct`] = (shifts[st][`cf`] / ((shifts[st][`cf`] + shifts[st][`ca`]) || 1))*100;
-            shifts[st][`dff_pct`] = (shifts[st][`dff`] / ((shifts[st][`dff`] + shifts[st][`dfa`]) || 1))*100;
-
-            const hours = shifts[st].toi / 60;
-            if(hours > 0) {
-                shifts[st].gf60 = shifts[st].gf/hours;
-                shifts[st].ga60 = shifts[st].ga/hours;
-                shifts[st].cf60 = shifts[st].cf/hours;
-                shifts[st].ca60 = shifts[st].ca/hours;
-                shifts[st].dff60 = shifts[st].dff/hours;
-                shifts[st].dfa60 = shifts[st].dfa/hours;
-            }
-
             results.push(_.extend({}, res, {shift_type: st}, shifts[st]));
         });
 
-        shifts.all[`avgshift`] = shifts.all[`shifts`] ? shifts.all[`toi`] / shifts.all[`shifts`] : 0;
         results.push(_.extend({}, res, {shift_type: 'all'}, shifts.all));
     });
 
     return results;
+
+};
+
+exports.formatTeamBulk = (data) => {
+
+    data = _.map(data, row => {
+
+        let item = _.extend({}, base_shift, row);
+
+        item._id = { team : row.team, season: row.season };
+
+        item.shift_type = item.shifttype;
+        delete item.shifttype;
+
+        item.toi = item.toi/60; //toi is in minutes for other shift data
+
+        this.calculateFieldsFor(item);
+
+        return item;
+    });
+
+    let keyed = _.groupBy(data, x => `${x.team}-${x.season}`);
+
+    _.each(_.keys(keyed), (key) => {
+        let all = this.buildAllFrom(keyed[key]);
+         keyed[key].push(all);
+    });
+
+    return _.flatten(_.values(keyed));
+
+};
+
+exports.buildAllFrom = (items) => {
+
+    if(!items.length) {
+        console.log("Data issue.. no records?");
+        return null;
+    }
+
+    let all = _.extend({
+        _id: { team: items[0].team, season: items[0].season },
+        team: items[0].team,
+        season: items[0].season,
+        shift_type: 'all',
+        shift_pct : 100}, base_shift);
+
+    _.each(items, item => {
+        all.shifts += item.shifts;
+        all.gf += item.gf;
+        all.ga += item.ga;
+        all.cf += item.cf;
+        all.ca += item.ca;
+        all.dff += item.dff;
+        all.dfa += item.dfa;
+        all.toi += item.toi;
+    });
+
+    _.each(items, item => {
+        item.shift_pct = all.shifts ? (item.shifts / all.shifts * 100) : 0;
+    });
+
+    this.calculateFieldsFor(all);
+
+    return all;
+};
+
+exports.calculateFieldsFor = (item) => {
+
+    item.avgshift = item.shifts ? item.toi / item.shifts * 60 : 0;
+    item.gf_pct = (item.gf / ((item.gf + item.ga) || 1))*100;
+    item.cf_pct = (item.cf / ((item.cf + item.ca) || 1))*100;
+    item.dff_pct = (item.dff / ((item.dff + item.dfa) || 1))*100;
+
+    const hours = item.toi / 60;
+    if(hours > 0) {
+        item.gf60 = item.gf/hours;
+        item.ga60 = item.ga/hours;
+        item.cf60 = item.cf/hours;
+        item.ca60 = item.ca/hours;
+        item.dff60 = item.dff/hours;
+        item.dfa60 = item.dfa/hours;
+    }
 
 };
