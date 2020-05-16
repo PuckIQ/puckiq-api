@@ -5,7 +5,7 @@ const constants = require('../../../common/constants');
 
 const shift_types = _.keys(constants.shift_type);
 const base_shift = {
-    toi: 0, shifts: 0,
+    games_played: 0, toi: 0, shifts: 0,
     gf: 0, ga: 0, gf60: 0, ga60: 0,
     cf: 0, ca: 0, cf60: 0, ca60: 0,
     dff:0, dfa: 0, dff60: 0, dfa60: 0
@@ -16,7 +16,7 @@ exports.formatBulk = (data, player_dict) => {
     let results = [];
     _.each(data, (item) => {
 
-        let res = {_id: item._id};
+        let res = {_id: item._id };
 
         // till we get a real nhlplayers collection
         if (_.has(player_dict, item._id.player_id)) {
@@ -37,9 +37,13 @@ exports.formatBulk = (data, player_dict) => {
 
         _.each(item.results, s => {
             res.total_shifts += s.total_shifts;
+
+            shifts.all.games_played += s.games_played;
+
             _.each(shift_types, st => {
                 const toi = (s[`${st}_shifts`] * s[`${st}_avgshift`])/60;
 
+                shifts[st].games_played += s.games_played;
                 shifts[st][`shifts`] += s[`${st}_shifts`];
                 shifts[st][`gf`] += s[`${st}_gf`];
                 shifts[st][`ga`] += s[`${st}_ga`];
@@ -117,10 +121,12 @@ exports.buildAllFrom = (items) => {
         _id: { team: items[0].team, season: items[0].season },
         team: items[0].team,
         season: items[0].season,
+        // games_played: items[0].games_played,
         shift_type: 'all',
         shift_pct : 100}, base_shift);
 
     _.each(items, item => {
+        all.games_played += item.games_played,
         all.shifts += item.shifts;
         all.gf += item.gf;
         all.ga += item.ga;
