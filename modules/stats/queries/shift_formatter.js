@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const constants = require('../../../common/constants');
 
-const shift_types = _.keys(constants.shift_type);
+const shift_types = _.filter(_.keys(constants.shift_type), x => x !== 'all');
 const base_shift = {
     games_played: 0, toi: 0, shifts: 0,
     gf: 0, ga: 0, gf60: 0, ga60: 0,

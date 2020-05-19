@@ -16,6 +16,7 @@ module.exports = (mongoose, config) => {
         //NOTE: we need both and calculate the rels
         if (options.onoff) delete options.onoff;
         if (options.positions === 'all') delete options.positions;
+        if (options.shift_type === 'all') delete options.shift_type; // need all records then calculate it and filter later
 
         let query = helper.mongoQueryBuilder(options);
 

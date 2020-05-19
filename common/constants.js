@@ -75,6 +75,7 @@ module.exports = {
         "playoffs" : 3
     },
     shift_type : {
+        "all": "all",
         "ostart": "ostart",
         "nstart":"nstart",
         "dstart":"dstart",

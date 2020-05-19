@@ -7,7 +7,7 @@ const InMemoryCache = require('../../common/in_memory_cache');
 const AppException = require('../../common/app_exception');
 
 const MAX_COUNT = 100;
-const all_shift_types = ['all'].concat(_.keys(constants.shift_type));
+const all_shift_types = _.keys(constants.shift_type);
 
 class ShiftsQuery {
 
