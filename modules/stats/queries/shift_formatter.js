@@ -5,7 +5,7 @@ const constants = require('../../../common/constants');
 
 const shift_types = _.filter(_.keys(constants.shift_type), x => x !== 'all');
 const base_shift = {
-    games_played: 0, toi: 0, shifts: 0,
+    games_played: 0, toi: 0, shifts: 0, toi_per_game: 0,
     gf: 0, ga: 0, gf60: 0, ga60: 0,
     cf: 0, ca: 0, cf60: 0, ca60: 0,
     dff:0, dfa: 0, dff60: 0, dfa60: 0
@@ -152,6 +152,7 @@ exports.calculateFieldsFor = (item) => {
     item.gf_pct = (item.gf / ((item.gf + item.ga) || 1))*100;
     item.cf_pct = (item.cf / ((item.cf + item.ca) || 1))*100;
     item.dff_pct = (item.dff / ((item.dff + item.dfa) || 1))*100;
+    item.toi_per_game = item.toi / item.games_played;
 
     const hours = item.toi / 60;
     if(hours > 0) {

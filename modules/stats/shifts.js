@@ -43,7 +43,7 @@ class ShiftsQuery {
                 //max_toi: null,
                 offset : 0,
                 group_by : constants.group_by.player_season_team,
-                sort : 'totalshifts',
+                sort : 'toi_per_game',
                 sort_direction : 'desc',
                 count: MAX_COUNT
             };
