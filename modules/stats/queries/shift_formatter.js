@@ -149,9 +149,15 @@ exports.buildAllFrom = (items) => {
 exports.calculateFieldsFor = (item) => {
 
     item.avgshift = item.shifts ? item.toi / item.shifts * 60 : 0;
+    item.gfpct = (item.gf / ((item.gf + item.ga) || 1))*100;
+    item.cfpct = (item.cf / ((item.cf + item.ca) || 1))*100;
+    item.dffpct = (item.dff / ((item.dff + item.dfa) || 1))*100;
+    //TODO remove these old ones below
     item.gf_pct = (item.gf / ((item.gf + item.ga) || 1))*100;
     item.cf_pct = (item.cf / ((item.cf + item.ca) || 1))*100;
     item.dff_pct = (item.dff / ((item.dff + item.dfa) || 1))*100;
+    //end remove
+
     item.toi_per_game = item.toi / item.games_played;
 
     const hours = item.toi / 60;
