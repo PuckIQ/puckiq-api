@@ -126,7 +126,7 @@ exports.buildAllFrom = (items) => {
         shift_pct : 100}, base_shift);
 
     _.each(items, item => {
-        all.games_played += item.games_played,
+        all.games_played += item.games_played;
         all.shifts += item.shifts;
         all.gf += item.gf;
         all.ga += item.ga;
@@ -152,12 +152,6 @@ exports.calculateFieldsFor = (item) => {
     item.gfpct = (item.gf / ((item.gf + item.ga) || 1))*100;
     item.cfpct = (item.cf / ((item.cf + item.ca) || 1))*100;
     item.dffpct = (item.dff / ((item.dff + item.dfa) || 1))*100;
-    //TODO remove these old ones below
-    item.gf_pct = (item.gf / ((item.gf + item.ga) || 1))*100;
-    item.cf_pct = (item.cf / ((item.cf + item.ca) || 1))*100;
-    item.dff_pct = (item.dff / ((item.dff + item.dfa) || 1))*100;
-    //end remove
-
     item.toi_per_game = item.toi / item.games_played;
 
     const hours = item.toi / 60;
