@@ -14,7 +14,7 @@ python3 populate.py -s 20192020
 
 # get args from command line
 parser = argparse.ArgumentParser()
-parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20192020,
+parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20212021,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
