@@ -268,6 +268,34 @@ describe('woodmoney query tests', function() {
 
         });
 
+        it('will cache refresh cache on timeout', function(done) {
+
+            let options = {
+                positions: 'd',
+                count: 50,
+                tier: constants.woodmoney_tier.elite
+            };
+
+            let cache = new InMemoryCache({timeout: 1/100});
+
+            let query = new WoodmoneyQuery(locator, {queries: mock_queries, cache: cache});
+            let query2 = new WoodmoneyQuery(locator, {queries: mock_queries, cache: cache});
+
+            query.exec(options).then((results) => {
+                (request_count).should.equal(1);
+                setTimeout(() => {
+                    query2.exec(options).then((results) => {
+                        (request_count).should.equal(2);
+                        return done();
+                    });
+                }, 1000);
+            }, (err) => {
+                should.fail('this should not be called');
+                return done();
+            });
+
+        });
+
     });
 
     describe('validation tests', function() {

@@ -1,11 +1,5 @@
 'use strict';
 
-/**
- *
- * @param params
- *  timeout = timeout in seconds
- * @constructor
- */
 function InMemoryCache(params) {
     params = params || {};
 
