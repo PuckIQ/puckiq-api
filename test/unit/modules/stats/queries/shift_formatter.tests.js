@@ -1,9 +1,9 @@
 'use strict';
 
-let _ = require('lodash');
-let should = require('should');
-let constants = require('../../../../../common/constants');
-let ShiftFormatter = require('../../../../../modules/stats/queries/shift_formatter');
+const _ = require('lodash');
+const should = require('should');
+const constants = require('../../../../../common/constants');
+const ShiftFormatter = require('../../../../../modules/stats/queries/shift_formatter');
 
 describe("shift formatter tests", () => {
 
@@ -81,13 +81,13 @@ describe("shift formatter tests", () => {
             (by_shift_type.all.gf).should.equal(gf);
             (by_shift_type.all.ga).should.equal(ga);
             (by_shift_type.all.shifts).should.equal(shifts);
-            (by_shift_type.all.gf_pct).should.equal((gf/(ga+gf))*100);
+            (by_shift_type.all.gfpct).should.equal((gf/(ga+gf))*100);
             (Math.round(by_shift_type.all.gf60, 4)).should.equal(Math.round(gf/toi*60*60, 4));
 
             (by_shift_type.otf._id.season).should.equal(20192020);
             (by_shift_type.otf._id.team).should.equal('EDM');
             (by_shift_type.otf.shift_pct).should.equal(by_shift_type.otf.shifts/by_shift_type.all.shifts*100);
-            (by_shift_type.otf.avgshift).should.equal(by_shift_type.otf.toi/by_shift_type.otf.shifts);
+            (by_shift_type.otf.avgshift).should.equal(by_shift_type.otf.toi/by_shift_type.otf.shifts*60);
             (by_shift_type.otf.gf60).should.equal(by_shift_type.otf.gf/by_shift_type.otf.toi*60);
         });
 

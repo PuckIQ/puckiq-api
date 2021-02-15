@@ -1,14 +1,14 @@
 'use strict';
 
-let _ = require('lodash');
-let should = require('should');
-let constants = require('../../../../common/constants');
-let ServiceLocator = require('../../../../common/service_locator');
-let InMemoryCache = require('../../../../common/in_memory_cache');
-let WoodwowyQuery = require('../../../../modules/stats/woodwowy');
-let WoodwowyFormatter = require('../../../../modules/stats/queries/woodwowy_formatter');
+const _ = require('lodash');
+const should = require('should');
+const constants = require('../../../../common/constants');
+const ServiceLocator = require('../../../../common/service_locator');
+const InMemoryCache = require('../../../../common/in_memory_cache');
+const WoodwowyQuery = require('../../../../modules/stats/woodwowy');
+const WoodwowyFormatter = require('../../../../modules/stats/queries/woodwowy_formatter');
 
-let mcdavid_klefbom_raw = require('../../../data/woodwowy/20192020_mcdavid_klefbom');
+const mcdavid_klefbom_raw = require('../../../data/woodwowy/20192020_mcdavid_klefbom');
 
 const player_dict = {
     '8478402': {

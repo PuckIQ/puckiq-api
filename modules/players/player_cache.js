@@ -1,10 +1,11 @@
+'use strict';
+
 const _ = require('lodash');
 const Cache = require('../../common/in_memory_cache');
-const AllPlayers = require('./queries/all');
 
 class PlayerCache {
 
-    constructor(locator) {
+    constructor(locator, all_players_query) {
 
         this._cache = new Cache({ timeout: 0 }); // no time out, let the player cache control it...
 
@@ -12,20 +13,21 @@ class PlayerCache {
         this.last_fetch = new Date(0);
         this.initializing = null;
 
+        this.all_players_query = all_players_query || require('./queries/all');
+
     }
 
-    /**
-     */
     initialize() {
 
         if(this.initializing) return this.initializing;
 
         this.initializing = new Promise((resolve, reject) => {
-            AllPlayers(this.locator.get('mongoose'), this.locator.get('config'))({})
+            this.all_players_query(this.locator.get('mongoose'), this.locator.get('config'))({})
                 .then((players) => {
                     this.last_fetch = new Date();
                     this._cache.set('all', _.keyBy(players, 'playerid'));
                     resolve(players)
+                    this.initializing = null;
                 }, (e) => {
                     reject(e)
                 });
@@ -80,14 +82,13 @@ class PlayerCache {
     refresh() {
 
         return new Promise((resolve, reject) => {
-
             this.initialize().then((players) => {
                 resolve(players);
             }, (e) => {
                 reject(e);
             });
-
         });
+
     }
 
     isStale() {

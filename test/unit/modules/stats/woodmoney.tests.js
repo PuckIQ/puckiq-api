@@ -1,14 +1,14 @@
 'use strict';
 
-let _ = require('lodash');
-let should = require('should');
-let constants = require('../../../../common/constants');
-let ServiceLocator = require('../../../../common/service_locator');
-let InMemoryCache = require('../../../../common/in_memory_cache');
-let WoodmoneyQuery = require('../../../../modules/stats/woodmoney');
+const _ = require('lodash');
+const should = require('should');
+const constants = require('../../../../common/constants');
+const ServiceLocator = require('../../../../common/service_locator');
+const InMemoryCache = require('../../../../common/in_memory_cache');
+const WoodmoneyQuery = require('../../../../modules/stats/woodmoney');
 
-let oilers_20172018_data = require('../../../data/woodmoney/oilers_20172018');
-let oilers_20182019_data = require('../../../data/woodmoney/oilers_20182019');
+const oilers_20172018_data = require('../../../data/woodmoney/oilers_20172018');
+const oilers_20182019_data = require('../../../data/woodmoney/oilers_20182019');
 
 describe('woodmoney query tests', function() {
 
