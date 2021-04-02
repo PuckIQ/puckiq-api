@@ -32,9 +32,9 @@ exports.handle = function(req, res, err) {
     if(req && !req.xhr) {
         if(statusCode === 403) {
             res.render('404'); // hide this from the user
-        } else if(!!~_.indexOf([404, 500, 503], statusCode)) {
+        } else if(!!~_.indexOf([400, 404, 500, 503], statusCode)) {
             //known error pages
-            res.render(statusCode.toString());
+            res.render(statusCode.toString(), err);
         } else {
             res.render('500');
         }
