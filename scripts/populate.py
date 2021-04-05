@@ -121,7 +121,7 @@ for collection_name in collections_to_sync:
       for key in row:
         pq_update[key] = row[key]
 
-      if args.verbose: print("updating _id " + row["_id"])
+      if args.verbose: print("updating _id " + str(row["_id"]))
       pqcollection.update_one({"_id" : row["_id"]}, {"$set" : pq_update})
 
       if args.verbose: print(".", end='', flush=True)
