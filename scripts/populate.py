@@ -4,6 +4,7 @@ import os
 import pymongo
 import sys
 import argparse
+import requests
 from datetime import date
 
 '''
@@ -48,7 +49,7 @@ if 'collection' in args and args.collection is not None:
 elif args.season_only:
   collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts']
 else:
-  collections_to_sync = ['playerhistory','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts']
+  collections_to_sync = ['playerhistory','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy']
 
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
@@ -68,9 +69,9 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
   season_player_key = str(player["playerid"]) + "-" + player["team"]
   player_dict[season_player_key] = player["GP"]
 
-#wipe existing data if necessary
-if args.wipe:
-  for collection_name in collections_to_sync:
+
+# deletes all data from a collection for the current_season
+def wipe_data_for_season(collection_name):
     if collection_name in collection_mapper:
       if args.verbose: print('deleting records from collection ' + collection_mapper[collection_name])
       pqcollection = pqdb.get_collection(collection_mapper[collection_name])
@@ -80,6 +81,10 @@ if args.wipe:
       pqcollection = pqdb.get_collection(collection_name)
       pqcollection.remove({'season': CURRENT_SEASON})
 
+#refresh caches (rather than wait 15 min for new players to show up
+def flush_cache():
+  requests.get("http://api.puckiq.com/refresh")
+  requests.get("http://api.puckiq.org/refresh")
 
 for collection_name in collections_to_sync:
 
@@ -91,10 +96,14 @@ for collection_name in collections_to_sync:
   else:
     pqcollection = pqdb.get_collection(collection_name)
 
-  #only get the data that has been updated since last_run_timestamp
-  #(unless wiping or shifts collection which is small)
   wm_query = {"season": CURRENT_SEASON }
-  if not args.wipe and collection_name.find("shifts") < 0: wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
+
+  # always wipe season/shifts collections as they dont have last_run_timestamp
+  if args.wipe or not collection_name.startswith('game'):
+    wipe_data_for_season(collection_name)
+  else
+    #for game collections
+    wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
 
   collection_count=0
   for row in wm_collection.find({"season": CURRENT_SEASON}):
@@ -126,7 +135,7 @@ for collection_name in collections_to_sync:
 
       if args.verbose: print(".", end='', flush=True)
 
-#refresh caches (rather than wait 15 min for new players to show up
-import requests
-requests.get("http://api.puckiq.com/refresh")
-requests.get("http://api.puckiq.org/refresh")
+  if collection_name = "seasonwoodwowy":
+    flush_cache()
+
+flush_cache()
