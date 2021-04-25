@@ -9,8 +9,8 @@ from datetime import date
 
 '''
 Usage:
-python3 populate.py -s 20192020 -c teamshifts
-python3 populate.py -s 20192020
+python3 popscr.py -s 20192020 -c teamshifts
+python3 popscr.py -s 20192020
 '''
 
 # get args from command line
