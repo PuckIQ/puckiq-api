@@ -70,14 +70,12 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
 
 # deletes all data from a collection for the current_season
 def wipe_data_for_season(collection_name):
+  coll = collection_name
   if collection_name in collection_mapper:
-    if args.verbose: print('deleting records from collection ' + collection_mapper[collection_name])
-    pqcollection = pqdb.get_collection(collection_mapper[collection_name])
-    pqcollection.delete_many({'season': CURRENT_SEASON})
-  elif collection_name.find('season') >= 0:
-    if args.verbose: print('deleting records from collection ' + collection_name)
-    pqcollection = pqdb.get_collection(collection_name)
-    pqcollection.delete_many({'season': CURRENT_SEASON})
+    coll = collection_mapper[collection_name]
+  if args.verbose: print('deleting records from collection ' + coll)
+  pqcollection = pqdb.get_collection(coll)
+  pqcollection.delete_many({'season': CURRENT_SEASON})
 
 
 #refresh caches (rather than wait 15 min for new players to show up
@@ -125,6 +123,7 @@ for collection_name in collections_to_sync:
   print("done " + collection_name)
   batch=[]
 
+  # do this here so that the cache is updated after the season data (the game data takes a long time)
   if collection_name == "seasonwoodwowy":
     flush_cache()
 
