@@ -20,8 +20,6 @@ parser.add_argument('--season', '-s', dest='season', action='store', type=int, d
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
 parser.add_argument('-verbose', '-v', dest='verbose', action='store_true', help='Verbose mode', default=False)
-parser.add_argument('-wipe', '-w', dest='wipe', action='store_true',
-                    help='Use this to clear existing data for a season and rebuild from G\'s db', default=False)
 parser.add_argument('-collection', '-c', dest='collection', action='store', help='Collection to sync')
 args = parser.parse_args()
 
@@ -72,19 +70,21 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
 
 # deletes all data from a collection for the current_season
 def wipe_data_for_season(collection_name):
-    if collection_name in collection_mapper:
-      if args.verbose: print('deleting records from collection ' + collection_mapper[collection_name])
-      pqcollection = pqdb.get_collection(collection_mapper[collection_name])
-      pqcollection.remove({'season': CURRENT_SEASON})
-    elif collection_name.find('season') >= 0:
-      if args.verbose: print('deleting records from collection ' + collection_name)
-      pqcollection = pqdb.get_collection(collection_name)
-      pqcollection.remove({'season': CURRENT_SEASON})
+  if collection_name in collection_mapper:
+    if args.verbose: print('deleting records from collection ' + collection_mapper[collection_name])
+    pqcollection = pqdb.get_collection(collection_mapper[collection_name])
+    pqcollection.delete_many({'season': CURRENT_SEASON})
+  elif collection_name.find('season') >= 0:
+    if args.verbose: print('deleting records from collection ' + collection_name)
+    pqcollection = pqdb.get_collection(collection_name)
+    pqcollection.delete_many({'season': CURRENT_SEASON})
+
 
 #refresh caches (rather than wait 15 min for new players to show up
 def flush_cache():
   requests.get("http://api.puckiq.com/refresh")
   requests.get("http://api.puckiq.org/refresh")
+
 
 for collection_name in collections_to_sync:
 
@@ -98,19 +98,11 @@ for collection_name in collections_to_sync:
 
   wm_query = {"season": CURRENT_SEASON }
 
-  # always wipe season/shifts collections as they dont have last_run_timestamp
-  if args.wipe or not collection_name.startswith('game'):
-    wipe_data_for_season(collection_name)
-  else
-    #for game collections
-    wm_query["last_run_timestamp"] = { "$gt" : last_run_date }
+  print("wiping data")
+  wipe_data_for_season(collection_name)
 
-  collection_count=0
+  batch=[]
   for row in wm_collection.find({"season": CURRENT_SEASON}):
-
-    if args.verbose and collection_count > 0 and collection_count % 1000 == 0:
-      print('processing row ' + str(collection_count))
-    collection_count=collection_count+1
 
     #basically seasonboxcars doesnt have these fields but check for all just in case
     if (collection_name.startswith("season") or collection_name.find("shifts") >= 0) and "playerid" in row and "team" in row:
@@ -120,22 +112,20 @@ for collection_name in collections_to_sync:
       else:
         row["gamesplayed"] = 0
 
-    if pqcollection.count(row) < 1:
-      pqpostid = pqcollection.insert_one(row).inserted_id
-      if args.verbose: print("+", end='', flush=True)
-    else:
+    batch.append(row)
+    if len(batch) == 1000:
+      if args.verbose: print("insert batch", end='', flush=True)
+      pqcollection.insert_many(batch)
+      batch=[]
 
-      #not entirely sure this is needed
-      pq_update = {}
-      for key in row:
-        pq_update[key] = row[key]
+  if len(batch) > 0:
+    if args.verbose: print("insert batch", end='', flush=True)
+    pqcollection.insert_many(batch)
 
-      if args.verbose: print("updating _id " + str(row["_id"]))
-      pqcollection.update_one({"_id" : row["_id"]}, {"$set" : pq_update})
+  print("done " + collection_name)
+  batch=[]
 
-      if args.verbose: print(".", end='', flush=True)
-
-  if collection_name = "seasonwoodwowy":
+  if collection_name == "seasonwoodwowy":
     flush_cache()
 
 flush_cache()
