@@ -11,6 +11,7 @@ from datetime import date
 Usage:
 python3 popscr.py -s 20192020 -c teamshifts
 python3 popscr.py -s 20192020
+python3 popscr.py -c woodmoney -v
 '''
 
 # get args from command line
@@ -45,9 +46,9 @@ collection_mapper["shifts"] = "seasonshifts"
 if 'collection' in args and args.collection is not None:
   collections_to_sync = [args.collection]
 elif args.season_only:
-  collections_to_sync = ['seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts']
+  collections_to_sync = ['schedule','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','shifts']
 else:
-  collections_to_sync = ['playerhistory','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy']
+  collections_to_sync = ['playerhistory','schedule','seasonboxcars','seasonwoodmoney','seasonwoodwowy','seasonwowy','nhlroster','roster','shifts','gameboxcars','gamewoodmoney','gamewoodwowy','gamewowy']
 
 
 print("collections_to_sync: " + ', '.join(collections_to_sync))
@@ -69,14 +70,13 @@ for player in playerhistory.find({"season": CURRENT_SEASON, "gametype":2 }):
 
 
 # deletes all data from a collection for the current_season
-def wipe_data_for_season(collection_name):
+def wipe_data_for_season(collection_name, wm_query):
   coll = collection_name
   if collection_name in collection_mapper:
     coll = collection_mapper[collection_name]
   if args.verbose: print('deleting records from collection ' + coll)
   pqcollection = pqdb.get_collection(coll)
-  pqcollection.delete_many({'season': CURRENT_SEASON})
-
+  pqcollection.delete_many(wm_query)
 
 #refresh caches (rather than wait 15 min for new players to show up
 def flush_cache():
@@ -94,13 +94,16 @@ for collection_name in collections_to_sync:
   else:
     pqcollection = pqdb.get_collection(collection_name)
 
-  wm_query = {"season": CURRENT_SEASON }
+  season_filter = 'data.season' if collection_name == 'schedule' else 'season'
+  wm_query = {}
+  wm_query[season_filter] = CURRENT_SEASON
 
-  print("wiping data")
-  wipe_data_for_season(collection_name)
+  print("wiping data " + season_filter)
+  wipe_data_for_season(collection_name, wm_query)
 
   batch=[]
-  for row in wm_collection.find({"season": CURRENT_SEASON}):
+
+  for row in wm_collection.find(wm_query):
 
     #basically seasonboxcars doesnt have these fields but check for all just in case
     if (collection_name.startswith("season") or collection_name.find("shifts") >= 0) and "playerid" in row and "team" in row:
