@@ -16,7 +16,7 @@ python3 popscr.py -c woodmoney -v
 
 # get args from command line
 parser = argparse.ArgumentParser()
-parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20202021,
+parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20212022,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
