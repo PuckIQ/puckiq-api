@@ -8,6 +8,7 @@ const AppException = require('../../common/app_exception');
 const InMemoryCache = require('../../common/in_memory_cache');
 const Queries = require('./queries');
 const WoodmoneyQuery = require('./woodmoney');
+const GameWoodmoney = require('./game_woodmoney');
 const WoodwowyQuery = require('./woodwowy');
 const ShiftsQuery = require('./shifts');
 
@@ -78,7 +79,6 @@ class StatsController {
 
     }
 
-
     /**
      * team: ie 3 digit code
      * season: if not set, current
@@ -93,6 +93,59 @@ class StatsController {
     getWoodmoney(req, res) {
 
         let query = new WoodmoneyQuery(this.locator, {
+            queries : Queries
+        });
+
+        let input = _.extend({}, req.query, req.body);
+
+        query.validate(input).then((options) => {
+
+            query.fetch(options).then((results) => {
+
+                let response = {
+                    request: _.extend({ _id: req.query.request_id || utils.uid(20)}, options),
+                    results
+                };
+
+                if(response.request.from_date) response.request.from_date = response.request.from_date.getTime();
+                if(response.request.to_date) response.request.to_date = response.request.to_date.getTime();
+
+                if (options.player) {
+                    this.locator.get('player_cache').all().then((player_dict) => {
+                        response.player = player_dict[options.player.toString()];
+                        res.jsonp(response);
+                    }, (err) => {
+                        return this.error_handler.handle(req, res, err);
+                    });
+                } else {
+                    res.jsonp(response);
+                }
+
+            }, (err) => {
+                return this.error_handler.handle(req, res, err);
+            });
+
+        }, (err) => {
+            console.log("validation error", err);
+            return this.error_handler.handle(req, res, err);
+        });
+
+    }
+
+    /**
+     * team: ie 3 digit code
+     * season: if not set, current
+     * tier (woodmoneytier)
+     *  - possible values Middle/Elite/Gritensity
+     * game type (gametype)
+     *  - possible values Home, Away, vs East, vs West
+     * (position is client side)
+     * @param req
+     * @param res
+     */
+    getGameWoodmoney(req, res) {
+
+        let query = new GameWoodmoney(this.locator, {
             queries : Queries
         });
 

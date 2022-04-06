@@ -33,12 +33,15 @@ module.exports = exports = function (app, locator) {
 
     app.get('/woodmoney', format_get_for_testing,(req, res) => stats.getWoodmoney(req, res));
     app.post('/woodmoney', (req, res) => stats.getWoodmoney(req, res));
+    app.get('/woodmoney/:player/games', format_get_for_testing,(req, res) => stats.getGameWoodmoney(req, res));
+    app.post('/woodmoney/:player/games', (req, res) => stats.getGameWoodmoney(req, res));
+    app.post('/woodmoney/:player/teams', (req, res) => stats.getGameWoodmoney(req, res));
     app.get('/woodmoney/seasons', (req, res) => stats.woodMoneySeasons(req, res));
 
     app.get('/shifts', format_get_for_testing,(req, res) => stats.getShifts(req, res));
     app.post('/shifts', (req, res) => stats.getShifts(req, res));
 
-    let PuckpediaController = require('../../modules/puckpedia/controller');
+    const PuckpediaController = require('../../modules/puckpedia/controller');
     let puckpedia = new PuckpediaController(locator);
     app.get('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));
     app.post('/puckpedia', (req, res) => puckpedia.getNightlyStats(req, res));

@@ -5,6 +5,8 @@ const constants = require('../../../common/constants');
 const calculator = require('./calculator');
 const woodmoney_tier_sort = constants.woodmoney_tier_sort;
 
+const SUMMATION_FIELDS = ['games_played','evtoi', 'cf','ca','dff','dfa','gf','ga','sf','sa','ff','fa','sacf','saca','oz', 'nz', 'dz'];
+
 exports.formatBulk = (data, player_dict) => {
 
     let results = _.chain(data).map(result => {
@@ -101,7 +103,7 @@ exports.format = (result, player_info, all_toi) => {
 
 };
 
-exports.buildAllRecords = (woodmoney) => {
+exports.buildAllRecords = (woodmoney, calculate) => {
 
     let tmp = {};
     tmp[constants.on_off.on_ice] = null;
@@ -133,10 +135,12 @@ exports.buildAllRecords = (woodmoney) => {
 
     let all_records = _.values(tmp);
 
-    // done later anyways...
-    // _.each(all_records, x => {
-    //     this.calculateFieldsFor(x);
-    // });
+    // normally done later anyways...
+    if(calculate) {
+        _.each(all_records, x => {
+            calculator.calculateFieldsFor(x);
+        });
+    }
 
     return all_records;
 };
@@ -153,9 +157,6 @@ exports.flattenWoodmoneyIntoTiers = (data) => {
 
     return results;
 };
-
-
-const SUMMATION_FIELDS = ['games_played','evtoi', 'cf','ca','dff','dfa','gf','ga','sf','sa','ff','fa','sacf','saca','oz', 'nz', 'dz'];
 
 exports._flattenWoodmoneyIntoTiers = (record) => {
 
