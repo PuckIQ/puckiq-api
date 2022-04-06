@@ -28,38 +28,33 @@ module.exports = (mongoose, config) => {
 
         // assume the query is pre-validated
 
+        let schedule_query = {
+            "data.date": {
+                $gte: dateToString(options.from_date),
+                $lte: dateToString(options.to_date)
+            }
+        };
+
         if (options.player) {
             query.playerid = options.player;
         }
 
         if (options.team) {
             query.team = options.team;
+            schedule_query.$or = [
+                {'data.away.teamabbr' : options.team.toString()},
+                {'data.home.teamabbr' : options.team.toString()}
+            ];
         }
 
         return Promise.all([
-            Schedule.findOne({ "data.date" : {$gte: dateToString(options.from_date)}}).sort({"data.gamekey":1}).exec(),
-            Schedule.findOne({ "data.date" : {$lte: dateToString(options.to_date)}}).sort({"data.gamekey":-1}).exec(),
-        ]).then(([from_game, to_game]) => {
+            Schedule.find(schedule_query).sort({"data.gamekey":1}).exec(),
+        ]).then(([games]) => {
 
-            // console.log("from_game", from_game);
-            // console.log("to_game", to_game);
-
-            //check that we have the data for the selected range, otherwise simply return empty results
-            if(options.from_date && to_game) {
-                let dt = Date.parse(to_game.data.date);
-                if (options.from_date > dt) {
-                    return Promise.resolve([]);
-                }
-            }
-
-            if(from_game || to_game) {
-                query.gamekey = {};
-                if (from_game) {
-                    query.gamekey.$gte = from_game.data.gamekey;
-                }
-                if (to_game) {
-                    query.gamekey.$lte = to_game.data.gamekey;
-                }
+            if(games.length) {
+                query.gamekey = { $in: _.map(games, 'data.gamekey') };
+            } else {
+                return Promise.resolve([]);
             }
 
             const group_by1 = {
