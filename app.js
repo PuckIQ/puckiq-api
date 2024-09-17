@@ -1,6 +1,6 @@
 'use strict';
 
-const env = process.env.NODE_ENV || 'staging'; //tmp checkin till Zsolt gets build setup
+const env = process.env.NODE_ENV || 'local'; //tmp checkin till Zsolt gets build setup
 const config = require('./config/config').getFor(env);
 
 const cluster = require('cluster');
