@@ -4,8 +4,6 @@ import os
 import pymongo
 import sys
 import argparse
-import requests
-from datetime import date
 
 '''
 Usage:
@@ -16,7 +14,7 @@ python3 popscr.py -c woodmoney -v
 
 # get args from command line
 parser = argparse.ArgumentParser()
-parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20212022,
+parser.add_argument('--season', '-s', dest='season', action='store', type=int, default=20222023,
                     help='The season to populate from G\'s db', required=False)
 parser.add_argument('-season_only', '-so', dest='season_only', action='store_true',
                     help='If you want to sync just the season collections', default=False)
@@ -34,7 +32,6 @@ wm_client = MongoClient(_config['dbs']['wm'][0])
 pq_client = MongoClient(_config['dbs']['puckiq'][0])
 
 #constants and client config
-last_run_date=date.today()
 CURRENT_SEASON=args.season
 
 collection_mapper = {}
@@ -115,18 +112,18 @@ for collection_name in collections_to_sync:
 
     batch.append(row)
     if len(batch) == 1000:
-      if args.verbose: print("insert batch", end='', flush=True)
+      if args.verbose: print(".", end='', flush=True)
       pqcollection.insert_many(batch)
       batch=[]
 
   if len(batch) > 0:
-    if args.verbose: print("insert batch", end='', flush=True)
+    if args.verbose: print(".", end='', flush=True)
     pqcollection.insert_many(batch)
 
   print("done " + collection_name)
   batch=[]
 
-  # do this here so that the cache is updated after the season data (the game data takes a long time)
+  # do this here so that the cache is updated after the season data (the game data takes a long time)  if collection_name == "seasonwoodwowy":
   if collection_name == "seasonwoodwowy":
     flush_cache()
 
