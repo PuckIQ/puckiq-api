@@ -46,13 +46,12 @@ module.exports = (mongoose, config) => {
                         "name": {$arrayElemAt: ["$names", -1]}
                     }
                 },
-            ]).allowDiskUse(true).exec((err, players) => {
-                if (err) reject(err);
+            ]).allowDiskUse(true).then((players) => {
                 _.each(players, p => {
                     p._id = p.playerid.toString();
                 });
                 resolve(players);
-            });
+            }, (err) => resolve(err));
         })
 
     };
